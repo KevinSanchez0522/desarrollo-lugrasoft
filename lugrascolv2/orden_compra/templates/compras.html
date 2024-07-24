@@ -38,7 +38,10 @@
                     {%endif%}
                     {% if not dato.compra.estado %}
                     <a href="{% url 'editar' dato.id_compra%}" class="open-modal3"  data-id="{{ dato.id_compra }}"><i class="bi bi-pencil-square"></i></a>
-                    {%endif%}       
+                    {%endif%}    
+                    {% if not dato.compra.estado %}
+                    <a href="{% url 'eliminar' dato.id_compra%}" class="eliminarOrden"  data-id="{{ dato.id_compra }}"><i class="bi bi-trash"></i></a>
+                    {%endif%}    
                 </td>
             </tr>
             {% endfor %}
@@ -165,6 +168,7 @@
                 // Guardar el enlace para poder ocultarlo más tarde
                 var currentLink = this;
                 editLink = document.querySelector('.open-modal3[data-id="' + idCompra + '"]');
+                deleteLink = document.querySelector('.eliminarOrden[data-id="' + idCompra + '"]');
 
                 // Realizar la solicitud AJAX al backend para obtener los elementos por orden
                 $.ajax({
@@ -229,6 +233,7 @@
                                 success: function(response) {
                                     // Manejar la respuesta del backend
                                     console.log("Estado actualizado con éxito a true");
+                                    location.reload();
                                 },
                                 error: function(xhr, status, error) {
                                     // Manejar errores de la solicitud AJAX
@@ -246,7 +251,11 @@
                             if (editLink) {
                                 editLink.style.display = 'none';
                             }
+                            
+                            if (deleteLink) {
+                                deleteLink.style.display = 'none';
 
+                            }
                         });
 
                         var existingButton = modalContent.querySelector('.btn-primary');
@@ -267,6 +276,33 @@
             };
         });
     });
+
+    $('.eliminarOrden').click(function(event){
+        event.preventDefault();
+        var compraId = $(this).data('id');
+        console.log('idCompra', compraId)
+        
+        if (confirm('Estas Seguro de eliminar esta orden de compra?')){
+
+
+            $.ajax({
+                url: "{% url 'eliminar' 0 %}".replace('0', compraId),
+                type: "POST",
+                headers:{"X-CSRFToken": getCookie("csrftoken")},
+                data: ({compraId:compraId
+
+                }),
+                success: function(data) {
+                    console.log('datos enviados correctamente');
+                    location.reload();
+                },
+                error: function(xhr, status, error){
+                    console.error('Error al enviar datos al servidor:', error);
+                }
+
+            })
+        }
+    })
 
 
 

@@ -1,10 +1,7 @@
 import json
 from django.http import JsonResponse
 from django.shortcuts import render
-from .models import Clientes, TransaccionFactura, TransaccionRemision, Facturas, Remisiones
-from inventario.models import Inventario
-from produccion.models import OrdenProduccion, TransaccionOrden, Transformulas
-from formulas.models import TransMp 
+from .models import Clientes, TransaccionFactura, TransaccionRemision, Facturas, Remisiones , Inventario, OrdenProduccion, TransaccionOrden, Transformulas, TransMp
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, F
 
@@ -14,7 +11,13 @@ def facturar(request):
     productos = Inventario.objects.all()
     
     
-    return render(request, 'facturacion.html',{'clientes': clientes , 'productos': productos})
+    
+    return render(request, 'facturacion.html',{'clientes': clientes , 'productos': productos,})
+
+def VerFacturas(request):
+    facturas = Facturas.objects.all();
+    return render(request, 'verFacturas.html', {'facturas': facturas})
+
 
 
 def obtenerOrdenCliente(request):

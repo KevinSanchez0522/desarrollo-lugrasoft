@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 # Create your views here. 
-from .models import  Proveedores, Compras , Inventario, TransMp
+from facturacion.models import  Proveedores, Compras , Inventario, TransMp
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.dateparse import parse_date
@@ -372,3 +372,67 @@ def obtener(request):
     
 
 
+
+def actualizarTMP(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # Obtener los datos enviados desde el frontend
+        # Aquí asumimos que los datos se envían como JSON desde el frontend
+        
+
+        # Procesar los datos recibidos
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            # Convertir los datos JSON a un diccionario Python
+            nfactura = data.get('nfactura')  # Obtener el número de factura enviado desde el frontend
+            datos_filas = data.get('datos')  # Obtener los datos de cada fila para actualizar
+
+            # Iterar sobre los datos de cada fila
+            for fila in datos_filas:
+                cod_inventario = fila.get('codInventario')
+                cantidad = fila.get('cantidad')
+                costo = fila.get('costo')
+                total_linea = fila.get('totalLinea')
+
+                # Buscar el registro en el modelo TransMP por número de factura y código de inventario
+                transmp_objeto = TransMp.objects.get(id_compra__id_compra=nfactura, cod_inventario=cod_inventario)
+
+                # Actualizar los campos del objeto TransMP
+                transmp_objeto.cant_mp = cantidad
+                transmp_objeto.costo_unitario = costo
+                transmp_objeto.total_linea = total_linea
+
+                # Guardar los cambios en la base de datos
+                transmp_objeto.save()
+
+            # Si todo sale bien, puedes devolver una respuesta JSON con un mensaje de éxito
+            return JsonResponse({'message': 'Datos actualizados correctamente.'}, status=200)
+
+        except Exception as e:
+            # Manejar cualquier excepción que pueda ocurrir durante el procesamiento de los datos
+            return JsonResponse({'error': str(e)}, status=400)
+
+    # Si la petición no es AJAX o no es POST, puedes devolver un error
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+
+def eliminarOrden(request, id_compra):
+    # Obtener la compra por id_compra
+    compra = get_object_or_404(Compras, id_compra=id_compra)
+    
+    if request.method == 'POST':
+        # Eliminar todos los registros relacionados en TransMP
+        transmps = TransMp.objects.filter(id_compra=compra)
+        transmps.delete()
+        
+        # Eliminar la compra
+        compra.delete()
+        
+        # Redirigir a alguna página de éxito o a donde corresponda
+        return redirect('compras')  # Ajusta esto a la URL a la que deseas redirigir después de eliminar
+    
+    # Si se accede a través de un método GET u otro método, puedes manejarlo aquí
+    # o redirigir a otra página de error o de confirmación.
+    
+    # Por ejemplo, puedes mostrar un mensaje de confirmación o simplemente redirigir a la página anterior.
+    return redirect('compras') 

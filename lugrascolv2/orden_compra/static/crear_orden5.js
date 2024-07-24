@@ -51,7 +51,9 @@ $('#proveedor').on('change', function() {
                 
                 // Agregar opciones de productos obtenidos
                 data.forEach(function(producto) {
-                    var option = new Option(producto.nombre, producto.id, false, false);
+                    var optionText = producto.nombre;
+                    var option = new Option(optionText, producto.id, false, false);
+                    $(option).data('id', producto.id);
                     $('#producto').append(option);
                 });
                 
@@ -82,7 +84,7 @@ $('#producto').on('change', function() {
     // Validar si se ha seleccionado un producto válido
     if (productoSeleccionado) {
         var id_producto = productoSeleccionado.id;
-        var nombre_producto = productoSeleccionado.text;
+        var nombre_producto = $(this).find('option:selected').text();
         var id_proveedor = $(this).attr('data-proveedor-id');
         var fechaCreacion = document.getElementById("fechaCreacion").value; 
         var numeroFactura = document.getElementById("numeroFactura").value; // Obtener número de factura
@@ -102,25 +104,24 @@ $('#producto').on('change', function() {
         var celdaUnidad = nuevaFila.insertCell();
         var selectUnidad = document.createElement('select');
         selectUnidad.innerHTML = '<option value="Unidad">Unidad</option>' +
-                                 '<option value="Galon">Galon</option>' +
-                                 '<option value="Kg">Kg</option>' +
-                                 '<option value="Gr">Gr</option>';
+                                '<option value="Galon">Galon</option>' +
+                                '<option value="Kg">Kg</option>' +
+                                '<option value="Gr">Gr</option>';
         celdaUnidad.appendChild(selectUnidad);
         nuevaFila.insertCell().textContent = id_proveedor; // ID del proveedor
         // Celda para el número de factura (suponiendo que 'numeroFactura' está definido)
         nuevaFila.insertCell().textContent = numeroFactura;
         // Celda para el icono de borrado
         var celdaBorrar = nuevaFila.insertCell();
-        var iconoBorrar = document.createElement('span');
-        iconoBorrar.classList.add('delete');
-        iconoBorrar.style.color = 'red';
-        iconoBorrar.textContent = 'X';
+        var iconoBorrar = document.createElement('i');
+        iconoBorrar.classList.add('bi', 'bi-trash');
         celdaBorrar.appendChild(iconoBorrar);
         
         // Evento para manejar la eliminación de la fila
         iconoBorrar.addEventListener('click', function() {
             var filaParaEliminar = this.closest('tr');
             filaParaEliminar.remove();
+            actualizarTotalFactura();
         });
         
         // Función para calcular el total de la fila

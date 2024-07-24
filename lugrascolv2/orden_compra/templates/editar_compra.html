@@ -13,17 +13,24 @@
 	<link rel="stylesheet" href="{%static 'editar_compra.css' %}">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<h4>Proveedor</h4>
-    {% for objeto in objetos%}
+    
 	<div class="container">
 		<div class="form-container">
 			<div class="left-column">
 				<div class="selector-container">
+                    
 					<div class="campofactura">
-						<input type="int" id="numeroFactura" required placeholder="Ingrese el número de factura"value="{{ objeto.id_compra.id_compra }}">
+                        {% if objetos %}
+						<input type="int" id="numeroFactura"  readonly placeholder="Ingrese el número de factura"value="{{ objetos.0.id_compra.id_compra }}">
+                        {%endif%}
 					</div>
+                    
 					<div class="campofecha">
-						<input type="date" id="fechaCreacion" value="{{ objeto.fecha_ingreso_str}}">
+                        {% if objetos %}
+						<input type="date" id="fechaCreacion" readonly value="{{ objetos.0.fecha_ingreso_str}}">
+                        {%endif%}
 					</div>
+                    
 				</div>
 				<div class="selector-container">
                     
@@ -51,9 +58,11 @@
 			</div>
 			<div class="right-column">
 				<div class="info">
-					<div id="nitproveedor">{{objeto.id_proveedor}}</div>
-					<div id="direccion">{{objeto.direccion}}</div>
-					<div id="telefono">{{objeto.telefono}}</div>
+                    {% if objetos%}
+					<div id="nitproveedor">{{objetos.0.id_proveedor}}</div>
+					<div id="direccion">{{objetos.0.direccion}}</div>
+					<div id="telefono">{{objetos.0.telefono}}</div>
+                    {%endif%}
 				</div>
 				<div id="totalFactura">
 					Total Factura
@@ -64,6 +73,7 @@
 			</div>
 		</div>
 	</div>
+    
 
 	
 	<div class= "tabla">
@@ -88,21 +98,25 @@
 				</tr>
 			</thead>
 			<tbody>
-                <td>{{objeto.cod_inventario.cod_inventario}}</td>
-                <td>{{objeto.nombre_mp}}</td>
-                <td><input type="number" value="{{objeto.cant_mp}}"></td>
-                <td><input type="number" value="{{objeto.costo_unitario}}"></td>
-                <td></td>
-                <td>{{objeto.fecha_ingreso}}</td>
-                <td>{{objeto.unidad_medida}}</td>
-                <td>{{objeto.id_proveedor}}</td>
-                <td>{{objeto.id_compra.id_compra}}</td>
-                <td><button class="eliminar-btn"><i class="bi bi-trash3-fill"></i></button></td>
+                {% for objeto in objetos%}
+                <tr data-cod-inventario="{{ objeto.cod_inventario.cod_inventario }}">
+                    <td>{{objeto.cod_inventario.cod_inventario}}</td>
+                    <td>{{objeto.nombre_mp}}</td>
+                    <td><input type="number" class="cantidad" value="{{objeto.cant_mp}}"></td>
+                    <td><input type="number" class="costounitario" value="{{objeto.costo_unitario}}"></td>
+                    <td></td>
+                    <td>{{objeto.fecha_ingreso}}</td>
+                    <td>{{objeto.unidad_medida}}</td>
+                    <td>{{objeto.id_proveedor}}</td>
+                    <td>{{objeto.id_compra.id_compra}}</td>
+                    <td><button class="eliminar-btn"><i class="bi bi-trash3-fill"></i></button></td>
+                </tr>
+                {%endfor%}
 			</tbody>
 		</table>	
 		
 	</div>
-	{%endfor%}
+	
 
 {% endblock  %}	
 
@@ -151,10 +165,6 @@
     });
     $(document).ready(function() {
         // Al hacer clic en el botón eliminar
-        $('.eliminar-btn').click(function() {
-            // Eliminar la fila correspondiente
-            $(this).closest('tr').remove();
-        });
 
         // Al seleccionar un producto
         $('#producto').change(function() {
@@ -185,7 +195,89 @@
 
             // Agregar la nueva fila a la tabla
             $('#tabla-formulario tbody').append(nuevaFila);
+
+            $('.eliminar-btn').click(function() {
+            // Eliminar la fila correspondiente
+                $(this).closest('tr').remove();
+            })
         });
     });
+
+
+    $('#enviarFormularioBtn').click(function() {
+        var nfactura = $('#numeroFactura').val();
+        console.log('factura', nfactura)
+
+    // Crear un array para almacenar los datos de cada fila
+        var datosFilas = [];
+
+        $('table tbody tr').each(function() {
+            var codInventario = $(this).attr('data-cod-inventario');
+            var cantidad = $(this).find('.cantidad').val();
+            var costo = $(this).find('.costounitario').val();
+            var totallinea = cantidad * costo;
+
+            // Crear un objeto con los datos de la fila actual
+                var datosFila = {
+                    codInventario: codInventario,
+                    cantidad: cantidad,
+                    costo: costo,
+                    totalLinea: totallinea
+                };
+
+                // Agregar el objeto al array
+                datosFilas.push(datosFila);
+            });
+
+        // Objeto con los datos a enviar al backend
+        var datosEnviar = {
+            nfactura: nfactura,
+            datos: datosFilas
+        };
+
+        console.log('Datos a enviar al backend:', datosEnviar);
+        if (confirm('¿Estás seguro de enviar los datos?')) {
+        // Enviar los datos al backend a través de AJAX
+            $.ajax({
+                url: "{% url 'editado' %}",  // Asegúrate de proporcionar la URL correcta para el endpoint del backend
+                type: "POST",  // El tipo de petición es POST
+                headers: {
+                    "X-CSRFToken": csrftoken
+                },
+                
+                data: JSON.stringify(datosEnviar),  // Convertir el objeto a JSON para enviarlo al backend
+                contentType: "application/json",  // Especificar el tipo de contenido como JSON
+                success: function(data) {
+                    // Manejar la respuesta exitosa del backend si es necesario
+                    console.log('Respuesta del servidor:', data);
+                    window.history.back();
+                },
+                error: function(xhr, status, error) {
+                    // Manejar errores de la petición AJAX
+                    console.error('Error al enviar datos al servidor:', error);
+                }
+            });
+        }
+
+    });
+
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Busca la cookie que comienza con el nombre deseado
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+var csrftoken = getCookie('csrftoken');
+
 </script>
 {%endblock%}

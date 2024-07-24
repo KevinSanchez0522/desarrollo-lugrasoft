@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-from .models import Proveedores, TransMp, Inventario, Compras
+from  facturacion.models import Proveedores, TransMp, Inventario, Compras
 
 # Create your views here.
 def verProveedor(request):

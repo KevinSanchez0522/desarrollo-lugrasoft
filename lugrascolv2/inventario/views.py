@@ -2,7 +2,7 @@ import json,io
 import random
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse,FileResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import  Inventario, TransaccionAjuste, Ajustes, Averias, TransaccionAverias
+from facturacion.models import  Inventario, TransaccionAjuste, Ajustes, Averias, TransaccionAverias
 from django.db.models import Max, F
 from docx import Document
 from reportlab.lib.pagesizes import letter

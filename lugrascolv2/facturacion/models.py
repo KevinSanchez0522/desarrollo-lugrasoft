@@ -218,9 +218,9 @@ class AuthUserUserPermissions(models.Model):
 
 
 class Compras(models.Model):
-    id_compra = models.IntegerField(primary_key=True)
     total_factura = models.IntegerField()
     estado = models.BooleanField()
+    id_compra = models.TextField(primary_key=True)
 
     class Meta:
         managed = False
@@ -313,10 +313,10 @@ class TransMp(models.Model):
     total_linea = models.FloatField()
     fecha_ingreso = models.DateField()
     unidad_medida = models.TextField()
-    id_compra = models.ForeignKey(Compras, models.DO_NOTHING, db_column='id_compra')
     id_proveedor = models.IntegerField()
     cod_inventario = models.ForeignKey(Inventario, models.DO_NOTHING, db_column='cod_inventario')
     tipo = models.TextField(blank=True, null=True)
+    id_compra = models.ForeignKey(Compras, models.DO_NOTHING, db_column='id_compra')
 
     class Meta:
         managed = False

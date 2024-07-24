@@ -4,12 +4,12 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 
-from .models import Clientes, Inventario, OrdenProduccion, Transformulas, TransaccionOrden, SalidasMpOrden
+from facturacion.models import Clientes, Inventario, OrdenProduccion, Transformulas, TransaccionOrden, SalidasMpOrden
 from django.db.models import Max, F
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Case, When, IntegerField, Value, CharField,Min
-from .models import TransaccionOrden
+
 
 # Create your views here.
 def pedido(request):

@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         '<td>' + dato.id_producto + '</td>' +
                                         '<td>' + dato.nombre + '</td>' +
                                         '<td>' + dato.cantidad + '</td>' +
-                                        '<td>' + subtotal_venta_formateado + '</td>' +
+                                        '<td><input type = "text" value = "' + subtotal_venta_formateado +'" </td>' +
                                        '</tr>';
         
                             $('#tabla-formulario tbody').append(fila);

@@ -244,11 +244,15 @@ div .boton {
     text-align: center;
     font-weight: bold;
 }
+.divajuste, .divaveria{
+    text-align: center;
+}
 .tituloa{
         font-size: 24px; /* Tamaño del texto */
         font-weight: bold; /* Grosor del texto */
         color: #45a049; /* Color del texto */
         margin-bottom: 10px; /* Espacio inferior */
+        text-align: center;
     
 }
 
@@ -256,7 +260,7 @@ div .boton {
 .modal {
     display: none; /* Oculta la ventana modal por defecto */
     position: fixed; /* Permite que la ventana modal se muestre encima del contenido */
-    z-index: 1; /* Asegura que la ventana modal esté encima de otros elementos */
+    z-index: 1000; /* Asegura que la ventana modal esté encima de otros elementos */
     left: 0;
     top: 0;
     width: 100%;
