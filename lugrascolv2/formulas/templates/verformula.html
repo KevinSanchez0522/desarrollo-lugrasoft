@@ -31,6 +31,7 @@
                 <td>{{formula.nombre}}</td>
                 <td><a href="#" class="open-modal" data-modal-target="#viewModal{{ forloop.counter }}"><i class="bi bi-eye-fill"></i></a>
                     <a href="#" class="open-modal" data-modal-target="#editModal{{ forloop.counter }}"><i class="bi bi-pencil-square"></i></a>
+                    <a href="{% url 'EliminarFormula' formula.cod_inventario.cod_inventario%}" class="deleteFormula"  onclick="return confirm('¿Estás seguro de que quieres eliminar este elemento?');"><i class="bi bi-trash"></i></a>
                 </td>
             </tr>
             {%endfor%}
@@ -360,6 +361,10 @@
             const cantidadInputs = modal.querySelectorAll('tbody input[type="number"]');
             const cantidades = Array.from(cantidadInputs).map(input => input.value);
             const transformulasId = button.dataset.formulaId; 
+            
+            
+    
+            
 
         
 
@@ -369,7 +374,8 @@
                 costosIndirectos: costosIndirectos,
                 utilidad: utilidad,
                 iva: iva,
-                cantidades: cantidades
+                cantidades: cantidades,
+                nombre : nombreEdit
                 // Agrega aquí los demás datos que desees enviar
             };
             console.log(data);
@@ -420,5 +426,8 @@ if (document.cookie && document.cookie !== '') {
 return cookieValue;
 }
 
-    </script>
+
+
+
+</script>
 {%endblock%}

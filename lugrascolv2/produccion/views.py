@@ -155,7 +155,10 @@ def ver_orden_en_curso(request):
         )
     
         transacciones = TransaccionOrden.objects.filter(
-            id__in=subquery.values('id'),
+            id__in=subquery.values('id'), 
+            fecha_entrega__in=subquery.values('min_fecha_entrega')
+        ).exclude(
+            estado='facturado'
         ).annotate(
             prioridad_order=Case(
                 When(prioridad='urgente', then=Value(1)),

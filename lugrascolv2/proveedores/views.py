@@ -15,19 +15,22 @@ def obtener_productos_por_proveedor(request, proveedor_id):
     if proveedor_id:
             # Filtrar productos por ID del proveedor
         productos = Inventario.objects.filter(id_proveedor=proveedor_id)
-        producto = TransMp.objects.filter(id_proveedor=proveedor_id)
-        # Obtener el último precio unitario del producto seleccionado desde TransMp
-        ultimo_transaccion = TransMp.objects.filter(id_proveedor=proveedor_id).order_by('-fecha_ingreso').first()
-        if ultimo_transaccion:
-            precio_unitario = ultimo_transaccion.costo_unitario
-        else:
-            # Si no hay transacciones, establecer un precio predeterminado
-            precio_unitario = 0
+
+        
         
         # Construir lista de datos para los productos encontrados
         data = []
         for producto_inv in productos:
+            ultimo_transaccion = TransMp.objects.filter(
+                id_proveedor=proveedor_id, 
+                cod_inventario=producto_inv.cod_inventario
+            ).order_by('-fecha_ingreso').first()
             # Obtener el costo unitario del producto del modelo TransMp
+            if ultimo_transaccion:
+                precio_unitario = ultimo_transaccion.costo_unitario
+            else:
+            # Si no hay transacciones, establecer un precio predeterminado
+                precio_unitario = 0
 
             
             # Crear un diccionario con los datos del producto

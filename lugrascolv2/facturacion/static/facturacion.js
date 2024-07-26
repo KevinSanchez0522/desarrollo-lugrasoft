@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var precioTotal = 0;
         var subtotalTotal =0;
         var ivaSobreSubtotalTotal = 0;
+        var iva = 0;
 
         $.ajax({
             url: obtenerfactura,
@@ -99,7 +100,9 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#orden').on('change', function() {
             var idOrden = $(this).val();  // Obtener el valor seleccionado (id_orden)
             var subtotal = 0;
-            
+            var ivaSobreSubtotalTotal = 0;
+            var subtotalTotal = 0;
+            var precioTotal = 0;
             
         
             // Verificar si se seleccionó una opción válida
@@ -126,21 +129,25 @@ document.addEventListener('DOMContentLoaded', function() {
                         $.each(response.datos, function(index, dato) {
                             // Determinar qué subtotal mostrar dependiendo de si se incluye IVA o no
                             var subtotal_venta_mostrar = incluirIVA ? dato.total_venta : dato.subtotal_venta;
-                            var subtotal_venta_formateado = '$' + ' ' + subtotal_venta_mostrar.toLocaleString();
+                            var subtotal_venta_formateado = '$' + ' ' + subtotal_venta_mostrar.toLocaleString('es-ES', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
         
                             var fila = '<tr>' +
                                         '<td>' + dato.id_producto + '</td>' +
                                         '<td>' + dato.nombre + '</td>' +
                                         '<td>' + dato.cantidad + '</td>' +
-                                        '<td><input type = "text" value = "' + subtotal_venta_formateado +'" </td>' +
+                                        '<td><input type = "text"  class= "valoreditable" value = "' + subtotal_venta_formateado +'" </td>' +
                                        '</tr>';
         
                             $('#tabla-formulario tbody').append(fila);
+                            iva = dato.iva;
         
                             // Calcular subtotal total solo si se incluye IVA
                             if (incluirIVA) {
                                 subtotal += dato.total_venta  * dato.cantidad;
-                                ivaSobreSubtotalTotal += (dato.total_venta * dato.cantidad * (dato.iva / 100));
+                                ivaSobreSubtotalTotal += (dato.total_venta * dato.cantidad * (iva/ 100));
                                 subtotalTotal = (subtotal - ivaSobreSubtotalTotal);
                             } else {
                                 subtotalTotal += dato.subtotal_venta * dato.cantidad;
@@ -151,10 +158,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         precioTotal = incluirIVA ? (subtotalTotal + ivaSobreSubtotalTotal) : subtotalTotal;
         
                         // Mostrar los valores calculados
-                        $('.ValorSubtotal').text('$ ' + subtotalTotal.toLocaleString());
-                        $('.ValorIva').text(incluirIVA ? ('$ ' + ivaSobreSubtotalTotal.toLocaleString()) : '');
-                        $('.Ptotal').text('$ ' + precioTotal.toLocaleString());
-                    },
+                        $('.ValorSubtotal').text('$ ' + subtotalTotal.toLocaleString('es-ES', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }));
+                        $('.ValorIva').text(incluirIVA ? ('$ ' + ivaSobreSubtotalTotal.toLocaleString('es-ES', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })) : '');
+                        $('.Ptotal').text('$ ' + precioTotal.toLocaleString('es-ES', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }));
+                    },  
                     error: function(xhr, status, error) {
                         // Manejar errores de la solicitud AJAX aquí
                         console.error('Error en la solicitud AJAX:', error);
@@ -164,6 +180,57 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Seleccionó una opción inválida');
             }
         });
+
+
+        
+        $('#tabla-formulario').on('input', '.valoreditable', function() {
+            var subtotal = 0;
+            var ivaSobreSubtotalTotal = 0;
+            var subtotalTotal = 0;
+            var precioTotal = 0;
+        
+            // Obtener el estado del checkbox de IVA
+            var incluirIVA = $('#checkIva').prop('checked');
+        
+            // Recalcular los valores
+            $('#tabla-formulario tbody tr').each(function() {
+                var subtotal_venta = parseFloat($(this).find('.valoreditable').val().replace(/[^0-9.-]+/g, ""));
+                
+                if (isNaN(subtotal_venta)) {
+                    subtotal_venta = 0;
+                }
+                
+                var cantidad = parseFloat($(this).find('td:nth-child(3)').text());
+                
+                // Sumar los valores
+                subtotalTotal += subtotal_venta * cantidad;
+            });
+        
+            // Calcular IVA si está incluido
+            if (incluirIVA) {
+                ivaSobreSubtotalTotal = (subtotalTotal * iva) / 100; // IVA del 19%
+                subtotalTotal = subtotalTotal- ivaSobreSubtotalTotal
+                precioTotal = subtotalTotal + ivaSobreSubtotalTotal;
+            } else {
+                ivaSobreSubtotalTotal = 0;
+                precioTotal = subtotalTotal;
+            }
+        
+            // Mostrar los valores recalculados
+            $('.ValorSubtotal').text('$ ' + subtotalTotal.toLocaleString('es-ES', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }));
+            $('.ValorIva').text(incluirIVA ? ('$ ' + ivaSobreSubtotalTotal.toLocaleString('es-ES', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })) : '');
+            $('.Ptotal').text('$ ' + precioTotal.toLocaleString('es-ES', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }));
+        });
+        
         $('.bt-facturar').on('click', function() {
             // Obtener datos del cliente seleccionado
             event.preventDefault();
@@ -220,6 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ica: ica,
                 total: total,
                 fecha : fechaactual,
+                estado: 'facturado'
             };
             console.log('datos js :', datosFacturacion)
 

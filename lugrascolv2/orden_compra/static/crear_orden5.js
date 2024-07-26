@@ -103,7 +103,7 @@ $('#producto').on('change', function() {
         nuevaFila.insertCell().textContent = fechaCreacion; // Fecha de creación
         var celdaUnidad = nuevaFila.insertCell();
         var selectUnidad = document.createElement('select');
-        selectUnidad.innerHTML = '<option value="Unidad">Unidad</option>' +
+        selectUnidad.innerHTML ='<option value="Unidad">Unidad</option>' +
                                 '<option value="Galon">Galon</option>' +
                                 '<option value="Kg">Kg</option>' +
                                 '<option value="Gr">Gr</option>';

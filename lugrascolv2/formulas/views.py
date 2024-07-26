@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import get_object_or_404, render
-from facturacion.models import Inventario, TransMp, Transformulas, Proveedores
+from facturacion.models import Inventario, TransMp, Transformulas, Proveedores, TransaccionOrden
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist 
@@ -201,6 +201,7 @@ def actualizar_transformula(request):
         utilidad = data.get('utilidad')
         iva = data.get('iva')
         cantidades = data.get('cantidades',[])
+        nombre = data.get('nombre')
 
 
         # Buscar la transformula correspondiente en la base de datos
@@ -211,6 +212,7 @@ def actualizar_transformula(request):
             transformula.costosindirectos = costos_indirectos
             transformula.pocentajeutilidad = utilidad
             transformula.porcentajeiva = iva
+            transformula.nombre = nombre
 
             # Actualizar los campos de materia y cantidad
             for i, cantidad in enumerate(cantidades, start=1):
@@ -227,3 +229,25 @@ def actualizar_transformula(request):
     else:
         # Devolver una respuesta de error si la solicitud no es POST
         return JsonResponse({'status': 'error', 'message': 'Método no permitido'})    
+    
+    
+    
+    
+    
+def eliminarFormula(request, cod_inventario):
+    
+    producto = get_object_or_404(Inventario, cod_inventario=cod_inventario)
+    orden= get_object_or_404(TransaccionOrden,cod_inventario=cod_inventario)
+    
+    if producto.cantidad > 0:
+        # Si el producto tiene cantidades en inventario, devolver un mensaje de error
+        return JsonResponse({'mensaje': f'No se puede eliminar el producto {cod_inventario} porque tiene cantidades en inventario.'}, status=400)
+    if orden.cod_inventario:
+        # Si el producto tiene cantidades en inventario, devolver un mensaje de error
+        return JsonResponse({'mensaje': f'No se puede eliminar el producto {cod_inventario} porque esta en proceso de produccion.'}, status=400)
+    else:
+        # Si el producto no tiene cantidades en inventario, proceder con la eliminación
+        transaccion = get_object_or_404(Transformulas, cod_inventario=cod_inventario)
+        transaccion.delete()
+        producto.delete()
+        return JsonResponse({'mensaje': f'Producto {cod_inventario} eliminado correctamente.'}, status=200)

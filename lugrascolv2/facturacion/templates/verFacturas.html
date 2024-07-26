@@ -30,12 +30,14 @@
         </thead>
         <tbody>
             {% for factura in facturas%}
+            
             <tr>
-                <td>{{factura.nfactura}}</td>
+                <td>${{factura.nfactura}}</td>
                 <td>{{factura.id_orden.id_orden}}</td>
+                <td>$ {{factura.total_factura_formateado}}</td>
                 <td>{{factura.fecha_facturacion}}</td>
-                <td>{{factura.total_factura}}</td>
             </tr>
+            
             {%endfor%}
         </tbody>
     </table>	

@@ -177,3 +177,20 @@ input[type="number"]:focus {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Aumenta la sombra al enfocar el input */
 }
 
+.titulomodal {
+    font-size: 28px; /* Tamaño del texto similar a un h2 */
+    font-weight: bold; /* Negrita para resaltar el texto */
+    color: #333; /* Color del texto */
+    text-align: center; /* Centrar el texto */
+    margin-bottom: 20px; /* Espacio inferior para separación */
+    text-transform: uppercase; /* Convertir el texto a mayúsculas */
+    letter-spacing: 2px; /* Espaciado entre letras */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Sombra de texto para efecto visual */
+    border: none; /* Quitar el borde del input */
+    background: transparent; /* Fondo transparente */
+    padding: 0; /* Sin relleno para ajustar el tamaño */
+    outline: none; /* Sin contorno al hacer foco */
+    width: 100%; /* Ajustar al ancho del contenedor */
+    box-sizing: border-box; /* Asegurarse de que el padding y el borde se incluyan en el ancho total */
+    transition: border-color 0.3s ease; /* Transición suave para el borde */
+}

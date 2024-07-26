@@ -15,8 +15,28 @@ def facturar(request):
     return render(request, 'facturacion.html',{'clientes': clientes , 'productos': productos,})
 
 def VerFacturas(request):
-    facturas = Facturas.objects.all();
-    return render(request, 'verFacturas.html', {'facturas': facturas})
+    # Obtener todas las facturas
+    facturas = Facturas.objects.all()
+
+    # Convertir y formatear `total_factura` directamente en la vista
+    facturas_formateadas = []
+    for factura in facturas:
+        total_factura = factura.total_factura / 100.0
+        # Convertir `total_factura` a cadena con separadores de miles
+        total_factura_formateado = '{:,.2f}'.format(total_factura).replace(',', 'X').replace('.', ',').replace('X', '.')
+        
+        # Crear un diccionario con los datos de la factura y el total formateado
+        factura_formateada = {
+            'nfactura': factura.nfactura,
+            'fecha_facturacion': factura.fecha_facturacion,
+            'total_factura_formateado': total_factura_formateado
+        }
+        
+        # Añadir el diccionario a la lista
+        facturas_formateadas.append(factura_formateada)
+    
+    # Pasar las facturas formateadas al contexto de la plantilla
+    return render(request, 'verFacturas.html', {'facturas': facturas_formateadas})
 
 
 
@@ -156,23 +176,28 @@ def PFacturar(request):
             iva = datos_facturacion['iva']
             total = datos_facturacion['total']
             fecha = datos_facturacion['fecha']
+            estado = datos_facturacion['estado']
 
             try:
             
+                total_float= total.replace('.','').replace(',','')
+                total_guardar = float(total_float)
                 
+                updateEstado = TransaccionOrden.objects.filter(id_orden=orden_id)
+                
+                updateEstado.update(estado=estado)
+                
+                
+
+
                 # Crear instancia de Facturas
-                
-                
-
-
-                
                 if incluir_iva:
                     modelo_transaccion = TransaccionFactura
                     factura_instance, created_factura = Facturas.objects.get_or_create(
                         nfactura=factura_numero,
                         defaults={
                             'fecha_facturacion': fecha,
-                            'total_factura': float(total.replace('.', '').replace(',', '.')),  # Asegurar formato correcto
+                            'total_factura': total_guardar,  # Asegurar formato correcto
                             'id_orden_field': orden_id
                         }
                     )
@@ -183,7 +208,7 @@ def PFacturar(request):
                         nremision=numero_remision,
                         defaults={
                             'fecha_remision': fecha,
-                            'total_remision': float(total.replace('.', '').replace(',', '.')),  # Asegurar formato correcto
+                            'total_remision': total_guardar,  # Asegurar formato correcto
                             'id_orden': orden_id
                         }
                     )
