@@ -74,6 +74,7 @@ class TransaccionFactura(models.Model):
     cod_inventario = models.IntegerField()
     cantidad = models.IntegerField()
     fecha_factura = models.DateField()
+    precio_venta = models.FloatField()
 
     class Meta:
         managed = False
@@ -85,6 +86,7 @@ class TransaccionRemision(models.Model):
     cod_inventario = models.IntegerField()
     cantidad = models.IntegerField()
     fecha_remision = models.DateField()
+    precio_venta = models.FloatField()
 
     class Meta:
         managed = False

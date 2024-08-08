@@ -11,11 +11,27 @@
 
 
 {% block areatrabajo%}
+<script>
+    var obtenerDetallesFacturacion = "{%url 'detallesFacturacion'%}"
+</script>
 
 <link rel="stylesheet" href="{%static 'verFacturas.css'%}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'verFacturas.js' %}"></script>
+
+
+<div class="sobretabla ">
+    <div class="selector ">
+        <select name="" id="filtro" class="js-example-basic-single" >
+            <option value="">Filtrar factura </option>
+            {%for factura in facturas%}
+            <option value="{{factura.nfactura}}">{{factura.nfactura}}</option>
+            {%endfor%}
+        </select>
+    </div>
+</div>
 
 
 <div class= "tabla">
@@ -26,21 +42,59 @@
                 <td>Cliente</td>
                 <td> Valor </td>
                 <td>Fecha</td>
+                <td></td>
             </tr>
         </thead>
         <tbody>
             {% for factura in facturas%}
             
             <tr>
-                <td>${{factura.nfactura}}</td>
-                <td>{{factura.id_orden.id_orden}}</td>
+                <td>{{factura.nfactura}}</td>
+                <td>{{factura.nombreCliente}}</td>
                 <td>$ {{factura.total_factura_formateado}}</td>
                 <td>{{factura.fecha_facturacion}}</td>
+                <td>
+                    <a href="" class="view" title="Ver Factura"><i class="bi bi-eye"></i></a>
+                    <a href="" class="edit" title="Editar Factura"><i class="bi bi-pencil"></i></a>
+                    <a href="" class="cancel" title="Anular Factura"><i class="bi bi-x-octagon"></i></a>
+                </td>
             </tr>
             
             {%endfor%}
         </tbody>
     </table>	
+
+
+    <div id="modalDetalleOrden" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="cabeceraModal">
+                <!-- Aquí puedes agregar contenido dinámico si lo deseas -->
+                <h2>Detalles de la Factura</h2>
+                <p id="detalleContenido">Aquí se mostrarán los detalles de la factura seleccionada.</p>
+                
+            </div>
+
+            <div class= "tabla">
+                <table class="table" id="tabla-formulario-modal">
+                    <thead class="table">
+                        <tr class="encabezado">
+                            <td>cod inventario </td>
+                            <td>Nombre</td>
+                            <td>cantidad</td>
+                            <td>Valor</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        <tr>
+                        </tr>
+                    </tbody>
+                </table>
+        </div>  
+    </div>
+
+
     
 </div>
 

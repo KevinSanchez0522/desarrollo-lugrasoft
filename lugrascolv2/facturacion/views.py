@@ -17,19 +17,41 @@ def facturar(request):
 def VerFacturas(request):
     # Obtener todas las facturas
     facturas = Facturas.objects.all()
+    
 
     # Convertir y formatear `total_factura` directamente en la vista
     facturas_formateadas = []
     for factura in facturas:
-        total_factura = factura.total_factura / 100.0
+        id_orden = factura.id_orden_field
+        
+        # Obtener la instancia de OrdenProduccion usando id_orden
+        try:
+            orden_produccion = OrdenProduccion.objects.get(id_orden=id_orden)
+        except OrdenProduccion.DoesNotExist:
+            # Manejar el caso cuando no se encuentra la OrdenProduccion
+            orden_produccion = None
+        
+        if orden_produccion:
+            # Obtener la instancia de Cliente desde OrdenProduccion
+            cliente = orden_produccion.nit  # `nit` es el campo de clave foránea en OrdenProduccion
+            
+            # Obtener el NIT del cliente
+            nombre = cliente.nombre
+        
+        else:
+            # Si no se encuentra la OrdenProduccion, asignar valores predeterminados
+            id_cliente = 'Desconocido'
+
+        #total_factura = factura.total_factura / 100.0
         # Convertir `total_factura` a cadena con separadores de miles
-        total_factura_formateado = '{:,.2f}'.format(total_factura).replace(',', 'X').replace('.', ',').replace('X', '.')
+        #total_factura_formateado = '{:,.2f}'.format(total_factura).replace(',', 'X').replace('.', ',').replace('X', '.')
         
         # Crear un diccionario con los datos de la factura y el total formateado
         factura_formateada = {
             'nfactura': factura.nfactura,
             'fecha_facturacion': factura.fecha_facturacion,
-            'total_factura_formateado': total_factura_formateado
+            'total_factura_formateado': f"{factura.total_factura:,}",
+            'nombreCliente': nombre
         }
         
         # Añadir el diccionario a la lista
@@ -181,7 +203,7 @@ def PFacturar(request):
             try:
             
                 total_float= total.replace('.','').replace(',','')
-                total_guardar = float(total_float)
+                total_guardar = convertir_a_numero(total)
                 
                 updateEstado = TransaccionOrden.objects.filter(id_orden=orden_id)
                 
@@ -215,19 +237,24 @@ def PFacturar(request):
 
                 # Iterar sobre los productos y guardar en el modelo correspondiente
                 for producto in productos:
+                    
                     if incluir_iva:
+                        print('valor producto', producto['costo_unitario'])
                         instancia_transaccion = modelo_transaccion(
                             nfactura=factura_instance,
                             cod_inventario=producto['id_producto'],
-                            cantidad=int(producto['cantidad']),
-                            fecha_factura=fecha
+                            cantidad= convertir_a_numero_entero(producto['cantidad']),
+                            fecha_factura=fecha,
+                            precio_venta = convertir_a_numero(producto['costo_unitario']),
+                            
                         )
                     else:
                         instancia_transaccion = modelo_transaccion(
                             nremision=remision,
                             cod_inventario=producto['id_producto'],
-                            cantidad=int(producto['cantidad']),
-                            fecha_remision=fecha
+                            cantidad=convertir_a_numero_entero(producto['cantidad']),
+                            fecha_remision=fecha,
+                            precio_venta = convertir_a_numero(producto['costo_unitario']),
                         )
 
                     # Guardar la instancia en la base de datos
@@ -366,3 +393,62 @@ def precio_producto(request):
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
     
+    
+def detallesFactura(request):
+    factura_id = request.GET.get('factura_id')
+    print('N factura', factura_id)
+    
+    if factura_id:
+        try:
+            
+            
+            transacciones = TransaccionFactura.objects.filter(nfactura=factura_id)
+            
+            productos = []
+            for transaccion in transacciones:
+                # Obtener detalles del producto desde el modelo Inventario
+                producto = Inventario.objects.get(cod_inventario=transaccion.cod_inventario)
+                
+                # Agregar los detalles del producto a la lista
+                productos.append({
+                    'cod_inventario': producto.cod_inventario,
+                    'nombre': producto.nombre,
+                    'cantidad': transaccion.cantidad,
+                    'fecha_factura': transaccion.fecha_factura,
+                    'precio_unitario': f"{transaccion.precio_venta:,}",
+                })
+            
+            # Preparar los datos para enviar en la respuesta JSON
+            data = {
+                'productos': productos,
+            }
+            
+            return JsonResponse(data)
+        except Facturas.DoesNotExist:
+            return JsonResponse({'error': 'Factura no encontrada'}, status=404)
+    else:
+        return JsonResponse({'error': 'ID de factura no proporcionado'}, status=400)
+    
+    
+    
+    
+    
+def convertir_a_numero(cadena):
+    # Reemplazar el punto (.) con nada (eliminar separadores de miles)
+    cadena = cadena.replace('.', '')
+    # Reemplazar la coma (,) con un punto (.) para el separador decimal
+    cadena = cadena.replace(',', '.')
+    # Convertir la cadena a un número flotante
+    numero = float(cadena)
+    return numero
+
+def convertir_a_numero_entero(cadena):
+    # Reemplazar el punto (.) con nada (eliminar separadores de miles)
+    cadena = cadena.replace('.', '')
+    # Reemplazar la coma (,) con un punto (.) para el separador decimal
+    cadena = cadena.replace(',', '.')
+    # Convertir la cadena a un número flotante
+    numero = float(cadena)
+    
+    numero_entero = int(round(numero))
+    return numero_entero
