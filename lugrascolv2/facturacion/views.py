@@ -1,9 +1,18 @@
 import json
+import os
+from pydoc import doc
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from .models import Clientes, TransaccionFactura, TransaccionRemision, Facturas, Remisiones , Inventario, OrdenProduccion, TransaccionOrden, Transformulas, TransMp
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, F
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib.units import inch
 
 # Create your views here.
 def facturar(request):
@@ -18,40 +27,23 @@ def VerFacturas(request):
     # Obtener todas las facturas
     facturas = Facturas.objects.all()
     
+    
 
     # Convertir y formatear `total_factura` directamente en la vista
     facturas_formateadas = []
     for factura in facturas:
         id_orden = factura.id_orden_field
-        
-        # Obtener la instancia de OrdenProduccion usando id_orden
-        try:
-            orden_produccion = OrdenProduccion.objects.get(id_orden=id_orden)
-        except OrdenProduccion.DoesNotExist:
-            # Manejar el caso cuando no se encuentra la OrdenProduccion
-            orden_produccion = None
-        
-        if orden_produccion:
-            # Obtener la instancia de Cliente desde OrdenProduccion
-            cliente = orden_produccion.nit  # `nit` es el campo de clave foránea en OrdenProduccion
-            
-            # Obtener el NIT del cliente
-            nombre = cliente.nombre
-        
-        else:
-            # Si no se encuentra la OrdenProduccion, asignar valores predeterminados
-            id_cliente = 'Desconocido'
 
-        #total_factura = factura.total_factura / 100.0
-        # Convertir `total_factura` a cadena con separadores de miles
-        #total_factura_formateado = '{:,.2f}'.format(total_factura).replace(',', 'X').replace('.', ',').replace('X', '.')
+        nombre_cliente = get_object_or_404(Clientes, nit=factura.cliente)
+        cliente = nombre_cliente.nombre # `nit` es el campo de clave foránea en OrdenProduccion
+
+
         
-        # Crear un diccionario con los datos de la factura y el total formateado
         factura_formateada = {
             'nfactura': factura.nfactura,
             'fecha_facturacion': factura.fecha_facturacion,
             'total_factura_formateado': f"{factura.total_factura:,}",
-            'nombreCliente': nombre
+            'nombreCliente': cliente
         }
         
         # Añadir el diccionario a la lista
@@ -177,7 +169,6 @@ def productos_facturar(request):
 from .models import Facturas, OrdenProduccion, TransaccionFactura, TransaccionRemision
 from django.http import JsonResponse
 import json
-
 def PFacturar(request):
     if request.method == 'POST':
         try:
@@ -220,7 +211,8 @@ def PFacturar(request):
                         defaults={
                             'fecha_facturacion': fecha,
                             'total_factura': total_guardar,  # Asegurar formato correcto
-                            'id_orden_field': orden_id
+                            'id_orden_field': orden_id,
+                            'cliente':cliente
                         }
                     )
                 else:
@@ -231,7 +223,8 @@ def PFacturar(request):
                         defaults={
                             'fecha_remision': fecha,
                             'total_remision': total_guardar,  # Asegurar formato correcto
-                            'id_orden': orden_id
+                            'id_orden': orden_id,
+                            'cliente': cliente,
                         }
                     )
 
@@ -248,6 +241,14 @@ def PFacturar(request):
                             precio_venta = convertir_a_numero(producto['costo_unitario']),
                             
                         )
+                        
+                        producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
+                        nueva_cantidad = producto_inventario.cantidad - convertir_a_numero_entero(producto['cantidad'])
+                        
+                        producto_inventario.cantidad = nueva_cantidad
+                        producto_inventario.save()
+                        print(f'Inventario actualizado para el producto {producto["id_producto"]}. Nueva cantidad: {nueva_cantidad}')
+                
                     else:
                         instancia_transaccion = modelo_transaccion(
                             nremision=remision,
@@ -256,12 +257,23 @@ def PFacturar(request):
                             fecha_remision=fecha,
                             precio_venta = convertir_a_numero(producto['costo_unitario']),
                         )
+                        producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
+                        nueva_cantidad = producto_inventario.cantidad - convertir_a_numero_entero(producto['cantidad'])
+                        
+                        producto_inventario.cantidad = nueva_cantidad
+                        producto_inventario.save()
+                        print(f'Inventario actualizado para el producto {producto["id_producto"]}. Nueva cantidad: {nueva_cantidad}')
 
                     # Guardar la instancia en la base de datos
                     instancia_transaccion.save()   
+                    
+    
 
 
-                
+                pdf_buffer = generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos, total, fecha, estado)
+                response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename=factura_{factura_numero}.pdf'
+                return response
 
             except OrdenProduccion.DoesNotExist:
                 # Manejar caso donde no se encuentra la orden de producción
@@ -277,13 +289,85 @@ def PFacturar(request):
     # Manejar otras solicitudes o devolver un error si es necesario
     return JsonResponse({'error': 'Método de solicitud no permitido'}, status=405)
 
+def generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos, total, fecha, estado):
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    content = []
+    
+    # Estilos para el documento
+    styles = getSampleStyleSheet()
+    title_style = styles['Title']
+    header_style = styles['Heading2']
+    normal_style = styles['BodyText']
+    styleN = styles['Normal']
+    
+    # Datos de cabecera
+    content.append(Paragraph(f'Factura Número: {factura_numero}', title_style))
+    content.append(Paragraph(f'Cliente: {cliente}', normal_style))
+    content.append(Paragraph(f'Dirección: {direccion}', normal_style))
+    content.append(Paragraph(f'Teléfono: {telefono}', normal_style))
+    content.append(Paragraph(f'Correo: {correo}', normal_style))
+    content.append(Paragraph(f'Fecha: {fecha}', normal_style))
+    content.append(Paragraph(f'Estado: {estado}', normal_style))
+    content.append(Paragraph(' ', normal_style))  # Espacio en blanco
+    
+    # Encabezado de la tabla
+    table_data = [['ID Producto', 'Nombre Producto', 'Cantidad', 'Precio Unitario', 'Total']]
+    
+    # Datos de los productos
+    for producto in productos:
+        costo = convertir_a_numero(producto['costo_unitario'])
+        cantidad= convertir_a_numero_entero(producto['cantidad'])
+        table_data.append([
+            producto['id_producto'],
+            Paragraph(producto['nombre'], styleN),
+            cantidad,
+            costo,
+            f"${cantidad * costo:.2f}"
+        ])
+    
+    # Añadir total
+    table_data.append(['', '', '', 'Subtotal:', f"${total}"])
+    
+    # Crear la tabla
+    table = Table(table_data, colWidths=[1.0*inch, 2.5*inch, 1.0*inch, 1.0*inch, 1.0*inch])
+    
+    # Estilo de la tabla
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), '#d0d0d0'),
+        ('TEXTCOLOR', (0, 0), (-1, 0), '#000000'),
+        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
+        ('BACKGROUND', (0, 1), (-1, -1), '#f9f9f9'),
+        ('GRID', (0, 0), (-1, -1), 1, '#000000'),
+    ]))
+    
+    content.append(table)
+    
+    # Crear el documento
+    doc.build(content)
+    
+
+    buffer.seek(0)
+    return buffer
+
+
+def descargar_pdf(request, factura_numero):
+    pdf_file_path = f'/tmp/factura_{factura_numero}.pdf'
+    if os.path.exists(pdf_file_path):
+        with open(pdf_file_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename=factura_{factura_numero}.pdf'
+            return response
+    else:
+        return JsonResponse({'error': 'Archivo no encontrado'}, status=404)
 
 def obtener_numero_factura(request):
     ultima_factura = None  # Define la variable antes del bloque try
     nueva_factura = None
     
     try:
-        ultima_factura = TransaccionFactura.objects.aggregate(Max('nfactura'))['nfactura__max']
+        ultima_factura = Facturas.objects.aggregate(Max('nfactura'))['nfactura__max']
         print(ultima_factura)
         if ultima_factura is not None:
             ultima_factura = ultima_factura + 1
@@ -403,6 +487,13 @@ def detallesFactura(request):
             
             
             transacciones = TransaccionFactura.objects.filter(nfactura=factura_id)
+            factura= get_object_or_404(Facturas, nfactura= factura_id)
+            cliente = get_object_or_404(Clientes, nit=factura.cliente)
+            
+            iva= factura.total_factura* 0.19
+            iva_redondeado = round(iva,2)
+            subtotal = factura.total_factura - iva_redondeado
+            
             
             productos = []
             for transaccion in transacciones:
@@ -416,6 +507,14 @@ def detallesFactura(request):
                     'cantidad': transaccion.cantidad,
                     'fecha_factura': transaccion.fecha_factura,
                     'precio_unitario': f"{transaccion.precio_venta:,}",
+                    'total_factura': f"{factura.total_factura:,}",
+                    'nit_cliente': cliente.nit,
+                    'nombre_cliente': cliente.nombre,
+                    'telefono_cliente': cliente.telefono,
+                    'direccion_cliente': cliente.direccion,
+                    'correo_cliente': cliente.email,
+                    'iva': f"{iva_redondeado:,}",
+                    'subtotal': f"{subtotal:,}"
                 })
             
             # Preparar los datos para enviar en la respuesta JSON
@@ -452,3 +551,56 @@ def convertir_a_numero_entero(cadena):
     
     numero_entero = int(round(numero))
     return numero_entero
+
+
+
+def editarFacturas(request, nfactura):
+    transacciones = TransaccionFactura.objects.filter(nfactura=nfactura)
+    
+    datos = get_object_or_404(Facturas, nfactura=nfactura)
+    
+    primeraTransaccion = transacciones.first()
+    fecha_factura = primeraTransaccion.fecha_factura
+    numero_factura = primeraTransaccion.nfactura
+    orden = datos.id_orden_field
+  
+    
+    cliente = get_object_or_404(Facturas, cliente=datos.cliente)
+    id_cliente = cliente.cliente
+
+    
+    DatosCliente = get_object_or_404(Clientes, nit=id_cliente)
+    # Crea una lista de diccionarios con los datos de cada transacción
+    datos_transacciones = []
+    for transaccion in transacciones:
+        try:
+            # Busca el nombre del producto en el modelo Inventario
+            producto = Inventario.objects.get(cod_inventario=transaccion.cod_inventario)
+            nombre_producto = producto.nombre
+        except Inventario.DoesNotExist:
+            nombre_producto = "Desconocido"  # Maneja el caso en que el producto no se encuentre
+
+        datos_transacciones.append({
+            'producto': transaccion.cod_inventario,
+            'nombre_producto': nombre_producto,
+            'cantidad': transaccion.cantidad,
+            'precio': f"${transaccion.precio_venta:,}",
+        })
+    
+    # Pasa los datos al contexto
+    context = {
+        'transacciones': datos_transacciones,
+        'fecha': fecha_factura,
+        'factura': numero_factura,
+        'orden': orden,
+        'nit': DatosCliente.nit,
+        'nombre': DatosCliente.nombre,
+        'direccion': DatosCliente.direccion,
+        'telefono': DatosCliente.telefono,
+        'correo': DatosCliente.email
+        
+        
+        
+    }
+    
+    return render(request, 'editarFactura.html', context)

@@ -1,0 +1,294 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Montserrat+Alternates|Poppins&display=swap');
+/* Estilos generales para la tabla */
+.tabla {
+    max-width: 100%;
+    margin: 20px auto;
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    max-height: 400px; /* Altura máxima de la tabla */
+    overflow-y: scroll;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Encabezado de la tabla */
+.encabezado td {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+}
+
+/* Cuerpo de la tabla */
+.table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Estilos para las celdas */
+.table td {
+    color: #333;
+}
+
+/* Estilos para el texto */
+.table th, .table td {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Mejora de la accesibilidad en pantallas pequeñas */
+@media screen and (max-width: 600px) {
+    .table thead {
+        display: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 15px;
+    }
+
+    .table td {
+        text-align: right;
+        padding-left: 50%;
+        text-align: right;
+        position: relative;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+}
+
+.sobretabla {
+    display: flex; /* Utiliza flexbox */
+    justify-content:flex-start; /* Distribuye los elementos uniformemente a lo largo del contenedor */
+    gap: 10px;
+}
+
+.sobretabla > div {
+    display: flex; /* Utiliza flexbox para los elementos internos */
+    align-items: center; /* Centra verticalmente los elementos */
+    margin-right: 20px; /* Ajusta el margen derecho para separar los elementos */
+}
+
+.sobretabla i {
+    /* Estilo del icono */
+    font-size: 20px; /* Tamaño del icono */
+    margin-right: 5px; /* Espacio entre el icono y el texto */
+}
+
+.sobretabla a {
+    /* Estilo del enlace */
+    text-decoration: none; /* Quita el subrayado predeterminado */
+    color:#6e8624; /* Color del texto del enlace */
+    font-weight: bold; /* Texto en negrita */
+}
+
+.sobretabla a:hover {
+    /* Estilo cuando se pasa el ratón sobre el enlace */
+    text-decoration: none; /* Subrayado al pasar el ratón */
+}
+
+
+
+
+
+.selector{
+    display: flex;
+    align-items: center;
+}
+
+.selector select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* x-offset, y-offset, blur-radius, color */
+    font-size: 15px;
+    font-weight: bold; 
+    outline: none;
+    background-color: #fff;
+    color: #6e8624;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    margin-left: 5px; /* Espacio entre el icono y el selector */
+}
+
+.filtro select:hover {
+    border-color: #6e8624;
+}
+
+
+.kardex select{
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* x-offset, y-offset, blur-radius, color */
+    font-size: 15px;
+    font-weight: bold; 
+    outline: none;
+    background-color: #fff;
+    color: #6e8624;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    margin-left: 5px; /* Espacio entre el icono y el selector */
+}
+
+.producto select{
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* x-offset, y-offset, blur-radius, color */
+    font-size: 15px;
+    font-weight: bold; 
+    outline: none;
+    background-color: #fff;
+    color: #6e8624;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    margin-left: 5px; /* Espacio entre el icono y el selector */
+}
+.selector{
+    display: flex;
+    align-items: center;
+}
+option .codigo {
+    font-weight: bold;
+}
+    /* Estilo personalizado para el input de tipo date */
+.fecha {
+    display: flex;
+    margin-bottom: 10px; /* Espacio entre el contenedor y otros elementos */
+
+}
+
+/* Estilo personalizado para el input de tipo date */
+.fecha input[type="date"] {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+    background-color: #fff;
+    color: #333;
+        /* Añade más estilos según sea necesario */
+}
+.texto textarea {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+    background-color: #fff;
+    color: #333;
+    resize: vertical; /* Permite al usuario redimensionar verticalmente el textarea */
+}
+.cabecera {
+    display: flex; /* Usa el modelo de caja flexible */
+    align-items: center; /* Centra verticalmente los elementos */
+    justify-content: space-between; 
+}
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #4CAF50 !important; 
+    color: white !important; 
+}
+/* Estilo para el botón de envío */
+.boton-envio {
+    background-color: #4CAF50; /* Color de fondo */
+    color: white; /* Color del texto */
+    padding: 10px 20px; /* Espaciado interno */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cursor apuntador */
+    font-size: 16px; /* Tamaño de fuente */
+    transition: background-color 0.3s; /* Transición suave */
+}
+
+/* Cambiar el color de fondo al pasar el mouse */
+.boton-envio:hover {
+    background-color: #45a049;
+}
+
+/* Ajuste de margen para centrar el botón horizontalmente */
+div .boton {
+    text-align: center;
+    margin-top: 5px;
+}
+.najuste{
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+    background-color: #fff;
+    color: #6e8624;
+    margin-bottom: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+.divajuste, .divaveria{
+    text-align: center;
+}
+.tituloa{
+        font-size: 24px; /* Tamaño del texto */
+        font-weight: bold; /* Grosor del texto */
+        color: #45a049; /* Color del texto */
+        margin-bottom: 10px; /* Espacio inferior */
+        text-align: center;
+    
+}
+
+/* Estilos para la ventana modal */
+.modal {
+    display: none; /* Oculta la ventana modal por defecto */
+    position: fixed; /* Permite que la ventana modal se muestre encima del contenido */
+    z-index: 1000; /* Asegura que la ventana modal esté encima de otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Habilita el desplazamiento vertical si la ventana modal es demasiado grande */
+    background-color: rgba(0,0,0,0.4); /* Fondo semitransparente */
+}
+
+  /* Estilos para el contenido de la ventana modal */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* Centra vertical y horizontalmente */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+  /* Estilos para el botón de cierre */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}

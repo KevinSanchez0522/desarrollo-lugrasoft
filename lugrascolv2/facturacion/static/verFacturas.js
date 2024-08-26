@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function openModal(facturaId) {
         // Aquí puedes cargar contenido dinámico basado en `facturaId`
         // Por ejemplo, hacer una solicitud AJAX para obtener detalles de la factura
-        document.getElementById('detalleContenido').textContent = 'Cargando detalles para la factura ' + facturaId;
+        document.getElementById('facturaN').textContent = 'N° de Factura:  ' + facturaId;
 
         // Mostrar el modal
         modal.style.display = "block";
@@ -64,12 +64,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (response.productos && response.productos.length > 0) {
                     response.productos.forEach(function(producto) {
                         var fila = '<tr>' +
-                                    '<td>' + producto.cod_inventario + '</td>' +
-                                    '<td>' + producto.nombre + '</td>' +
-                                    '<td>' + producto.cantidad + '</td>' +
-                                    '<td>$ ' + (producto.precio_unitario || 'N/A') + '</td>' +
+                                    '<td>' + producto.cantidad + ' '+'---'+' ' + producto.cod_inventario + ' ' + producto.nombre + '</td>' +
+                                    '<td>'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
                                     '</tr>';
                         tbody.append(fila);
+                        $('.valorNit').text('N° de Cliente:  '+ producto.nit_cliente);
+                        $('.nombreCliente').text(producto.nombre_cliente);
+                        $('.direcCliente').text(producto.direccion_cliente);
+                        $('.telCliente').text(producto.telefono_cliente);
+                        $('.emailCliente').text(producto.correo_cliente);
+                        $('.fecha').text('Fecha: ' + producto.fecha_factura);
+                        $('.valorTOTAL').text('$'+ '' + producto.total_factura);
+                        $('.valorIVA').text('$' + '' + producto.iva);
+
+                        
+                        $('.valorSUBTOTAL').text('$' + '' + producto.subtotal);
+                        
                     });
                 } else {
                     // Si no hay productos, agregar una fila con un mensaje
@@ -110,3 +120,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 // fin apertura del modal 
 });
+
+function printModal() {
+    var botonImprimir  = document.querySelector('.invoice-footer button');
+    var closeButton = document.getElementById('closeButton');
+    botonImprimir.style.display = 'none';
+    closeButton.style.display = 'none';
+    var printWindow = window.open('', '', 'height=600,width=800');
+    var modalContent = document.querySelector('#modalDetalleOrden .modal-content').innerHTML;
+    
+    // Ruta al archivo CSS
+    var cssLink = imprimir
+
+    printWindow.document.write('<html><head><title>facturación lugrascol SAS </title>');
+    printWindow.document.write('<link rel="stylesheet" href="' + cssLink + '">');
+    printWindow.document.write('</head><body >');
+    printWindow.document.write(modalContent);
+    printWindow.document.write('</body></html>');
+
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+}

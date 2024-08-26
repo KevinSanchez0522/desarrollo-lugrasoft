@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import facturar, obtenerOrdenCliente, productos_facturar,PFacturar, obtener_numero_factura, precio_producto, VerFacturas, detallesFactura
+from .views import facturar, obtenerOrdenCliente, productos_facturar,PFacturar, obtener_numero_factura, precio_producto, VerFacturas, detallesFactura,descargar_pdf, editarFacturas
 
 
 urlpatterns = [
@@ -10,5 +10,7 @@ urlpatterns = [
     path('obtenerF/', obtener_numero_factura, name= 'obtenerFactura'),
     path('precioProducto/', precio_producto, name='precioxproducto'),
     path('verfactura/', VerFacturas , name= 'verfactura' ),
-    path('detalles_factura/', detallesFactura, name='detallesFacturacion')
+    path('detalles_factura/', detallesFactura, name='detallesFacturacion'),
+    path('descargar_pdf/<str:factura_numero>/', descargar_pdf, name='descargar_pdf'),
+    path('editarFactura/<int:nfactura>/', editarFacturas, name= 'editar')
 ]

@@ -33,6 +33,7 @@ class Facturas(models.Model):
     fecha_facturacion = models.DateField()
     total_factura = models.FloatField()
     id_orden_field = models.IntegerField(db_column='id_orden ')    # Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
+    cliente = models.IntegerField()
 
     class Meta:
         managed = False
@@ -53,6 +54,7 @@ class Remisiones(models.Model):
     fecha_remision = models.DateField()
     total_remision = models.FloatField()
     id_orden = models.IntegerField()
+    cliente = models.IntegerField()
     class Meta:
         managed = False
         db_table = 'Remisiones'

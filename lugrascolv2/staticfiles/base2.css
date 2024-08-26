@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Montserrat+Alternates|Poppins&display=swap');
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.sidebar {
+    width: 200px;
+    height: 105vh; /* Ajusta la altura según sea necesario */
+    background-color: #6e8624;
+    color: #fff;
+    padding: 20px;
+}
+.logo{
+    display: inline-flex;
+    align-items: center;
+    width: 150px;
+}
+.logo h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    font-family: 'Montserrat Alternates', sans-serif;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+.nav ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 30px;
+    
+}
+
+.nav li {
+    margin-bottom: 20px;
+    font-family: 'Montserrat Alternates', sans-serif;
+    color: #f0f181ee;
+
+
+}
+
+.nav a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+}
+
+.content {
+    padding: 20px; /* Ajusta el margen izquierdo para que el contenido no se superponga con la barra lateral */
+    width: 82.5vw;
+    float: right;
+    box-sizing: border-box;
+    top: 0;
+    position: absolute;
+    margin-left: 240px;
+    height: 50px;
+    text-align: center; 
+    background-color: #e8eb68ee;
+    margin-top: 0;
+    border-radius: 10px;
+}
+.titulo{
+    font-family: 'Montserrat Alternates', sans-serif;
+    display: contents;
+    color:  #6e8624;
+
+
+}
+
+.content2 {
+    padding: 20px; /* Ajusta el margen izquierdo para que el contenido no se superponga con la barra lateral */
+    width: 82.5vw;
+    float: right;
+    box-sizing: border-box;
+    top: 70px;
+    position: absolute;
+    margin-left: 240px;
+    height: 100vh;
+    text-align: center;
+    background-color: #fff;
+    margin-top: 0;
+    border-bottom-right-radius: 7px;
+    
+}
+
+
+/* Estilos para dispositivos móviles */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+    }
+
+    .content {
+        margin-left: 0;
+    }
+}
+img{
+    margin-top: 10px;;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+}
+
+
+
+/*estilos para las sublistas*/
+.menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu li {
+    position: relative;
+}
+
+.menu li a {
+    display: block;
+    text-decoration: none;
+    color: #f0f181ee;
+}
+.submenu {
+    display: none;
+    position: relative;
+    top: 100%;
+    left: 0;
+    background-color: #6e8624;
+    
+}
+
+.menu li:hover .submenu {
+    display: block;
+}
+
+.submenu li {
+    display: block;
+}
+
+.submenu li a {
+    padding: 8px 20px;
+}
+.salir{
+    margin-top: 30%;
+    
+}
+
+/* Estilo del contenido de la modal */
+
+
+.modal {
+    display: none; /* Oculta la modal */
+    position: fixed; /* Se queda fija en pantalla */
+    z-index: 1; /* Sitúa la modal sobre el contenido */
+    left: 0;
+    top: 0;
+    width: 100%; /* Anchura completa */
+    height: 100%; /* Altura completa */
+    overflow: auto; /* Permite scroll */
+    background-color: rgb(0,0,0); /* Fondo negro */
+    background-color: rgba(0,0,0,0.4); /* Negro con opacidad */
+}
+.modal-content {
+    
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Estilo para el botón cerrar */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}

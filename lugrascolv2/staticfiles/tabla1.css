@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Montserrat+Alternates|Poppins&display=swap');
+/* Estilos generales para la tabla */
+.tabla {
+    max-width: 100%;
+    margin: 20px auto;
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    max-height: 400px; /* Altura máxima de la tabla */
+    overflow-y: scroll;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Encabezado de la tabla */
+.encabezado td {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+}
+
+/* Cuerpo de la tabla */
+.table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Estilos para las celdas */
+.table td {
+    color: #333;
+}
+
+/* Estilos para el texto */
+.table th, .table td {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Mejora de la accesibilidad en pantallas pequeñas */
+@media screen and (max-width: 600px) {
+    .table thead {
+        display: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 15px;
+    }
+
+    .table td {
+        text-align: right;
+        padding-left: 50%;
+        text-align: right;
+        position: relative;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+}
+
+.sobretabla {
+    display: flex; /* Utiliza flexbox */
+    justify-content:flex-start; /* Distribuye los elementos uniformemente a lo largo del contenedor */
+    gap: 10px;
+}
+
+.sobretabla > div {
+    display: flex; /* Utiliza flexbox para los elementos internos */
+    align-items: center; /* Centra verticalmente los elementos */
+    margin-right: 20px; /* Ajusta el margen derecho para separar los elementos */
+}
+
+.sobretabla i {
+    /* Estilo del icono */
+    font-size: 20px; /* Tamaño del icono */
+    margin-right: 5px; /* Espacio entre el icono y el texto */
+}
+
+.sobretabla a {
+    /* Estilo del enlace */
+    text-decoration: none; /* Quita el subrayado predeterminado */
+    color:#6e8624; /* Color del texto del enlace */
+    font-weight: bold; /* Texto en negrita */
+}
+
+.sobretabla a:hover {
+    /* Estilo cuando se pasa el ratón sobre el enlace */
+    text-decoration: none; /* Subrayado al pasar el ratón */
+}
+
+
+
+
+
+.filtro{
+    display: flex;
+    align-items: center;
+}
+
+.filtro select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* x-offset, y-offset, blur-radius, color */
+    font-size: 15px;
+    font-weight: bold; 
+    outline: none;
+    background-color: #fff;
+    color: #6e8624;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    margin-left: 5px; /* Espacio entre el icono y el selector */
+}
+
+.filtro select:hover {
+    border-color: #6e8624;
+}
+
+
+.kardex select{
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* x-offset, y-offset, blur-radius, color */
+    font-size: 15px;
+    font-weight: bold; 
+    outline: none;
+    background-color: #fff;
+    color: #6e8624;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    margin-left: 5px; /* Espacio entre el icono y el selector */
+}
+

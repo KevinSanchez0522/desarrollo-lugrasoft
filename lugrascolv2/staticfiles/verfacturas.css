@@ -1,0 +1,281 @@
+/* Estilos generales para la tabla */
+.tabla {
+    width: 100%;
+    margin: 20px auto;
+    margin-top: 20px; /* Espacio entre la tabla y el contenido superior */
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    max-height: calc(100vh - 140px); /* Altura máxima de la tabla */
+    overflow-y: scroll;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Encabezado de la tabla */
+.encabezado td {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+}
+
+/* Cuerpo de la tabla */
+.table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Estilos para las celdas */
+.table td {
+    color: #333;
+}
+
+/* Estilos para el texto */
+.table th, .table td {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Mejora de la accesibilidad en pantallas pequeñas */
+@media screen and (max-width: 600px) {
+    .table thead {
+        display: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 15px;
+    }
+
+    .table td {
+        text-align: right;
+        padding-left: 50%;
+        text-align: right;
+        position: relative;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+}
+.highlight {
+    background-color: #f0f0f0; /* Color de fondo para resaltar la fila */
+}
+/*estilos para el modal */
+
+/* Estilo básico para el modal */
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed; /* Fijo en la pantalla */
+    z-index: 1000; /* Por encima de otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%; /* Ancho completo */
+    height: 100%; /* Altura completa */
+    overflow: auto; /* Hacer scroll si es necesario */
+    background-color: rgb(0,0,0); /* Color de fondo semitransparente */
+    background-color: rgba(0,0,0,0.4); /* Color de fondo semitransparente */
+}
+
+/* Estilo del contenido del modal */
+.modal-content {
+    background-image: url('{% static "logo.png"%}');
+    background-color: #fefefe;
+    margin: 15% auto; /* Centrado */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Ancho del modal */
+}
+
+/* Estilo para el botón de cerrar */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+@media print {
+    .no-print {
+        display: none;
+    }
+}
+#detalleContenido{
+    text-align: center;
+    font-size: 22px;
+}
+
+.tablatotales{
+    display: grid;
+    justify-content: end; /* Alinea los elementos al final del contenedor */
+    padding: 10px;
+    height: 70px;
+    
+    
+}
+
+
+.totalFactura, .iva{
+    width: 300px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    padding: 10px;
+    
+}
+
+.datosCliente {
+    display: flex;
+    flex-direction: column; /* Organiza los elementos en una columna */
+    border: 1px solid #ddd; /* Borde alrededor del contenedor */
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 20px; /* Espacio interno */
+    background-color: #f9f9f9; /* Fondo suave */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    max-width: 60%; /* Ancho máximo del contenedor */
+    margin: 20px auto; /* Centra el contenedor horizontalmente */
+}
+
+.datosCliente div {
+    display: flex;
+    justify-content: space-between; /* Espacia las etiquetas y valores */
+    margin-bottom: 10px; /* Espacio entre cada línea */
+}
+
+.datosCliente div strong {
+    color: #333; /* Color para las etiquetas */
+    font-weight: bold; /* Negrita para las etiquetas */
+}
+
+.datosCliente div span {
+    color: #555; /* Color para el valor */
+}
+
+
+
+.Imprimir {
+    display: flex;
+    justify-content: flex-end; /* Alinea el botón al final del contenedor */
+    margin-top: 20px; /* Espacio arriba del contenedor */
+}
+
+.botonImprimir {
+    display: inline-flex;
+    align-items: center; /* Centra el ícono verticalmente con el texto */
+    padding: 10px 20px; /* Espacio interno del botón */
+    font-size: 16px; /* Tamaño de la fuente */
+    font-weight: bold; /* Negrita para el texto */
+    color: #ffffff; /* Color del texto */
+    background-color: #4CAF50; /* Color de fondo del botón */
+    border: none; /* Sin borde */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para el botón */
+    cursor: pointer; /* Cambia el cursor a mano al pasar sobre el botón */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Transición suave para cambios de color y sombra */
+}
+
+.botonImprimir:hover {
+    background-color: #4CAF50; /* Color de fondo al pasar el cursor */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada al pasar el cursor */
+}
+
+.botonImprimir i {
+    margin-left: 8px; /* Espacio entre el texto y el ícono */
+}
+
+
+/* prueba modelo factura*/
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .invoice-header {
+            width: 50%;
+            
+        }
+        .invoice-header p{
+            margin-block-start: 3px;
+            margin-block-end: 3px ;
+        }
+        .invoice-header h2{
+            margin-block-end: 3px;
+        }
+        .invoice-header h4{
+            margin-block-start: 3px;
+        }
+        .invoice-details {
+            width: 40%;
+            text-align: right;
+        }
+        .invoice-details h2 {
+            margin-top: 0;
+        }
+        .tablamodal {
+            flex: 1;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .tablamodal.th, .tablamodal.td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .comments {
+            flex: 1;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .invoice-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+.coment-total{
+    display: flex;
+    align-items: flex-start;
+    gap: 20px; /* Espacio entre los contenedores */
+}        
+
+/*estilos para la tabla de factura*/
+
+.DESCRIPCION{
+    width: 100%;
+}
+.precio{
+    width: 20%;
+    text-align: center;
+}

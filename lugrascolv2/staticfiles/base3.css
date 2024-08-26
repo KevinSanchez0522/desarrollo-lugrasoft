@@ -1,0 +1,143 @@
+/* Estilos para el cuerpo y la fuente */
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Montserrat+Alternates|Poppins&display=swap');
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif; /* Cambiado a la fuente principal */
+}
+
+/* Estilos para la barra lateral */
+.sidebar {
+    width: 200px; /* Cambiado a un valor ligeramente mayor */
+    min-height: 100vh; /* Asegura que la barra lateral tenga al menos el alto de la pantalla */
+    background-color: #6e8624;
+    color: #fff;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
+/* Estilos para el contenido */
+.content {
+    padding: 20px;
+    margin-left: 220px; /* Asegura que el contenido no se superponga con la barra lateral */
+    box-sizing: border-box;
+    width: 80vw;
+    float: right;
+    top: 0;
+    margin-left: 240px;
+    height: 50px;
+    text-align: center; 
+    background-color: #e8eb68ee;
+    margin-top: 0;
+    border-radius: 10px;
+    position: fixed;
+}
+
+/* Estilos para el contenido secundario */
+.content2 {
+    padding: 20px;
+    margin-left: 240px; /* Asegura que el contenido no se superponga con la barra lateral */
+    box-sizing: border-box;
+    margin-top: 70px;
+    
+}
+
+/* Estilos para dispositivos móviles */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        position: static;
+        padding-bottom: 50px;
+    }
+
+    .content,
+    .content2 {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* Estilos adicionales para los elementos de la barra lateral */
+.sidebar .logo h1 {
+    margin-bottom: 0; /* Elimina el margen inferior del encabezado */
+    font-size: 15px; /* Aumenta el tamaño del texto */
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
+.sidebar .nav ul {
+    margin-top: 20px; /* Reduce el margen superior */
+}
+
+.sidebar .nav li {
+    margin-bottom: 15px; /* Reduce el espacio entre elementos de la lista */
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
+.sidebar .nav a {
+    font-size: 16px; /* Reduce el tamaño del texto */
+}
+.titulo{
+    font-family: 'Montserrat Alternates', sans-serif;
+    display: contents;
+    color:  #6e8624;
+
+
+}
+/* Estilos para el contenido principal */
+.content .titulo,
+.content2 .titulo {
+    font-size: 24px; /* Aumenta el tamaño del título */
+    margin-bottom: 20px; /* Aumenta el espacio inferior */
+}
+
+/* Otros estilos específicos pueden ir aquí */
+
+/* Estilos para las imágenes */
+img {
+    max-width: 100%; /* Asegura que las imágenes no se salgan de su contenedor */
+    height: auto; /* Mantiene la proporción original de la imagen */
+}
+/*estilos para las sublistas*/
+.menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu li {
+    position: relative;
+}
+
+.menu li a {
+    display: block;
+    text-decoration: none;
+    color: #f0f181ee;
+}
+.submenu {
+    display: none;
+    position: relative;
+    top: 100%;
+    left: 0;
+    background-color: #6e8624;
+    
+}
+
+.menu li:hover .submenu {
+    display: block;
+}
+
+.submenu li {
+    display: block;
+}
+
+.submenu li a {
+    padding: 8px 20px;
+}
+.salir{
+    margin-top: 30%;
+    
+}

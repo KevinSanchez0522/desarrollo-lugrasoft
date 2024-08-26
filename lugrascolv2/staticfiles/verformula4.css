@@ -1,0 +1,196 @@
+
+.tabla {
+    max-width: 100%;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    max-height: 400px; /* Altura máxima de la tabla */
+    overflow-y: scroll;
+    margin-top: 50px;
+    
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Encabezado de la tabla */
+.encabezado td {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+}
+
+/* Cuerpo de la tabla */
+.table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Estilos para las celdas */
+.table td {
+    color: #333;
+}
+
+/* Estilos para el texto */
+.table th, .table td {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Mejora de la accesibilidad en pantallas pequeñas */
+@media screen and (max-width: 600px) {
+    .table thead {
+        display: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 15px;
+    }
+
+    .table td {
+        text-align: right;
+        padding-left: 50%;
+        text-align: right;
+        position: relative;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+}
+
+/*estilos para el modal*/
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 5px;
+    max-width: 80%;
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+a{
+    color: black; /* Color de texto negro para todos los enlaces */
+    text-decoration: none; /* Elimina cualquier decoración de texto */
+}
+/* estilos para cabecera de el modal*/
+.compact-data-container {
+    max-width: 90%; /* Ajusta el ancho máximo */
+    margin: 0 auto; /* Centra horizontalmente */
+    padding: 20px;
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap; /* Permitir que los elementos se envuelvan en varias líneas */
+    justify-content: center; /* Centra los elementos horizontalmente */
+    align-items: flex-start; /* Alinea los elementos al principio verticalmente */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.data-item {
+    margin-right: 20px;
+    margin-bottom: 10px;
+    flex: 1; /* Hace que los elementos se expandan para llenar el espacio disponible */
+}
+
+.data-item label {
+    font-weight: bold;
+}
+
+.data-item span {
+    margin-left: 5px;
+    padding: 4px;
+    border-radius: 5px;
+}
+
+/* Estilo para el campo de Total venta */
+.data-item.total-venta {
+    font-weight: bold;
+    color: #ff5722; /* Color resaltado */
+}
+h2 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333; /* Color del texto */
+    text-align: center;
+    margin-bottom: 20px; /* Espacio inferior para separación */
+    text-transform: uppercase; /* Convertir el texto a mayúsculas */
+    letter-spacing: 2px; /* Espaciado entre letras */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Sombra de texto */
+}
+/* Estilo para los inputs con sombras */
+input[type="number"] {
+    border: none; /* Elimina el borde predeterminado */
+    padding: 8px; /* Añade espacio alrededor del texto */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Agrega una sombra suave */
+    transition: box-shadow 0.3s ease; /* Agrega una transición suave para la sombra */
+}
+
+/* Estilo adicional cuando se enfoca el input */
+input[type="number"]:focus {
+    outline: none; /* Elimina el contorno de enfoque */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Aumenta la sombra al enfocar el input */
+}
+
+.titulomodal {
+    font-size: 28px; /* Tamaño del texto similar a un h2 */
+    font-weight: bold; /* Negrita para resaltar el texto */
+    color: #333; /* Color del texto */
+    text-align: center; /* Centrar el texto */
+    margin-bottom: 20px; /* Espacio inferior para separación */
+    text-transform: uppercase; /* Convertir el texto a mayúsculas */
+    letter-spacing: 2px; /* Espaciado entre letras */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Sombra de texto para efecto visual */
+    border: none; /* Quitar el borde del input */
+    background: transparent; /* Fondo transparente */
+    padding: 0; /* Sin relleno para ajustar el tamaño */
+    outline: none; /* Sin contorno al hacer foco */
+    width: 100%; /* Ajustar al ancho del contenedor */
+    box-sizing: border-box; /* Asegurarse de que el padding y el borde se incluyan en el ancho total */
+    transition: border-color 0.3s ease; /* Transición suave para el borde */
+}

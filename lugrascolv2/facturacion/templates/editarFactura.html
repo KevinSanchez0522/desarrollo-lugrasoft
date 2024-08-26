@@ -1,0 +1,153 @@
+{% extends "dashboard.html" %}
+{% load static%}
+
+{% block title %}
+	<title>Facturación</title>
+{% endblock title %}
+{% block titulohoja%}
+	<h2 class="titulo">Editar Factura</h2>
+{% endblock titulohoja %}
+
+
+
+{% block areatrabajo%}
+<link rel="stylesheet" href="{%static 'facturacion.css'%}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'editarFactura.js' %}"></script>
+
+
+
+<div class="cabecera">
+    
+    <div class="ladoIzquierdo">
+        
+        <div class="info-factura">
+            <div class="factura">
+                
+                <label for="NFactura" class="labelF"> # Factura</label>
+                <span class="facturaN">{{factura.nfactura}}</span>
+
+            </div>
+            <div class="divfecha">
+                <label for="fecha" class="labelFecha">Fecha</label>
+                <span id="fechaActual">{{fecha}}</span>
+            </div>
+
+        
+        </div>
+        <div class="selectores">
+            <div class="cliente">
+                <select name="" class="js-example-basic-single" id="cliente">
+                    <option value="">{{nit}}--{{nombre}}</option>
+                    {% for cliente in clientes %}
+                        <option value="{{cliente.nit}}" data-nit="{{cliente.nit}}" data-direccion="{{cliente.direccion}}" data-telefono="{{cliente.telefono}}" data-correo="{{cliente.email}}">{{nit}}--{{nombre}}</option>
+                    {% endfor %}
+                </select>
+
+            </div>
+            <div class="orden">
+                <select name="" class="js-example-basic-single" id="orden">
+                        <option value="">{{orden}}</option>
+                </select>
+            </div>
+
+            <div class="Bproducto">
+                <select name="" class="js-example-basic-single" id="Bproducto">
+                    <option value="">Productos</option>
+                    {% for producto in productos%}
+                        {% if producto.tipo == 'pt' %}
+                        <option value="{{producto.cod_inventario}}">{{producto.nombre}}</option>
+                        {% endif %}
+                    {%endfor%}
+                    
+                </select>
+            </div>
+        </div>
+
+    </div>
+    <div class="ladoDerecho">
+        <div class="info-cliente">
+            <div class="Direccion">
+                <span>Direccion:  <span id="spanDireccion">{{direccion}}  </span>
+            </div>
+            <div class="Telefono">
+                <span>Telefono:  <span id="spanTelefono"> {{telefono}} </span>
+            </div>
+            <div class="Correo">
+                <span>Correo:   <span id="spanCorreo"> {{correo}} </span>
+            </div>
+        </div>
+        <button type="submit" class="bt-facturar"> Facturar </button>
+    </div>
+
+    
+</div>
+<div class="contenedor-principal">
+    <div class= "tabla">
+        <table class="table" id="tabla-formulario">
+            <thead class="table">
+                <tr class="encabezado">
+                    <td>ID Producto</td>
+                    <td>Nombre</td>
+                    <td> Cantidad</td>
+                    <td>Precio de venta</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaccion in transacciones %}
+                <tr>
+                    <td>{{transaccion.producto}}</td>
+                    <td>{{transaccion.nombre_producto}}</td>
+                    <td>{{transaccion.cantidad}}</td>
+                    <td><input type="number"  placeholder="{{transaccion.precio}}"></td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>	
+        
+    </div>
+    <div class="info-adicional">
+        <div class="subtotal">
+            <div>
+                <span class="sub">SUBTOTAL :</span>
+            </div>
+            <div>
+                <span class="ValorSubtotal">$ </span>
+            </div>
+        </div>
+        <div class="iva">
+            <div>
+                <input type="checkbox" name="checkIva" id="checkIva" checked>
+                <label for="checkIva">IVA :</label>
+            </div>
+            <div>
+                <span class="ValorIva">$ </span>
+            </div>
+            
+        </div>
+        <div class="ica">
+            <div>
+                <input type="checkbox" name="checkIca" id="checkIca">
+                <label for="checkIca">RETEFUENTE : </label>
+            </div>
+            <div>
+                <span class="ValorIca">$ </span>
+            </div>
+            
+        </div>
+        <div class="total">
+            <div>
+                <span class="Stotal">TOTAL :</span>
+            </div>
+            <div>
+                <span class="Ptotal">$ </span>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+{%endblock %}
