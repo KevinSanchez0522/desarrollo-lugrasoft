@@ -3,7 +3,52 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#filtro').select2();
         
         });
+
+        
+        $('.cancel').on('click', function(event) {
+            event.preventDefault(); // Prevenir el comportamiento por defecto del enlace
+            
+            var url = $(this).attr('href'); // Obtener la URL del enlace
+            
+            // Mostrar un cuadro de confirmación
+            var confirmar = confirm('¿Está seguro de que desea anular esta factura?');
+            
+            if (confirmar) {
+                // Si el usuario confirma, realizar una solicitud AJAX para procesar la anulación
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken') // Asegúrate de que el token CSRF está incluido
+                    },
+                    success: function(response) {
+                        // Cambiar el icono de anulación en la página
+                        
+                        
+                        // Mostrar un mensaje de éxito o redirigir a otra página
+                        alert('Factura anulada exitosamente');
+                        
+                        // Opcionalmente, recargar la página para ver los cambios reflejados
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        // Manejo de errores
+                        console.error('Error al anular la factura:', error);
+                    }
+                });
+            } else {
+                console.log('Anulación cancelada');
+            }
+        });
     
+        $('.disabled').on('click', function(event) {
+            event.preventDefault(); // Prevenir el comportamiento por defecto del enlace
+            alert('LA FACTURA HA SIDO ANULADA')
+        });
+        $('.noEdit').on('click', function(event) {
+            event.preventDefault(); // Prevenir el comportamiento por defecto del enlace
+            alert('NO PUEDE EDITAR, LA FACTURA ESTA ANULADA')
+        });
     var tabla = document.getElementById('tabla-formulario');
     var filas = tabla.getElementsByTagName('tr');
 
@@ -101,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Obtener el número de factura desde el elemento de la fila
             var facturaId = this.closest('tr').querySelector('td').textContent.trim();
+            
 
             // Abrir el modal con el ID de la factura
             openModal(facturaId);
@@ -119,7 +165,129 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 // fin apertura del modal 
+
+
+
+
+$('.BuscarFecha').on('click',function(){
+    var fechaInicio = $('#fecha_inicio').val();
+    var fechaFin = $('#fecha_fin').val();
+
+    if (!fechaInicio || !fechaFin) {
+        alert('Por favor, ingrese ambas fechas.');
+        return;
+    }
+    $.ajax({
+        url: buscarFecha,
+        method: 'GET',
+        data: {
+            fecha_inicio: fechaInicio,
+            fecha_fin: fechaFin
+        },
+        success: function(response) {
+            console.log('Facturas filtradas:', response.facturas);
+            actualizarTabla(response.facturas);
+        },
+        error: function(xhr, status, error){
+            console.log('error en la solicitud AJAX: ', status, error);
+        }
+    });
+})
+function inicializarEventos() {
+
+    $('#tabla-formulario').off('click', '.view');
+    $('#tabla-formulario').off('click', '.cancel');
+    // Manejar clic en los enlaces de vista
+    $('#tabla-formulario').on('click', '.view', function(e) {
+        e.preventDefault();
+        var facturaId = $(this).data('id')
+        console.log('factura: ',  facturaId)
+        // Aquí abre el modal y carga la información de la factura
+        openModal(facturaId);
+    
+    });
+
+    $('#tabla-formulario').on('click', '.cancel', function(e) {
+        e.preventDefault(); // Prevenir el comportamiento por defecto del enlace
+        
+        var url = $(this).attr('href'); // Obtener la URL del enlace
+
+        if (!url.endsWith('/')) {
+            url += '/';
+        }
+        
+        // Mostrar un cuadro de confirmación
+        var confirmar = confirm('¿Está seguro de que desea anular esta factura?');
+        
+        if (confirmar) {
+            // Si el usuario confirma, realizar una solicitud AJAX para procesar la anulación
+            $.ajax({
+                url: url,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken') // Asegúrate de que el token CSRF está incluido
+                },
+                success: function(response) {
+                    // Mostrar un mensaje de éxito o redirigir a otra página
+                    alert('Factura anulada exitosamente');
+                    
+                    // Opcionalmente, recargar la página para ver los cambios reflejados
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    // Manejo de errores
+                    console.error('Error al anular la factura:', error);
+                }
+            });
+        } else {
+            console.log('Anulación cancelada');
+        }
+    });
+}
+
+function actualizarTabla(facturas) {
+    var tbody = $('#tabla-formulario tbody');
+    tbody.empty(); // Limpiar el tbody antes de agregar nuevas filas
+
+    var editar = '/facturacion/editarFactura/';
+    var anular = '/facturacion/anular/';
+
+    // Agregar filas a la tabla
+    $.each(facturas, function(index, factura) {
+        var fila = '<tr>' +
+            '<td>' + factura.nfactura + '</td>' +
+            '<td>' + factura.nombreCliente + '</td>' +
+            '<td>$ ' + factura.total_factura_formateado + '</td>' +
+            '<td>' + factura.fecha_facturacion + '</td>' +
+            '<td>' +
+            '<a href="" data-id="' + factura.nfactura +'" class="view" title="Ver Factura"><i class="bi bi-eye"></i></a>' +
+            (factura.facturaAnulada ? 
+                '<a href="#" class="noEdit" title="No puede Editar"><i class="bi bi-clipboard2-x"></i></a>' :
+                '<a href="'+ editar + factura.nfactura +'" class="edit" title="Editar Factura"><i class="bi bi-pencil"></i></a>'
+            ) +
+            (factura.facturaAnulada ? 
+                '<a href="#" class="disabled" title="Factura Anulada"><i class="bi bi-folder-x"></i></a>' :
+                '<a href="'+ anular + factura.nfactura +'" class="cancel" title="Anular Factura"><i class="bi bi-x-octagon"></i></a>'
+            ) +
+            '</td>' +
+            '</tr>';
+
+        tbody.append(fila);
+         // Re-inicializar los eventos después de agregar nuevas filas
+        inicializarEventos();
+    });
+}
 });
+
+
+
+
+
+function abrirModal(facturaId) {
+    // Implementa la lógica para abrir y cargar el modal aquí
+    console.log('Abriendo modal para factura ID:', facturaId);
+    // Ejemplo: Cargar datos y mostrar el modal
+}
 
 function printModal() {
     var botonImprimir  = document.querySelector('.invoice-footer button');
@@ -141,4 +309,19 @@ function printModal() {
     printWindow.document.close();
     printWindow.focus();
     printWindow.print();
+}
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }

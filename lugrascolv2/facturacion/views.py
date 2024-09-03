@@ -8,11 +8,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, F
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+from reportlab.pdfgen import canvas # type: ignore
 from io import BytesIO
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.units import inch
+from django.utils.dateparse import parse_date
 
 # Create your views here.
 def facturar(request):
@@ -36,6 +37,7 @@ def VerFacturas(request):
 
         nombre_cliente = get_object_or_404(Clientes, nit=factura.cliente)
         cliente = nombre_cliente.nombre # `nit` es el campo de clave foránea en OrdenProduccion
+        facturaAnulada = factura.total_factura == 0
 
 
         
@@ -43,7 +45,8 @@ def VerFacturas(request):
             'nfactura': factura.nfactura,
             'fecha_facturacion': factura.fecha_facturacion,
             'total_factura_formateado': f"{factura.total_factura:,}",
-            'nombreCliente': cliente
+            'nombreCliente': cliente,
+            'facturaAnulada': facturaAnulada
         }
         
         # Añadir el diccionario a la lista
@@ -212,7 +215,8 @@ def PFacturar(request):
                             'fecha_facturacion': fecha,
                             'total_factura': total_guardar,  # Asegurar formato correcto
                             'id_orden_field': orden_id,
-                            'cliente':cliente
+                            'cliente':cliente,
+                            'estado': estado
                         }
                     )
                 else:
@@ -225,6 +229,7 @@ def PFacturar(request):
                             'total_remision': total_guardar,  # Asegurar formato correcto
                             'id_orden': orden_id,
                             'cliente': cliente,
+                            'estado': estado
                         }
                     )
 
@@ -563,13 +568,13 @@ def editarFacturas(request, nfactura):
     fecha_factura = primeraTransaccion.fecha_factura
     numero_factura = primeraTransaccion.nfactura
     orden = datos.id_orden_field
-  
+
+    id_cliente = datos.cliente
+    cliente = get_object_or_404(Clientes, nit=id_cliente)
     
-    cliente = get_object_or_404(Facturas, cliente=datos.cliente)
-    id_cliente = cliente.cliente
 
     
-    DatosCliente = get_object_or_404(Clientes, nit=id_cliente)
+    
     # Crea una lista de diccionarios con los datos de cada transacción
     datos_transacciones = []
     for transaccion in transacciones:
@@ -593,14 +598,160 @@ def editarFacturas(request, nfactura):
         'fecha': fecha_factura,
         'factura': numero_factura,
         'orden': orden,
-        'nit': DatosCliente.nit,
-        'nombre': DatosCliente.nombre,
-        'direccion': DatosCliente.direccion,
-        'telefono': DatosCliente.telefono,
-        'correo': DatosCliente.email
+        'nit': cliente.nit,
+        'nombre': cliente.nombre,
+        'direccion': cliente.direccion,
+        'telefono': cliente.telefono,
+        'correo': cliente.email
         
         
         
     }
     
     return render(request, 'editarFactura.html', context)
+
+
+def editarFactura(request):
+    if request.method == 'POST':
+        try:
+            # Leer los datos JSON del cuerpo de la solicitud
+            data = json.loads(request.body)
+            factura = data.get('factura')
+            totalFactura = data.get('totalFactura')
+            productos = data.get('filas')
+            
+            
+            # Filtrar las transacciones por número de factura
+            transacciones = TransaccionFactura.objects.filter(nfactura=factura)
+            
+            
+            
+            facturas = get_object_or_404(Facturas, nfactura=factura)
+            facturas.total_factura = convertir_a_numero(totalFactura)
+            facturas.save()
+            
+    
+
+            # Crear un diccionario para mapear códigos de productos a precios
+            productos_dict = {str(producto['producto']): float(producto['precio']) for producto in productos}
+            
+            print('diccionario', productos_dict)
+            
+            # Variable para almacenar IDs de productos que no se encontraron
+            productos_no_encontrados = []
+
+            # Actualizar precios en las transacciones
+            for transaccion in transacciones:
+                
+                cod_producto = str(transaccion.cod_inventario).strip()
+                print('codigo',cod_producto, transaccion.cod_inventario)
+                if cod_producto in productos_dict:
+                    print('ingrese por if')
+                    nuevo_precio = productos_dict[cod_producto]
+                    print('Nuevo precio para el código', cod_producto, ':', nuevo_precio)
+                    transaccion.precio_venta = nuevo_precio
+                    transaccion.save()
+                else:
+                    # Si el código de producto no se encuentra en los datos enviados
+                    productos_no_encontrados.append(cod_producto)
+            
+            # Responder con un JSON
+            response_data = {
+                'success': True,
+                'factura': factura,
+                'productos_no_encontrados': productos_no_encontrados
+            }
+            return JsonResponse(response_data)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    
+def anularFactura(request, nfactura):
+    if request.method == 'POST':
+        
+        estado = 'por facturar'
+        # Filtrar las transacciones asociadas a la factura
+        transacciones = TransaccionFactura.objects.filter(nfactura=nfactura)
+        factura = get_object_or_404(Facturas, nfactura=nfactura)
+        factura.total_factura = 0
+        factura.estado = 'anulado'
+        factura.save()
+        
+        
+        updateEstado = TransaccionOrden.objects.filter(id_orden=factura.id_orden_field)
+        updateEstado.update(estado=estado)
+        if not transacciones.exists():
+            return JsonResponse({'error': 'No se encontraron transacciones para esta factura'}, status=404)
+        
+        # Listar los cod_inventario y cantidades
+        inventarios_actualizados = []
+
+        for transaccion in transacciones:
+            cod_inventario = transaccion.cod_inventario
+            cantidad = transaccion.cantidad
+
+            # Cambiar la cantidad en TransaccionFactura a negativa
+            transaccion.cantidad = -cantidad
+            transaccion.precio_venta = 0
+            transaccion.save()
+
+            # Buscar el inventario asociado
+            inventario = Inventario.objects.filter(cod_inventario=cod_inventario).first()
+
+            if inventario:
+                # Restar la cantidad del inventario
+                inventario.cantidad += cantidad
+                inventario.save()
+                inventarios_actualizados.append({
+                    'cod_inventario': cod_inventario,
+                    'nueva_cantidad': inventario.cantidad
+                })
+            else:
+                return JsonResponse({'error': f'No se encontró inventario para el código {cod_inventario}'}, status=404)
+
+        # Responder con éxito
+        return JsonResponse({
+            'success': True,
+            'inventarios_actualizados': inventarios_actualizados
+        })
+
+    # Manejo para métodos HTTP diferentes a POST
+    return HttpResponse("Método no permitido", status=405)
+
+
+
+def buscarXfecha(request):
+    
+    fecha_inicio_str = request.GET.get('fecha_inicio')
+    fecha_fin_str = request.GET.get('fecha_fin')
+
+    # Convertir las fechas de cadena a objetos de fecha
+    fecha_inicio = parse_date(fecha_inicio_str) if fecha_inicio_str else None
+    fecha_fin = parse_date(fecha_fin_str) if fecha_fin_str else None
+
+    # Filtrar facturas por rango de fechas
+    facturas_query = Facturas.objects.all()
+    if fecha_inicio and fecha_fin:
+        facturas_query = facturas_query.filter(fecha_facturacion__range=(fecha_inicio, fecha_fin))
+
+    # Convertir y formatear las facturas filtradas
+    facturas_formateadas = []
+    for factura in facturas_query:
+        id_orden = factura.id_orden_field
+        nombre_cliente = get_object_or_404(Clientes, nit=factura.cliente)
+        cliente = nombre_cliente.nombre
+        facturaAnulada = factura.total_factura == 0
+
+        factura_formateada = {
+            'nfactura': factura.nfactura,
+            'fecha_facturacion': factura.fecha_facturacion,
+            'total_factura_formateado': f"{factura.total_factura:,}",
+            'nombreCliente': cliente,
+            'facturaAnulada': facturaAnulada
+        }
+        
+        facturas_formateadas.append(factura_formateada)
+
+    return JsonResponse({'facturas': facturas_formateadas})

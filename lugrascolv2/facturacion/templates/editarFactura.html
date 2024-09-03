@@ -11,6 +11,10 @@
 
 
 {% block areatrabajo%}
+<script>
+    var Editados = "{%url 'Edicion'%}"
+</script>
+
 <link rel="stylesheet" href="{%static 'facturacion.css'%}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -79,7 +83,7 @@
                 <span>Correo:   <span id="spanCorreo"> {{correo}} </span>
             </div>
         </div>
-        <button type="submit" class="bt-facturar"> Facturar </button>
+        <button type="submit" class="bt-facturar"> ENVIAR CORRECCION </button>
     </div>
 
     
@@ -100,8 +104,8 @@
                 <tr>
                     <td>{{transaccion.producto}}</td>
                     <td>{{transaccion.nombre_producto}}</td>
-                    <td>{{transaccion.cantidad}}</td>
-                    <td><input type="number"  placeholder="{{transaccion.precio}}"></td>
+                    <td class="cantidad">{{transaccion.cantidad}}</td>
+                    <td><input class="entrada-precio" type="text"  placeholder="{{transaccion.precio}}"></td>
                 </tr>
                 {%endfor%}
             </tbody>

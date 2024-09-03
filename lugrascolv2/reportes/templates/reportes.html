@@ -1,0 +1,124 @@
+{% extends "dashboard.html" %}
+{% load static%}
+
+{% block title %}
+	<title>Reportes</title>
+{% endblock title %}
+{% block titulohoja%}
+	<h2 class="titulo">Reportes</h2>
+{% endblock titulohoja %}
+
+{% block areatrabajo%}
+
+<script>
+    var reporteVentas = "{% url 'reporteVentas' %}"
+</script>
+
+<link rel="stylesheet" href="{%static 'reportes.css'%}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'reportes.js' %}"></script>
+
+
+
+<div class="tabs-container">
+    <div class="tabs">
+        <button class="tab-button" data-target="#tab1">Ventas</button>
+        <button class="tab-button" data-target="#tab2">Ventas Dinamicas</button>
+        <button class="tab-button" data-target="#tab3">Ventas Totales</button>
+        <button class="tab-button" data-target="#tab4">Inventario</button>
+    </div>
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane">
+            <div class= "tabla">
+                <table class="table" id="tabla-formulario">
+                    <thead class="table">
+                        <tr class="encabezado">
+                            <td>ID Producto</td>
+                            <td>Nombre</td>
+                            <td>Precio de venta</td>
+                            <td>Fecha</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>	
+                
+            </div>
+            <div id="floating-container" class="floating-container">
+                <p>Inicio de la Semana: <span id="start-week"></span></p>
+                <p>Día Actual: <span id="current-day"></span></p>
+                <p>Total Facturas: <span id="total-value">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
+            </div>
+        </div>
+        <div id="tab2" class="tab-pane">
+            <div class= "tabla">
+                <table class="table" id="tabla-formulario">
+                    <thead class="table">
+                        <tr class="encabezado">
+                            <td>ID Producto</td>
+                            <td>Nombre</td>
+                            <td> Cantidad</td>
+                            <td>Precio de venta</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>	
+                
+            </div>
+            <div id="floating-container" class="floating-container">
+                <p>Inicio de la Semana: <span id="start-week"></span></p>
+                <p>Día Actual: <span id="current-day"></span></p>
+                <p>Total Facturas: <span id="total-value">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
+            </div>
+        </div>
+        <div id="tab3" class="tab-pane">
+            <div class= "tabla">
+                <table class="table" id="tabla-formulario">
+                    <thead class="table">
+                        <tr class="encabezado">
+                            <td>ID Producto</td>
+                            <td>Nombre</td>
+                            <td> Cantidad</td>
+                            <td>Precio de venta</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>	
+                
+            </div>
+            <div id="floating-container" class="floating-container">
+                <p>Inicio de la Semana: <span id="start-week"></span></p>
+                <p>Día Actual: <span id="current-day"></span></p>
+                <p>Total Facturas: <span id="total-value">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
+            </div>
+        </div>
+        <div id="tab4" class="tab-pane">
+            <div class= "tabla">
+                <table class="table" id="tabla-formulario">
+                    <thead class="table">
+                        <tr class="encabezado">
+                            <td>ID Producto</td>
+                            <td>Nombre</td>
+                            <td> Cantidad</td>
+                            <td>Precio de venta</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>	
+                
+            </div>
+            <div id="floating-container" class="floating-container">
+                <p>Inicio de la Semana: <span id="start-week"></span></p>
+                <p>Día Actual: <span id="current-day"></span></p>
+                <p>Total Facturas: <span id="total-value">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{%endblock %}
