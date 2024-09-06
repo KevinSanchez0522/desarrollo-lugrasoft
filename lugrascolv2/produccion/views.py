@@ -323,3 +323,20 @@ def irAfacturar (request):
             return JsonResponse({'error': 'Error al decodificar los datos JSON.'}, status=400)
         
     return JsonResponse({'error': 'Método no permitido.'}, status=400)
+
+
+def eliminarOrdenProduccion(request):
+    if request.method == 'POST':
+        id_orden = request.POST.get('id_orden')
+        orden = get_object_or_404(TransaccionOrden, id_orden=id_orden)
+        modeloOrden = get_object_or_404(OrdenProduccion, id_orden=id_orden)
+
+        if orden.estado == 'creado':  # Suponiendo que el estado se guarda como un string
+            # Aquí puedes proceder a eliminar la orden o marcarla como eliminada
+            orden.delete()  # O cualquier otra lógica que necesites
+            modeloOrden.delete()
+            return JsonResponse({'status': 'success', 'message': 'Orden eliminada.'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'La orden no está en estado creado.'})
+
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'})

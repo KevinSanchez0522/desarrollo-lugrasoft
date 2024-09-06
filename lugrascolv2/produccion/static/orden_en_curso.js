@@ -183,6 +183,40 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
             });
         });
+
+        $('#bt-eliminar').click(function(event) {
+            event.preventDefault();  // Evita el comportamiento por defecto del botón
+
+            // Obtén el ID de la orden desde el atributo data-id del botón
+            
+            // Pide confirmación al usuario antes de eliminar la orden
+            if (confirm("¿Estás seguro de que deseas eliminar la orden con ID " +
+                idOrden + "?")) {
+
+            // Realiza una solicitud AJAX al backend
+                    $.ajax({
+                        url: eliminarOrden,  // Usa el nombre de la URL definida en urls.py
+                        type: 'POST',
+                        headers: { 'X-CSRFToken': getCookie('csrftoken') }, 
+                        data: {
+                            'id_orden': idOrden,
+                        },
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                alert(response.message);
+                                // Aquí puedes realizar cualquier acción adicional, como eliminar la fila de la tabla
+                                location.reload();
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error en la solicitud:', error);
+                            alert('Ocurrió un error al procesar la solicitud.');
+                        }
+                    });
+                }
+        });
     
         // Botón para producir
         $('#bt-producir').on('click', function(event) {

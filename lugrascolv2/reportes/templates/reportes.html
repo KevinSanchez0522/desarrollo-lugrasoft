@@ -11,7 +11,10 @@
 {% block areatrabajo%}
 
 <script>
-    var reporteVentas = "{% url 'reporteVentas' %}"
+    var reporteVentas = "{% url 'reporteVentas' %}";
+    var reporteVentasDinamicas = "{% url 'reporteVentasDinamicas' %}";
+    var costeoInventarioURL = "{% url 'costearInventario' %}";
+    var BuscarXFecha = "{% url 'buscarXfecha'%}" 
 </script>
 
 <link rel="stylesheet" href="{%static 'reportes.css'%}">
@@ -31,6 +34,21 @@
     </div>
     <div class="tab-content">
         <div id="tab1" class="tab-pane">
+            <div class="cabecera-tabla">
+                <div class="contenedor-fecha">
+                    <div class="filtroFecha">
+                        <label for="fecha_inicio">Fecha Inicio</label>
+                        <input type="date" id="fecha_inicioVentas" name="fecha_inicio" class="form-control" value="{{ request.GET.fecha_inicio }}">
+                    </div>
+                    <div  class="filtroFecha">
+                        <label for="fecha_fin">Fecha Fin</label>
+                        <input type="date" id="fecha_finVentas" name="fecha_fin" class="form-control" value="{{ request.GET.fecha_fin }}">
+                    </div>
+                    <div  class="filtroFecha" >
+                        <button class="BuscarFechaVentas">BUSCAR</button>
+                    </div>
+                </div>
+            </div>
             <div class= "tabla">
                 <table class="table" id="tabla-formulario">
                     <thead class="table">
@@ -47,20 +65,35 @@
                 
             </div>
             <div id="floating-container" class="floating-container">
-                <p>Inicio de la Semana: <span id="start-week"></span></p>
-                <p>Día Actual: <span id="current-day"></span></p>
+                <p class="inicioFecha">Fecha inicio: <span id="start-week"></span></p>
+                <p class="finFecha">Fecha Final: <span id="current-day"></span></p>
                 <p>Total Facturas: <span id="total-value">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
             </div>
         </div>
         <div id="tab2" class="tab-pane">
+            <div class="cabecera-tabla">
+                <div class="contenedor-fecha">
+                    <div class="filtroFecha">
+                        <label for="fecha_inicio">Fecha Inicio</label>
+                        <input type="date" id="fecha_inicioVentasDinamicas" name="fecha_inicio" class="form-control" value="{{ request.GET.fecha_inicio }}">
+                    </div>
+                    <div  class="filtroFecha">
+                        <label for="fecha_fin">Fecha Fin</label>
+                        <input type="date" id="fecha_finVentasDinamicas" name="fecha_fin" class="form-control" value="{{ request.GET.fecha_fin }}">
+                    </div>
+                    <div  class="filtroFecha" >
+                        <button class="BuscarFechaVentasDinamicas">BUSCAR</button>
+                    </div>
+                </div>
+            </div>
             <div class= "tabla">
-                <table class="table" id="tabla-formulario">
+                <table class="table" id="tabla-formulario2">
                     <thead class="table">
                         <tr class="encabezado">
                             <td>ID Producto</td>
                             <td>Nombre</td>
-                            <td> Cantidad</td>
                             <td>Precio de venta</td>
+                            <td>Fecha</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -69,14 +102,109 @@
                 
             </div>
             <div id="floating-container" class="floating-container">
-                <p>Inicio de la Semana: <span id="start-week"></span></p>
-                <p>Día Actual: <span id="current-day"></span></p>
-                <p>Total Facturas: <span id="total-value">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
+                <p> Fecha Inicio :  <span id="start-week2"></span></p>
+                <p>Fecha fin :  <span id="current-day2"></span></p>
+                <p>Total Facturas: <span id="total-value2">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
             </div>
+
+            <div id="modalDetalleOrden" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeButton">&times;</span>
+                    <div class="cabeceraModal">
+                        <h2 id="detalleContenido">Factura de venta</h2>
+                    </div>
+                    <div class="container">
+                        <div class="invoice-header">
+                            <h2>Lugrascol SAS</h2>
+                            <h4>Lubricantes y grasas de Colombia</h4>
+                            <p>Vda laguneta KM 2</p>
+                            <p>Giron, Santander</p>
+                            <p>(607)55555555</p>
+                            <p>info@lubricantesgrasas.com</p>
+                        </div>
+                        <div class="invoice-details">
+                            <p class="fecha" id="modalFecha"></p>
+                            <p id="modalFacturaN"></p>
+                            <p class="valorNit"></p>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="invoice-header">
+                            <h3>FACTURAR A:</h3>
+                            <p class="nombreCliente" id="modalNombreCliente">[Nombre]</p>
+                            <p class="direcCliente" id="modalDireccionCliente">[Dirección]</p>
+                            <p class="telCliente" id="modalTelCliente">Teléfono: [000-000-0000]</p>
+                            <p class="emailCliente" id="modalEmailCliente">[Ciudad, Estado, Código Postal]</p>
+                        </div>
+                    </div>
+                    <table class="DESCRIPCION" id="tabla-formulario-modal">
+                        <thead>
+                            <tr class="encabezado">
+                                <th class="descripcion">DESCRIPCION</th>
+                                <th class="precio">PRECIO UNITARIO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalDescripcion">
+                            <!-- Se llenará dinámicamente -->
+                        </tbody>
+                    </table>
+                    <div class="coment-total">
+                        <div class="comments">
+                            <h4>COMENTARIOS</h4>
+                            <p>1. Total a pagar en 30 días</p>
+                            <p>2. Incluya por favor el número de factura en su cheque</p>
+                        </div>
+                        <table class="tablamodal">
+                            <tr>
+                                <td>SUBTOTAL</td>
+                                <td class="valorSUBTOTAL" id="modalSubtotal">$ 605.00</td>
+                            </tr>
+                            <tr>
+                                <td>TASA DE IMPUESTO</td>
+                                <td>19%</td>
+                            </tr>
+                            <tr>
+                                <td>IMPUESTO</td>
+                                <td class="valorIVA" id="modalImpuesto"></td>
+                            </tr>
+                            <tr>
+                                <td>OTRO</td>
+                                <td>$ -</td>
+                            </tr>
+                            <tr>
+                                <td>TOTAL</td>
+                                <td class="valorTOTAL" id="modalTotal"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="invoice-footer">
+                        <p>Si usted tiene preguntas sobre esta factura, póngase en contacto con [Nombre, Teléfono, E-mail]</p>
+                        <p>¡Gracias por su negocio!</p>
+                        <button onclick="printModal()">imprimir <i class="bi bi-printer"></i></button>
+                    </div>
+                </div>
+            </div>
+        
+
         </div>
         <div id="tab3" class="tab-pane">
+            <div class="cabecera-tabla">
+                <div class="contenedor-fecha">
+                    <div class="filtroFecha">
+                        <label for="fecha_inicio">Fecha Inicio</label>
+                        <input type="date" id="fecha_inicioVentasCombinadas" name="fecha_inicio" class="form-control" value="{{ request.GET.fecha_inicio }}">
+                    </div>
+                    <div  class="filtroFecha">
+                        <label for="fecha_fin">Fecha Fin</label>
+                        <input type="date" id="fecha_finVentasCombinadas" name="fecha_fin" class="form-control" value="{{ request.GET.fecha_fin }}">
+                    </div>
+                    <div  class="filtroFecha" >
+                        <button class="BuscarFechaVentasCombinadas">BUSCAR</button>
+                    </div>
+                </div>
+            </div>
             <div class= "tabla">
-                <table class="table" id="tabla-formulario">
+                <table class="table" id="tabla-formulario3">
                     <thead class="table">
                         <tr class="encabezado">
                             <td>ID Producto</td>
@@ -91,20 +219,21 @@
                 
             </div>
             <div id="floating-container" class="floating-container">
-                <p>Inicio de la Semana: <span id="start-week"></span></p>
-                <p>Día Actual: <span id="current-day"></span></p>
-                <p>Total Facturas: <span id="total-value">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
+                <p>Fecha Inicio : <span id="start-week3"></span></p>
+                <p>Fecha Fin : <span id="current-day3"></span></p>
+                <p>Total Facturas: <span id="total-value3">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
             </div>
         </div>
         <div id="tab4" class="tab-pane">
             <div class= "tabla">
-                <table class="table" id="tabla-formulario">
+                <table class="table" id="tabla-formulario4">
                     <thead class="table">
                         <tr class="encabezado">
                             <td>ID Producto</td>
                             <td>Nombre</td>
                             <td> Cantidad</td>
                             <td>Precio de venta</td>
+                            <td>Total Fila</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -113,9 +242,9 @@
                 
             </div>
             <div id="floating-container" class="floating-container">
-                <p>Inicio de la Semana: <span id="start-week"></span></p>
-                <p>Día Actual: <span id="current-day"></span></p>
-                <p>Total Facturas: <span id="total-value">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
+                
+                <p>Costo total productos - cantidad</p>
+                <p>Total Inventario: <span id="total-value4">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
             </div>
         </div>
     </div>

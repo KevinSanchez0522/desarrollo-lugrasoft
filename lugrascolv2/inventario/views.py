@@ -2,13 +2,14 @@ import json,io
 import random
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse,FileResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from facturacion.models import  Inventario, TransaccionAjuste, Ajustes, Averias, TransaccionAverias
+from facturacion.models import  Inventario, TransaccionAjuste, Ajustes, Averias, TransaccionAverias, TransMp, Transformulas
 from django.db.models import Max, F
 from docx import Document
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
+from decimal import Decimal
 
 
 #Create your views here.
@@ -153,6 +154,7 @@ def averias(request):
 
 
 def generar_informe_averia(request):
+    
     if request.method == 'GET':
         id_averia = request.GET.get('id_averia')
     elif request.method == 'POST':
@@ -187,23 +189,76 @@ def generar_informe_averia(request):
     content.append(Spacer(1, 30))  
 
     # Detalles de las transacciones en forma de tabla
-    data = [['Código de Inventario', 'Nombre', 'Cantidad']]
+    data = [['Código de Inventario', 'Nombre', 'Cantidad', 'Costo']]
+    totalCosto = Decimal('0.00')
+    
     for transaccion in transacciones:
-        data.append([transaccion.cod_inventario.cod_inventario,
-                     transaccion.cod_inventario.nombre,
-                     transaccion.cant_averia])
+        
+        formula = Transformulas.objects.filter(
+                cod_inventario=transaccion.cod_inventario
+        ).first()
+            
+        if formula:
+            # Si el código del producto es una fórmula, calcular el costo usando la fórmula
+            subtotal_costo = 0.0
+            iva_costo = 0.0
+            total_costo = 0.0
+            
+            # Calcular el subtotal_costo usando las materias primas de la fórmula
+            for i in range(1, 9):  # Iterar sobre los campos materia1 hasta materia8
+                campo_materia = getattr(formula, f"materia{i}")
+                if campo_materia:  # Verificar si hay un código de materia prima en el campo actual
+                    materia_prima = TransMp.objects.filter(cod_inventario=campo_materia).order_by('-fecha_ingreso').first()
+                    if materia_prima:
+                        setattr(formula, f"costo_unitario{i}", materia_prima.costo_unitario)
+                        cantidad = getattr(formula, f"cant_materia{i}")
+                        costo_unitario = getattr(materia_prima, f"costo_unitario")
+                        subtotal_costo += cantidad * costo_unitario
+                    else:
+                        # Asignar valores predeterminados si la materia prima no se encuentra
+                        setattr(formula, f"nombre_mp{i}", "Materia prima no encontrada")
+                        setattr(formula, f"costo_unitario{i}", 0.0)
+            
+            iva_costo = (Decimal(subtotal_costo) * Decimal(formula.porcentajeiva)) / Decimal('100')
+            total_costo = Decimal(subtotal_costo) + Decimal(formula.costosindirectos) + iva_costo
+            precio_unitario = total_costo
+            
+        else:
+            # Si el código del producto es una materia prima, obtener el costo unitario de la última transacción
+            ultimo_transaccion = TransMp.objects.filter(
+                cod_inventario=transaccion.cod_inventario
+            ).order_by('-fecha_ingreso').first()
+            
+            if ultimo_transaccion:
+                # Si existe una transacción, usa su costo unitario
+                precio_unitario = Decimal(ultimo_transaccion.costo_unitario)
+            else:
+                # Si no hay transacción, establecer un precio predeterminado
+                precio_unitario = Decimal('0.00')
+                
+        total_fila = Decimal(transaccion.cant_averia) * precio_unitario
+        totalCosto += total_fila
+        
+        data.append([   transaccion.cod_inventario.cod_inventario,
+                        transaccion.cod_inventario.nombre,
+                        transaccion.cant_averia,
+                        f"{precio_unitario:,.2f}"])
+        
     
     # Crear la tabla
     table = Table(data)
-    table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-                               ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                               ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                               ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                               ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                               ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                               ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+    table.setStyle(TableStyle([ ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                                ('WORDWRAP', (0, 0), (-1, -1), True)]))
 
     content.append(table)
+    content.append(Spacer(1, 20))
+    content.append(Paragraph(f"Total Costo Averías: {totalCosto:,.2f}", styles['Normal']))
 
     # Generar el PDF
     pdf.build(content)

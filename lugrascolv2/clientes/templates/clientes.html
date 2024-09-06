@@ -1,0 +1,93 @@
+{% extends "dashboard.html" %}
+{% load static%}
+
+{% block title %}
+	<title>Clientes</title>
+{% endblock title %}
+{% block titulohoja%}
+	<h2 class="titulo">Clientes</h2>
+{% endblock titulohoja %}
+
+{% block areatrabajo%}
+<link rel="stylesheet" href="{%static 'clientes.css'%}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'clientes.js' %}"></script>
+
+
+
+<div class= "tabla">
+	<table class="table" id="tabla-formulario4">
+		<thead class="table">
+			<tr class="encabezado">
+				<td>NIT</td>
+				<td>NOMBRE</td>
+				<td>DIRECCION</td>
+				<td>TELEFONO</td>
+				<td>CORREO</td>
+				<td></td>
+			</tr>
+		</thead>
+		<tbody>
+			{% for cliente in clientes%}
+			<tr>
+				<td>{{cliente.nit}}</td>
+				<td>{{cliente.nombre}}</td>
+				<td>{{cliente.direccion}}</td>
+				<td>{{cliente.telefono}}</td>
+				<td>{{cliente.email}}</td>
+				<td>
+					<a href="#" class="edit-link" 
+						data-nit="{{ cliente.nit }}"
+						data-nombre="{{ cliente.nombre }}"
+						data-direccion="{{ cliente.direccion }}"
+						data-telefono="{{ cliente.telefono }}"
+						data-email="{{ cliente.email }}">
+						<i class="bi bi-pencil-square"></i>
+				 	</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+
+	<div id="miModal2" class="modal">
+		<div class="modal-content">
+			<span class="closemodal2">&times;</span>
+			<div class="form-container2">
+				<form action="{% url 'actualizarDatos' %}" method="post" class="form-box" onsubmit="return confirmarEnvio()">
+					{% csrf_token %}
+				<h2>Editar Cliente </h2>
+				
+				<div class="form-group">
+					<label for="nit">NIT:</label>
+					<input type="number" id="nit" name="nit" required placeholder="{{cliente.nit}}">
+				</div>
+				
+				
+				<div class="form-group">
+					<label for="name">Nombre:</label>
+					<input type="text" id="nombreproveedor" name="name" required placeholder="{{cliente.nombre}}">
+				</div>
+				
+				<div class="form-group">
+					<label for="direccion">Dirección:</label>
+					<input type="text" id="direccion" name="direccion" required placeholder="{{cliente.direccion}}">
+				</div>
+				<div class="form-group">
+					<label for="telefono">Teléfono:</label>
+					<input type="number" id="telefono" name="telefono" required >
+				</div>
+                <div class="form-group">
+					<label for="email">Email:</label>
+					<input type="Email" id="email" name="email" required >
+				</div>
+					<button type="submit" class="addcliente">Actualizar Datos</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+{%endblock %}

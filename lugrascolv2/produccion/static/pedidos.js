@@ -15,6 +15,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const tabButtons = document.querySelectorAll(".tab-button");
     const tabContents = document.querySelectorAll(".tab-content");
 
+
+
+
+
+
     function mostrarPestanaActiva() {
         // Mostrar la pestaña de la tabla por defecto
         document.getElementById("tabla-content").classList.add("active");
@@ -331,6 +336,10 @@ function actualizarVisualizacionMateriasPrimasRequeridas(materiasPrimasRequerida
             }
         }
     });
+
+
+
+
     
     $(document).ready(function() {
         // Selector para el botón de enviar (por ejemplo, un botón con id "enviarDatos")
@@ -416,6 +425,9 @@ function actualizarVisualizacionMateriasPrimasRequeridas(materiasPrimasRequerida
         });
     
     
+
+
+
 });
 
 
