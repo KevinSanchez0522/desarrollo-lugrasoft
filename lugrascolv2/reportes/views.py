@@ -343,6 +343,58 @@ def anularRemision(request, nremision):
 
     # Manejo para métodos HTTP diferentes a POST
     return HttpResponse("Método no permitido", status=405)    
+
+
+
+
+
+def detallesremi(request):
+    remision_id = request.GET.get('remisionId')
+    print('N factura', remision_id)
+    
+    if remision_id:
+        try:
+            
+            
+            transacciones = TransaccionRemision.objects.filter(nremision=remision_id)
+            remision = get_object_or_404(Remisiones, nremision= remision_id)
+            cliente = get_object_or_404(Clientes, nit=remision.cliente)
+            
+
+            subtotal = remision.total_remision
+            
+            
+            productos = []
+            for transaccion in transacciones:
+                # Obtener detalles del producto desde el modelo Inventario
+                producto = Inventario.objects.get(cod_inventario=transaccion.cod_inventario)
+                
+                # Agregar los detalles del producto a la lista
+                productos.append({
+                    'cod_inventario': producto.cod_inventario,
+                    'nombre': producto.nombre,
+                    'cantidad': transaccion.cantidad,
+                    'fecha_factura': transaccion.fecha_remision,
+                    'precio_unitario': f"{transaccion.precio_venta:,}",
+                    'total_factura': f"{remision.total_remision:,}",
+                    'nit_cliente': cliente.nit,
+                    'nombre_cliente': cliente.nombre,
+                    'telefono_cliente': cliente.telefono,
+                    'direccion_cliente': cliente.direccion,
+                    'correo_cliente': cliente.email,
+                    'subtotal': f"{subtotal:,}"
+                })
+            
+            # Preparar los datos para enviar en la respuesta JSON
+            data = {
+                'productos': productos,
+            }
+            
+            return JsonResponse(data)
+        except Facturas.DoesNotExist:
+            return JsonResponse({'error': 'Factura no encontrada'}, status=404)
+    else:
+        return JsonResponse({'error': 'ID de factura no proporcionado'}, status=400)
     
 def convertir_a_numero(cadena):
     # Reemplazar el punto (.) con nada (eliminar separadores de miles)

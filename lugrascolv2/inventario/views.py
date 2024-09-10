@@ -1,14 +1,16 @@
 import json,io
 import random
+from django.forms import DecimalField
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse,FileResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from facturacion.models import  Inventario, TransaccionAjuste, Ajustes, Averias, TransaccionAverias, TransMp, Transformulas
-from django.db.models import Max, F
-from docx import Document
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib import colors
+from facturacion.models import  Inventario, TransaccionAjuste, Ajustes, Averias, TransaccionAverias, TransMp, Transformulas, TransaccionFactura, TransaccionRemision, TransaccionRemision, SalidasMpOrden
+from django.db.models import Max, F, IntegerField, Sum
+from django.db.models.functions import Coalesce
+from docx import Document # type: ignore
+from reportlab.lib.pagesizes import letter # type: ignore
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer # type: ignore
+from reportlab.lib.styles import getSampleStyleSheet # type: ignore
+from reportlab.lib import colors # type: ignore
 from decimal import Decimal
 
 
@@ -268,3 +270,94 @@ def generar_informe_averia(request):
     response = HttpResponse(pdf_buffer, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename=informe_averia_{id_averia}.pdf'
     return response
+
+
+
+def buscarKardex(request):
+    productos = Inventario.objects.all()
+    return render(request, 'kardex.html', {'productos': productos})
+
+def kardex_view(request):
+    if request.method == 'POST':
+        # Obtener datos del POST
+        cod_producto = request.POST.get('cod_producto')
+        fecha_inicio = request.POST.get('fecha_inicio')
+        fecha_final = request.POST.get('fecha_final')
+
+        # Filtrar transacciones según el rango de fechas y el producto
+        transacciones = {
+            'factura': TransaccionFactura.objects.filter(
+                cod_inventario=cod_producto,
+                fecha_factura__range=[fecha_inicio, fecha_final]
+            ),
+            'remision': TransaccionRemision.objects.filter(
+                cod_inventario=cod_producto,
+                fecha_remision__range=[fecha_inicio, fecha_final]
+            ),
+            'ajuste': TransaccionAjuste.objects.filter(
+                cod_inventario=cod_producto,
+                fecha_ajuste__range=[fecha_inicio, fecha_final]
+            ),
+            'averia': TransaccionAverias.objects.filter(
+                cod_inventario=cod_producto,
+                fecha_averia__range=[fecha_inicio, fecha_final]
+            ),
+            'salida_orden': SalidasMpOrden.objects.filter(
+                cod_inventario=cod_producto,
+                fecha_e_produccion__range=[fecha_inicio, fecha_final]
+            ),
+        }
+
+        # Inicializar el saldo de inventario
+        saldo = 0
+
+        # Procesar entradas de factura
+        entradas_factura = transacciones['factura'].aggregate(
+            total=Coalesce(Sum('cantidad', output_field=IntegerField()), 0)
+        )['total']
+        saldo += entradas_factura
+
+        # Procesar entradas de remisión
+        entradas_remision = transacciones['remision'].aggregate(
+            total=Coalesce(Sum('cantidad', output_field=IntegerField()), 0)
+        )['total']
+        saldo += entradas_remision
+
+        # Procesar ajustes de inventario (puede ser positivo o negativo)
+        ajustes = transacciones['ajuste'].aggregate(
+            total=Coalesce(Sum('cant_ajuste', output_field= IntegerField()), 0)
+        )['total']
+        saldo += ajustes
+
+        # Procesar averías (se restan del inventario)
+        averias = transacciones['averia'].aggregate(
+            total=Coalesce(Sum('cant_averia', output_field= IntegerField()), 0)
+        )['total']
+        saldo -= averias
+
+        # Procesar salidas de órdenes (se restan del inventario)
+        salidas_orden = transacciones['salida_orden'].aggregate(
+            total=Coalesce(Sum('cantidad', output_field=IntegerField()), 0)
+        )['total']
+        saldo -= salidas_orden
+
+        # Crear una lista de resultados para el kardex
+        kardex = []
+
+        for key, qs in transacciones.items():
+            for transaccion in qs:
+                kardex.append({
+                    'fecha': transaccion.fecha.strftime('%Y-%m-%d'),  # Formatear fecha
+                    'descripcion': key,
+                    'referencia': transaccion.referencia,
+                    'entradas': transaccion.cantidad if key in ['factura', 'remision'] else 0,
+                    'salidas': transaccion.cantidad if key in ['ajuste', 'averia', 'salida_orden'] else 0,
+                    'saldo': saldo,
+                })
+
+        # Ordenar el kardex por fecha
+        kardex.sort(key=lambda x: x['fecha'])
+
+        return JsonResponse({'kardex': kardex})
+    else:
+        return JsonResponse({'error': 'Método no permitido'}, status=405)

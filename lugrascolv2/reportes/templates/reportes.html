@@ -15,6 +15,8 @@
     var reporteVentasDinamicas = "{% url 'reporteVentasDinamicas' %}";
     var costeoInventarioURL = "{% url 'costearInventario' %}";
     var BuscarXFecha = "{% url 'buscarXfecha'%}" 
+    var remi = "{% url 'datosRemision' %}"
+    var imprimir = "{% static 'reportes.css' %}"
 </script>
 
 <link rel="stylesheet" href="{%static 'reportes.css'%}">
@@ -115,12 +117,13 @@
                     </div>
                     <div class="container">
                         <div class="invoice-header">
-                            <h2>Lugrascol SAS</h2>
+                            <!---<h2>Lugrascol SAS</h2>
                             <h4>Lubricantes y grasas de Colombia</h4>
                             <p>Vda laguneta KM 2</p>
                             <p>Giron, Santander</p>
                             <p>(607)55555555</p>
                             <p>info@lubricantesgrasas.com</p>
+                            --->
                         </div>
                         <div class="invoice-details">
                             <p class="fecha" id="modalFecha"></p>
@@ -161,7 +164,7 @@
                             </tr>
                             <tr>
                                 <td>TASA DE IMPUESTO</td>
-                                <td>19%</td>
+                                <td class="taza"></td>
                             </tr>
                             <tr>
                                 <td>IMPUESTO</td>

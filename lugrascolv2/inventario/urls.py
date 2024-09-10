@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import inventory_view, ajuste, obtener_numero_ajuste,agregar_transaccion_ajuste, agregar_transaccion_averias,obtener_numero_averia,averias, generar_informe_averia
+from .views import inventory_view, ajuste, obtener_numero_ajuste,agregar_transaccion_ajuste, agregar_transaccion_averias,obtener_numero_averia,averias, generar_informe_averia, buscarKardex, kardex_view
 urlpatterns = [
     path('', inventory_view, name= 'inv'),
     path('ajuste/', ajuste , name= 'ajuste'),
@@ -8,5 +8,7 @@ urlpatterns = [
     path('averias/', averias, name= 'averias'),
     path('obtener_averiaN/', obtener_numero_averia, name= 'obtenerAveria'),
     path('agregarAveria/', agregar_transaccion_averias, name='agregarAverias'),
-    path('informe/', generar_informe_averia, name= 'informe')
+    path('informe/', generar_informe_averia, name= 'informe'),
+    path('kardex/', buscarKardex, name= 'kardex'), 
+    path('api/kardex/', kardex_view, name='kardex_view'),
 ]

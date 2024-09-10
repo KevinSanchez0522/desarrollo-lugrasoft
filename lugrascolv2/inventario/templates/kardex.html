@@ -1,0 +1,83 @@
+{% extends "dashboard.html" %}
+{% load static%}
+
+{% block title %}
+	<title>Inventario</title>
+{% endblock title %}
+{% block titulohoja%}
+	<h2 class="titulo">Reconstruir Kardex </h2>
+{% endblock titulohoja %}
+
+
+{% block areatrabajo %}
+
+
+<script>
+    var verKardex = "{% url 'kardex_view' %}"
+</script>
+
+
+
+<link rel="stylesheet" href="{% static 'kardex.css' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{%static 'kardex.js'%}"></script>
+
+
+
+<div class="sobretabla">
+
+
+    <div  class="selector">  
+        <label for=""> Seleccione el producto</label>   
+        <select class="js-example-basic-single" name="state" id="cod_producto">
+            <option value="">Seleccione el producto</option>
+            {%for producto in productos %}
+            <option value="{{producto.cod_inventario}}">{{producto.cod_inventario}} -- {{producto.nombre}}</option>
+            {%endfor%}
+        </select>
+    </div>
+    <div class="contenedor-fecha">
+        <div class="filtroFecha">
+            <label for="fecha_inicio">Fecha Inicio</label>
+            <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" value="{{ request.GET.fecha_inicio }}">
+        </div>
+        <div  class="filtroFecha">
+            <label for="fecha_fin">Fecha Fin</label>
+            <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" value="{{ request.GET.fecha_fin }}">
+        </div>
+        <div  class="filtroFecha" >
+            <button class="BuscarFecha">BUSCAR</button>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class= "tabla">
+	<table class="table" id="kardex_table tbody">
+		<thead class="table">
+			<tr class="encabezado">
+				<td>Fecha</td>
+				<td>Descripcion</td>
+				<td>Referencia</td>
+                <td>entradas</td>
+                <td>Salidas</td>
+                <td>Saldo</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+            <!-- aqui van los datos dinamicos   -->
+			</tr>
+			
+		</tbody>
+	</table>	
+	
+</div>
+
+
+
+{%endblock%}
