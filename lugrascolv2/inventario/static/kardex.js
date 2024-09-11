@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'fecha_final': fechaFinal
             },
             success:function(response){
+                console.log('Respuesta del backend:', response);
                 if (response.kardex) {
                     actualizarTabla(response.kardex);
                 } else {
@@ -67,24 +68,23 @@ function getCookie(name) {
     }
 
 
-function actualizarTabla(kardex) {
-    // Selecciona el tbody dentro de la tabla con id "kardex_table"
-    const tablaBody = document.querySelector('#kardex_table tbody');
-    tablaBody.innerHTML = '';  // Limpiar tabla antes de agregar nuevos datos
-
-    kardex.forEach(item => {
-        // Crear una nueva fila
-        const fila = document.createElement('tr');
-        // Definir el contenido HTML de la fila
-        fila.innerHTML = `
-            <td>${item.fecha}</td>
-            <td>${item.descripcion}</td>
-            <td>${item.referencia}</td>
-            <td>${item.entradas}</td>
-            <td>${item.salidas}</td>
-            <td>${item.saldo}</td>
-        `;
-        // Agregar la fila al tbody
-        tablaBody.appendChild(fila);
-    });
-}
+    function actualizarTabla(kardex) {
+        // Selecciona el tbody dentro de la tabla con id "kardex_table"
+        $('#kardex_table tbody').empty();  // Limpia el tbody
+    
+        // Itera sobre el array de objetos kardex
+        kardex.forEach(item => {
+            // Crea una nueva fila para cada objeto en kardex
+            var fila = '<tr>' +
+                '<td>' + item.fecha + '</td>' +
+                '<td>' + item.descripcion + '</td>' +
+                '<td>' + item.referencia + '</td>' +
+                '<td>' + (item.entradas || 0) + '</td>' +
+                '<td>' + (item.salidas || 0) + '</td>' +
+                '<td>' + (item.saldo || 0) + '</td>' +
+                '</tr>';
+    
+            // Añade la fila al tbody
+            $('#kardex_table tbody').append(fila);
+        });
+    }

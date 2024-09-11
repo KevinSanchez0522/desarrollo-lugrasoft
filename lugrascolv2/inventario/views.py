@@ -286,13 +286,9 @@ def kardex_view(request):
 
         # Filtrar transacciones según el rango de fechas y el producto
         transacciones = {
-            'factura': TransaccionFactura.objects.filter(
+            'materia_prima': TransMp.objects.filter(
                 cod_inventario=cod_producto,
-                fecha_factura__range=[fecha_inicio, fecha_final]
-            ),
-            'remision': TransaccionRemision.objects.filter(
-                cod_inventario=cod_producto,
-                fecha_remision__range=[fecha_inicio, fecha_final]
+                fecha_ingreso__range=[fecha_inicio,fecha_final]
             ),
             'ajuste': TransaccionAjuste.objects.filter(
                 cod_inventario=cod_producto,
@@ -306,54 +302,84 @@ def kardex_view(request):
                 cod_inventario=cod_producto,
                 fecha_e_produccion__range=[fecha_inicio, fecha_final]
             ),
+            'factura': TransaccionFactura.objects.filter(
+                cod_inventario=cod_producto,
+                fecha_factura__range=[fecha_inicio, fecha_final]
+            ),
+            'remision': TransaccionRemision.objects.filter(
+                cod_inventario=cod_producto,
+                fecha_remision__range=[fecha_inicio, fecha_final]
+            ),
+
+
+
+
         }
 
         # Inicializar el saldo de inventario
         saldo = 0
 
-        # Procesar entradas de factura
-        entradas_factura = transacciones['factura'].aggregate(
-            total=Coalesce(Sum('cantidad', output_field=IntegerField()), 0)
-        )['total']
-        saldo += entradas_factura
 
-        # Procesar entradas de remisión
-        entradas_remision = transacciones['remision'].aggregate(
-            total=Coalesce(Sum('cantidad', output_field=IntegerField()), 0)
-        )['total']
-        saldo += entradas_remision
-
-        # Procesar ajustes de inventario (puede ser positivo o negativo)
-        ajustes = transacciones['ajuste'].aggregate(
-            total=Coalesce(Sum('cant_ajuste', output_field= IntegerField()), 0)
-        )['total']
-        saldo += ajustes
-
-        # Procesar averías (se restan del inventario)
-        averias = transacciones['averia'].aggregate(
-            total=Coalesce(Sum('cant_averia', output_field= IntegerField()), 0)
-        )['total']
-        saldo -= averias
-
-        # Procesar salidas de órdenes (se restan del inventario)
-        salidas_orden = transacciones['salida_orden'].aggregate(
-            total=Coalesce(Sum('cantidad', output_field=IntegerField()), 0)
-        )['total']
-        saldo -= salidas_orden
 
         # Crear una lista de resultados para el kardex
         kardex = []
 
         for key, qs in transacciones.items():
             for transaccion in qs:
+                if key == 'factura':
+                    fecha = transaccion.fecha_factura
+                    cantidad = transaccion.cantidad
+                    referencia = transaccion.nfactura
+                    entradas = cantidad
+                    salidas = 0
+                elif key == 'remision':
+                    fecha = transaccion.fecha_remision
+                    cantidad = transaccion.cantidad
+                    referencia = transaccion.nremision
+                    entradas = cantidad
+                    salidas = 0
+                elif key == 'ajuste':
+                    fecha = transaccion.fecha_ajuste
+                    cantidad = transaccion.cant_ajuste
+                    referencia = transaccion.id_ajuste.id_ajuste
+                    entradas = cantidad if cantidad > 0 else 0
+                    salidas = -cantidad if cantidad < 0 else 0
+                elif key == 'averia':
+                    fecha = transaccion.fecha_averia
+                    cantidad = transaccion.cant_averia
+                    referencia = transaccion.id_averia.id_averia
+                    entradas = 0
+                    salidas = cantidad
+                elif key == 'salida_orden':
+                    fecha = transaccion.fecha_e_produccion
+                    cantidad = transaccion.cantidad
+                    referencia = transaccion.id_orden.id_orden
+                    entradas = 0
+                    salidas = cantidad
+                elif key == 'materia_prima':
+                    fecha = transaccion.fecha_ingreso
+                    cantidad = transaccion.cant_mp
+                    referencia = transaccion.id_compra.id_compra
+                    entradas = cantidad
+                    salidas = 0
+                    
+                
+
+                saldo += entradas - salidas
+
                 kardex.append({
-                    'fecha': transaccion.fecha.strftime('%Y-%m-%d'),  # Formatear fecha
+                    'fecha': fecha.strftime('%Y-%m-%d'),
                     'descripcion': key,
-                    'referencia': transaccion.referencia,
-                    'entradas': transaccion.cantidad if key in ['factura', 'remision'] else 0,
-                    'salidas': transaccion.cantidad if key in ['ajuste', 'averia', 'salida_orden'] else 0,
+                    'referencia': referencia,
+                    'entradas': entradas,
+                    'salidas': salidas,
                     'saldo': saldo,
                 })
+                
+                print("Kardex:")
+                for item in kardex:
+                    print(item)
+
 
         # Ordenar el kardex por fecha
         kardex.sort(key=lambda x: x['fecha'])
