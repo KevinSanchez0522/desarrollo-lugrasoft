@@ -1,0 +1,20 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso No Autorizado</title>
+    <link rel="stylesheet" href="{% static 'error.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>403 - Acceso No Autorizado</h1>
+        <p>Lo siento, pero no tienes permiso para acceder a esta página.</p>
+        <p><a href="{% url 'dashboard' %}">Volver a la página principal</a></p>
+        <div class="footer">
+            <p>&copy; {{ current_year }} Tu Sitio Web. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

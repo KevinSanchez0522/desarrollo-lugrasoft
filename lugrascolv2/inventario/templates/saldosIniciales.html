@@ -1,0 +1,66 @@
+{% extends "dashboard.html" %}
+{% load static%}
+
+{% block title %}
+	<title>Inventario</title>
+{% endblock title %}
+{% block titulohoja%}
+	<h2 class="titulo">Cargar saldos iniciales de inventario</h2>
+{% endblock titulohoja %}
+
+
+{% block areatrabajo %}
+
+<script>
+    var cargardatos = "{% url 'upload_excel' %}"
+    var procesarDatos = "{% url 'procesarDatos' %}"
+</script>
+
+<link rel="stylesheet" href="{% static 'saldos.css' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{%static 'cargaSaldos.js'%}"></script>
+
+
+
+<h1>Cargar Archivo Excel</h1>
+<input type="file" id="fileInput" />
+<button id="uploadButton">Cargar</button>
+
+<div id="result">
+
+    <div class= "tabla">
+        <table class="table" id="tabla-saldos">
+            <thead class="table">
+                <tr class="encabezado">
+                    <td>Codigo</td>
+                    <td>Nombre</td>
+                    <td>Cantidad</td>
+                    <td>Costo Unitario</td>
+                    <td>Total</td>
+                    <td>Fecha de ingreso</td>
+                    <td>unidad de medida</td>
+                    <td>proveedor</td>
+                    <td>tipo</td>
+                    <td>indentificador</td>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    
+                </tr>
+                
+            </tbody>
+        </table>	
+    </div>
+    <div>
+        <button class="boton">CARGAR INVENTARIO</button>
+    </div>
+    
+</div>
+
+
+
+{% endblock areatrabajo %}

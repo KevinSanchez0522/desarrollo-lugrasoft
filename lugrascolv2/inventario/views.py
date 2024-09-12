@@ -1,9 +1,10 @@
+import datetime
 import json,io
 import random
 from django.forms import DecimalField
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse,FileResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from facturacion.models import  Inventario, TransaccionAjuste, Ajustes, Averias, TransaccionAverias, TransMp, Transformulas, TransaccionFactura, TransaccionRemision, TransaccionRemision, SalidasMpOrden
+from facturacion.models import  Inventario, TransaccionAjuste, Ajustes, Averias, TransaccionAverias, TransMp, Proveedores, Transformulas, TransaccionFactura, TransaccionRemision, TransaccionRemision, SalidasMpOrden, Compras
 from django.db.models import Max, F, IntegerField, Sum
 from django.db.models.functions import Coalesce
 from docx import Document # type: ignore
@@ -12,6 +13,11 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, 
 from reportlab.lib.styles import getSampleStyleSheet # type: ignore
 from reportlab.lib import colors # type: ignore
 from decimal import Decimal
+from .forms import ExcelUploadForm
+import pandas as pd
+from django.db import IntegrityError, OperationalError
+
+import logging
 
 
 #Create your views here.
@@ -387,3 +393,171 @@ def kardex_view(request):
         return JsonResponse({'kardex': kardex})
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    
+    
+    
+    
+    
+def cargaSaldos(request):
+    return render(request, 'saldosIniciales.html')    
+
+
+
+def upload_excel(request):
+    if request.method == 'POST':
+        excel_file = request.FILES.get('file')
+        if not excel_file:
+            return JsonResponse({'error': 'No se ha subido ningún archivo'}, status=400)
+
+        try:
+            df = pd.read_excel(excel_file, engine='openpyxl')
+            
+                        # Imprimir las primeras filas del dataframe para depuración
+            
+            # Convertir columnas específicas a solo fecha
+            if 'fecha de ingreso (dd/mm/aaaa)' in df.columns:
+                df['fecha de ingreso (dd/mm/aaaa)'] = pd.to_datetime(df['fecha de ingreso (dd/mm/aaaa)'], errors='coerce').dt.date
+
+            data = df.head().to_dict(orient='records')
+            
+             # Imprimir los datos procesados para depuración
+            
+            
+            
+            
+            return JsonResponse({'data': data})
+        
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+# Configurar el logger
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
+def guardarDatos(request):
+    if request.method == 'POST':
+        try:
+            # Obtener los datos del cuerpo de la solicitud
+            data = json.loads(request.body)
+            
+            # Obtener los datos enviados desde el frontend
+            datos = data.get('datos', [])
+            
+            # Filtrar los datos por tipo
+            datos_tipo_m = [item for item in datos if item.get('Tipo') == 'm']
+            datos_tipo_pt = [item for item in datos if item.get('Tipo') == 'pt']
+
+
+            
+            # Procesar datos de tipo 'm'
+            for item in datos_tipo_m:
+                try:
+                    # Imprimir los datos antes de convertir
+                    print("Datos crudos del item:", item)
+                    
+                    # Convertir valores a los tipos correctos
+                    codigo = int(item.get('Codigo'))
+                    nombre = item.get('Nombre')
+                    cantidad = int(item.get('Cantidad'))
+                    costo_unitario = float(item.get('Costo Unitario', 0))
+                    total_linea = float(item.get('Total', 0))         
+                    fecha_ingreso= item.get('Fecha de ingreso')
+                    unidad_medida = item.get('Unidad de medida')
+                    id_proveedor = int(item.get('Proveedor'))
+                    tipo = item.get('Tipo')
+                    id_compra = item.get('Identificador')
+                    
+
+                    
+                    proveedor_obj, created = Proveedores.objects.get_or_create(
+                        id_proveedor=id_proveedor
+                    )
+                    
+                    inventario_obj, created = Inventario.objects.get_or_create(
+                        cod_inventario=codigo,
+                        defaults={
+                            'nombre': nombre,
+                            'cantidad': cantidad,
+                            'id_proveedor': proveedor_obj,
+                            'tipo': tipo
+                        }
+                    )
+                    
+                    compra_obj, created = Compras.objects.get_or_create(
+                        id_compra=id_compra,
+                        defaults={
+                            'estado': True,
+                            'total_factura': 0
+                        }
+                    )
+                    #Crear y guardar instancias en TransMp
+                    nuevoSaldo = TransMp(
+                        cod_inventario=inventario_obj,
+                        nombre_mp=nombre,
+                        cant_mp=cantidad,
+                        costo_unitario=costo_unitario,
+                        total_linea=total_linea,
+                        fecha_ingreso=fecha_ingreso,
+                        unidad_medida=unidad_medida,
+                        id_proveedor=id_proveedor,
+                        tipo=tipo,
+                        id_compra=compra_obj
+                    )
+                    nuevoSaldo.save()
+                
+                        
+                    
+                    if not all([codigo, nombre, cantidad, costo_unitario, total_linea, fecha_ingreso, unidad_medida, id_proveedor, tipo, id_compra]):
+                        logger.error("Faltan datos requeridos")
+                    
+                    logger.debug(f"Instancia de TransMp creada: {nuevoSaldo}")
+                    
+                except Exception as ve:
+                    logger.error(f"Error al procesar el item: {item}, Error: {ve}")
+                    
+                    
+                    
+            for item in datos_tipo_pt:
+                    codigo = int(item.get('Codigo'))
+                    nombre = item.get('Nombre')
+                    cantidad = int(item.get('Cantidad'))
+                    costo_unitario = float(item.get('Costo Unitario', 0))
+                    total_linea = float(item.get('Total', 0))         
+                    fecha_ingreso= item.get('Fecha de ingreso')
+                    unidad_medida = item.get('Unidad de medida')
+                    id_proveedor = int(item.get('Proveedor'))
+                    tipo = item.get('Tipo')
+                    id_compra = item.get('Identificador')
+                    
+                    
+                    proveedor_objt, created = Proveedores.objects.get_or_create(
+                        id_proveedor=id_proveedor
+                    )
+                    
+                    inventario_obj, created = Inventario.objects.get_or_create(
+                        cod_inventario=codigo,
+                        defaults={
+                            'nombre': nombre,
+                            'cantidad': cantidad,
+                            'id_proveedor': proveedor_objt,
+                            'tipo': tipo
+                        }
+                    )
+                
+                        
+                    
+            return JsonResponse({'status': 'Datos recibidos con éxito'})
+        
+        except json.JSONDecodeError:
+            # Manejar errores de decodificación JSON
+            return JsonResponse({'error': 'Error en el formato JSON'}, status=400)
+        
+        except Exception as e:
+            # Manejar otros posibles errores
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    # Manejar el caso en que el método no sea POST
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

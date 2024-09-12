@@ -18,8 +18,8 @@ from django.contrib.auth.decorators import user_passes_test
 
 
 def orden(request):
-    if request.user.username == "KeydenSaid":
-        return HttpResponseForbidden("¡Acceso no autorizado!")
+    if not request.user.groups.filter(name="contabilidad").exists():
+        return render(request, '403.html', status=403)
     else:
         proveedor = Proveedores.objects.all()
         estado_transaccion = TransMp.objects.all()

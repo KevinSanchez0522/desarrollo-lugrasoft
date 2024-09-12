@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from facturacion.models import Clientes, Inventario, OrdenProduccion, Transformulas, TransaccionOrden, SalidasMpOrden
 from django.db.models import Max, F
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db import transaction
 from django.db.models import Case, When, IntegerField, Value, CharField,Min
 
@@ -15,7 +15,9 @@ from django.db.models import Case, When, IntegerField, Value, CharField,Min
 def pedido(request):
     cliente = Clientes.objects.all()
     producto = Inventario.objects.filter(tipo='pt')
-    usuarios = User.objects.all()
+    nombre_grupo = "Produccion"
+    grupo = Group.objects.get(name=nombre_grupo)
+    usuarios = User.objects.filter(groups=grupo)
     return render(request, 'pedidos1.html', {'clientes': cliente, 'productos': producto, 'usuarios': usuarios})
 
 

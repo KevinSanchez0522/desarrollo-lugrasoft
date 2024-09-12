@@ -3,9 +3,11 @@ $('#materias').select2();
 
 });
 // Definir tablaFormulario globalmente
-var tablaFormulario;
+
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    tablaFormulario = document.getElementById('tabla-formulario');
     var formulario = document.getElementById('formulario');
 
     formulario.addEventListener('submit', function(event) {
@@ -25,10 +27,10 @@ document.addEventListener('DOMContentLoaded', function() {
         var filas = tablaFormulario.getElementsByTagName('tbody')[0].rows;
         for (var i = 0; i < filas.length; i++) {
             var rowData = {};
-            rowData.cod_producto = filas[i].cells[0].innerText.trim();
-            rowData.nombre = filas[i].cells[1].innerText.trim();
-            rowData.cantidad = filas[i].cells[2].innerText.trim();
-            rowData.precio_unitario = filas[i].cells[3].innerText.trim();
+            rowData.cod_producto = filas[i].cells[0] ? filas[i].cells[0].innerText.trim() : '';
+            rowData.nombre = filas[i].cells[1] ? filas[i].cells[1].innerText.trim() : '';
+            rowData.cantidad = filas[i].cells[2] ? filas[i].cells[2].innerText.trim() : '';
+            rowData.precio_unitario = filas[i].cells[3] ? filas[i].cells[3].innerText.trim() : '';
 
             // Validar si la fila contiene datos no vacíos
             if (rowData.cod_producto !== '' && rowData.nombre !== '' && rowData.cantidad !== '' && rowData.precio_unitario !== '') {
