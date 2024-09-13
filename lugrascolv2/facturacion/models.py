@@ -12,7 +12,7 @@ class Averias(models.Model):
     id_averia = models.IntegerField(primary_key=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Averias'
 
 
@@ -24,7 +24,7 @@ class Clientes(models.Model):
     email = models.TextField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Clientes'
 
 
@@ -37,7 +37,7 @@ class Facturas(models.Model):
     estado = models.TextField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Facturas '
 
 
@@ -46,7 +46,7 @@ class OrdenProduccion(models.Model):
     nit = models.ForeignKey(Clientes, models.DO_NOTHING, db_column='Nit')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Orden_produccion'
 
 
@@ -58,7 +58,7 @@ class Remisiones(models.Model):
     cliente = models.IntegerField()
     estado = models.TextField()
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Remisiones'
 
 
@@ -69,7 +69,7 @@ class SalidasMpOrden(models.Model):
     fecha_e_produccion = models.DateField(db_column='fecha_E_produccion', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Salidas_Mp_Orden'
 
 
@@ -81,7 +81,7 @@ class TransaccionFactura(models.Model):
     precio_venta = models.FloatField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Transaccion_Factura'
 
 
@@ -93,7 +93,7 @@ class TransaccionRemision(models.Model):
     precio_venta = models.FloatField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Transaccion_Remision'
 
 
@@ -105,7 +105,7 @@ class TransaccionAjuste(models.Model):
     cod_inventario = models.ForeignKey('Inventario', models.DO_NOTHING, db_column='cod_inventario')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Transaccion_ajuste'
 
 
@@ -116,7 +116,7 @@ class TransaccionAverias(models.Model):
     cod_inventario = models.ForeignKey('Inventario', models.DO_NOTHING, db_column='cod_inventario')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Transaccion_averias'
 
 
@@ -132,7 +132,7 @@ class TransaccionOrden(models.Model):
     fecha_terminacion_orden = models.DateField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Transaccion_orden'
 
 
@@ -142,7 +142,7 @@ class Ventas(models.Model):
     id_remi = models.IntegerField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Ventas'
 
 
@@ -150,7 +150,7 @@ class Ajustes(models.Model):
     id_ajuste = models.IntegerField(primary_key=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'ajustes'
 
 
@@ -158,7 +158,7 @@ class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'auth_group'
 
 
@@ -168,7 +168,7 @@ class AuthGroupPermissions(models.Model):
     permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'auth_group_permissions'
         unique_together = (('group', 'permission'),)
 
@@ -179,7 +179,7 @@ class AuthPermission(models.Model):
     codename = models.CharField(max_length=100)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'auth_permission'
         unique_together = (('content_type', 'codename'),)
 
@@ -197,7 +197,7 @@ class AuthUser(models.Model):
     date_joined = models.DateTimeField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'auth_user'
 
 
@@ -207,7 +207,7 @@ class AuthUserGroups(models.Model):
     group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'auth_user_groups'
         unique_together = (('user', 'group'),)
 
@@ -218,7 +218,7 @@ class AuthUserUserPermissions(models.Model):
     permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'auth_user_user_permissions'
         unique_together = (('user', 'permission'),)
 
@@ -229,7 +229,7 @@ class Compras(models.Model):
     id_compra = models.TextField(primary_key=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'compras'
 
 
@@ -243,7 +243,7 @@ class DjangoAdminLog(models.Model):
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'django_admin_log'
 
 
@@ -252,7 +252,7 @@ class DjangoContentType(models.Model):
     model = models.CharField(max_length=100)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'django_content_type'
         unique_together = (('app_label', 'model'),)
 
@@ -264,7 +264,7 @@ class DjangoMigrations(models.Model):
     applied = models.DateTimeField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'django_migrations'
 
 
@@ -274,7 +274,7 @@ class DjangoSession(models.Model):
     expire_date = models.DateTimeField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'django_session'
 
 
@@ -286,7 +286,7 @@ class Inventario(models.Model):
     tipo = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'inventario'
 
 
@@ -297,7 +297,7 @@ class ProduccionSalidasmporden(models.Model):
     cod_inventario = models.ForeignKey(Inventario, models.DO_NOTHING, db_column='cod_inventario')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'produccion_salidasmporden'
 
 
@@ -308,7 +308,7 @@ class Proveedores(models.Model):
     telefono = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'proveedores'
 
 
@@ -325,7 +325,7 @@ class TransMp(models.Model):
     id_compra = models.ForeignKey(Compras, models.DO_NOTHING, db_column='id_compra')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'trans_mp'
 
 
@@ -353,5 +353,5 @@ class Transformulas(models.Model):
     costosindirectos = models.FloatField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'transformulas'
