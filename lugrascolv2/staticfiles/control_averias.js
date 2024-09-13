@@ -214,6 +214,7 @@ function enviarDatos() {
             // Una vez que se completa el envío de datos de tabla, envía el id_averia a la vista informe
             descargarInformeAveria(id_averia)
             
+            
         },
         error: function(xhr, status, error) {
             console.error('Error en la solicitud AJAX:', error);

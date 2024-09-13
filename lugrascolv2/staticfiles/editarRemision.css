@@ -1,0 +1,315 @@
+.cabecera{
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+.ladoIzquierdo{
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    
+}
+.info-factura{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 70px;
+    margin-bottom: 30px;
+    
+
+}
+
+
+.labelF, .labelFecha {
+    display: block; /* Para que el label ocupe toda la línea */
+    font-weight: bold; /* Opcional: negrita para los labels */
+    font-size: 14px;
+}
+
+.factura span, .divfecha span {
+    display: block; /* Colocar el span debajo del label */
+    margin-top: 5px; /* Espacio entre label y span */
+    font-weight: normal; /* Opcional: ajustar peso de fuente según diseño */
+    width: 50%;
+}
+.ladoDerecho{
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+}
+.factura .divfecha{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    margin-bottom: 10px;
+    
+}
+.info-factura span {
+    border-radius: 4px;
+    box-shadow:0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 120px;
+}
+.js-example-basic-single{
+    width: 90%;
+    margin-bottom: 15px;
+}
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #4CAF50 !important; 
+    color: #fff !important; 
+    
+}
+
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    
+    border-radius: 4px;
+    border: 1px solid #f9f9f9;
+    height: 25px; /* Asegura que la altura sea similar a los otros inputs */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Agrega una sombra suave */
+    transition: box-shadow 0.3s ease; 
+    
+}
+
+span.select2-selection.select2-selection--single {
+    text-align: start;
+    border: none;
+    
+}
+.selector-container {
+    margin-bottom: 50px;
+    gap: 10px; /* Espacio entre el select2 y el botón */
+    background-color: #f9f9f9;
+    align-items: center;
+    
+    
+}
+.selectores .cliente{
+    margin-bottom: 15px;
+}
+
+.selectores .orden{
+    margin-bottom: 40px;
+}
+
+.info-cliente {
+    background-color: #ffff;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    
+}
+
+.info-cliente > div {
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    padding: 3px;
+}
+
+.info-cliente span {
+    font-weight: bold;
+}
+
+.Direccion {
+    color: #333;
+}
+
+.Telefono {
+    color: #333;
+}
+
+.Correo {
+    color: #333;
+}
+
+/* Estilos generales para la tabla */
+.tabla {
+    width: 100%;
+    margin: 20px auto;
+    margin-top: 20px; /* Espacio entre la tabla y el contenido superior */
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    max-height: calc(100vh - 140px); /* Altura máxima de la tabla */
+    overflow-y: scroll;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Encabezado de la tabla */
+.encabezado td {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+}
+
+/* Cuerpo de la tabla */
+.table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Estilos para las celdas */
+.table td {
+    color: #333;
+}
+
+/* Estilos para el texto */
+.table th, .table td {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Mejora de la accesibilidad en pantallas pequeñas */
+@media screen and (max-width: 600px) {
+    .table thead {
+        display: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 15px;
+    }
+
+    .table td {
+        text-align: right;
+        padding-left: 50%;
+        text-align: right;
+        position: relative;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+}
+.info-adicional {
+    flex: 0 0 250px; /* Ancho fijo para el contenedor de información adicional */
+    border-radius: 5px;
+    margin-top: 15px;
+
+    box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+}
+
+.contenedor-principal {
+    display: flex;
+    
+
+}
+.subtotal, .iva, .ica, .total{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+.sub, .ivaS, .icaS, .Stotal{
+    margin-bottom: 5px;
+    border-radius: 4px;
+    
+}
+.info-adicional .subtotal, .iva, .ica, .total {
+    margin-bottom: 15px;
+    margin-left: 5px;
+}
+/* estilos para el chackbox*/
+/* Ocultar el checkbox por defecto */
+input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Estilo del contenedor del checkbox (opcional) */
+input[type="checkbox"] + label {
+    display: inline-block;
+    padding-left: 25px; /* Espacio para el icono */
+    position: relative;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Estilo del checkbox personalizado */
+input[type="checkbox"] + label:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+/* Estilo del tick dentro del checkbox cuando está marcado */
+input[type="checkbox"]:checked + label:before {
+    background-color: #4CAF50; /* Color de fondo del tick */
+    border-color: #4CAF50; /* Color del borde del tick */
+}
+
+/* Estilo del tick (el símbolo de marca) */
+input[type="checkbox"] + label:after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 3px;
+    width: 6px;
+    height: 12px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    display: none; /* Ocultar el tick por defecto */
+}
+
+/* Mostrar el tick cuando el checkbox está marcado */
+input[type="checkbox"]:checked + label:after {
+    display: block;
+}
+.bt-facturar{
+    margin-top: 50px;
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #4CAF50; /* Color de fondo del botón */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+.bt-facturar :hover {
+    background-color: #53ad56; /* Cambio de color al pasar el mouse */
+}
+.bt-facturar :focus {
+    outline: none; /* Elimina el borde de enfoque al hacer clic */
+}
+
+.bt-facturar :active {
+    background-color: #53ad56; /* Color de fondo al hacer clic */
+    transform: translateY(1px); /* Efecto de presionado */
+}

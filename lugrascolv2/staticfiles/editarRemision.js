@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Enviar los datos al servidor usando AJAX
                     $.ajax({
-                        url: Editados, // Cambia esto por la URL del endpoint que recibe los datos
+                        url: EditadosRemision, // Cambia esto por la URL del endpoint que recibe los datos
                         type: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
