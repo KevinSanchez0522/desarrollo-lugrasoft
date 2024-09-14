@@ -1,0 +1,3 @@
+[submodule "lugrascolv2/desarrollo-lugrasoft"]
+    path = lugrascolv2/desarrollo-lugrasoft
+    url = https://github.com/usuario/repositorio-submodulo.git
