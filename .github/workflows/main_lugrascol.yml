@@ -35,7 +35,7 @@ jobs:
       - name: Zip artifact for deployment
         run: |
           mkdir -p release/lugrascolv2
-          cp -r lugrascolv2/lugrascolv2 release/lugrascolv2/
+          cp -r lugrascolv2/* release/lugrascolv2/
           cd release
           zip -r ../release.zip .
 
