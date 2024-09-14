@@ -28,14 +28,14 @@ jobs:
           source venv/bin/activate
       
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r lugrascolv2/requirements.txt
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
       - name: Zip artifact for deployment
         run: |
           mkdir -p release/lugrascolv2
-          cp -r lugrascolv2/lugrascolv2 release/lugrascolv2/
+          cp -r lugrascolv2/* release/lugrascolv2/
           cd release
           zip -r ../release.zip .
 
