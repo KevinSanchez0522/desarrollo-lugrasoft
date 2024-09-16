@@ -4,9 +4,9 @@ from .settings import BASE_DIR
 
 SECRET_KEY = os.environ['SECRET']
 
-ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME ']]
-CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['WEBSITE_HOSTNAME ']]
-DEBUG = False
+ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME']]
+CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['WEBSITE_HOSTNAME']]
+DEBUG = True
 
 
 MIDDLEWARE = [
@@ -20,19 +20,25 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticfilesStorage'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-connection_string = os.environ['AZURE_POSTGRESQL_CONECTIONSTRING']
-parameters = {pair.split('='):pair.split('=')[1] for pair in connection_string.split(' ')}
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+dbname = os.environ['DBNAME']
+user = os.environ['USER']
+host = os.environ['HOST']
+password = os.environ['PASSWORD']
 
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': parameters['debname'],
-        'USER': parameters['host'],
-        'PASSWORD': parameters['user'],
-        'HOST': parameters['password'],
+        'NAME': dbname,
+        'USER': user,
+        'PASSWORD':password,
+        'HOST': host,
     }
 }

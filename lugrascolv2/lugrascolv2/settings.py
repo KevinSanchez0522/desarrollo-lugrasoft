@@ -24,9 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-b0j(fwb-retx0q5v^kau**j*jj9r#921lzj)!44z_mm-ek@p$-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['lugrascol-d7dnhpdkgagxdpc6.israelcentral-01.azurewebsites.net']
+CSRF_TRUSTED_ORIGINS = ['https://lugrascol-d7dnhpdkgagxdpc6.israelcentral-01.azurewebsites.net']
 
 
 # Application definition
@@ -60,6 +61,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -92,6 +94,23 @@ WSGI_APPLICATION = 'lugrascolv2.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'lugrascoldb',
+        'USER': 'kevin',
+        'PASSWORD': '2204Ky05',
+        'HOST': 'lugrascoldb.postgres.database.azure.com',
+        'PORT': '5432'
+    }
+}
+
+
+
+
+
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -102,6 +121,7 @@ DATABASES = {
         'PORT': '5432'
     }
 }
+"""
 
 
 # Password validation
@@ -166,14 +186,14 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
         },
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
     },
