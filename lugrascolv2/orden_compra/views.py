@@ -18,7 +18,7 @@ from django.contrib.auth.decorators import user_passes_test
 
 
 def orden(request):
-    if not request.user.groups.filter(name="contabilidad").exists():
+    if not (request.user.groups.filter(name="Contabilidad").exists() or not request.user.groups.filter(name="Gerencia").exists() ):
         return render(request, '403.html', status=403)
     else:
         proveedor = Proveedores.objects.all()

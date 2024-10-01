@@ -6,7 +6,7 @@ from django.utils.dateparse import parse_date
 
 # Create your views here.
 def reportes(request):
-    if not (request.user.groups.filter(name="contabilidad").exists() or request.user.groups.filter(name="administradores").exists()):
+    if not (request.user.groups.filter(name="Contabilidad").exists() or request.user.groups.filter(name="Gerencia").exists()):
         return render(request, '403.html', status=403)
     else:
         return render(request, 'reportes.html')
