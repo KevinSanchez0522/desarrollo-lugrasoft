@@ -13,6 +13,6 @@ from django.core.wsgi import get_wsgi_application
 
 #settings_module = 'lugrascolv2.deployment' if 'WEBSITE_HOSTNAME' in os.environ else  'lugrascolv2.settings'
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE',  config("DJANGO_SETTINGS_MODULE"))
+os.environ.setdefault('DJANGO_SETTINGS_MODULE',  'lugrascolv2.settings')
 
 application = get_wsgi_application()
