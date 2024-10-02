@@ -23,13 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b0j(fwb-retx0q5v^kau**j*jj9r#921lzj)!44z_mm-ek@p$-'
+#SECRET_KEY = 'django-insecure-b0j(fwb-retx0q5v^kau**j*jj9r#921lzj)!44z_mm-ek@p$-'
+
+SECRET_KEY = os.environ['SECRET']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ['DEBUG']
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://lugrascol-d7dnhpdkgagxdpc6.israelcentral-01.azurewebsites.net']
+CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['HOSTNAME']]
 
 
 # Application definition
@@ -113,7 +115,7 @@ DATABASES = {
     }
 }
 
-DATABASES["default"] = dj_database_url.parse("postgresql://kevin:K6FtwgKJv8mdgkMTfI4WJLeqAvAbSR7g@dpg-cruajktumphs73ekapqg-a.oregon-postgres.render.com/lugrascoldb")
+DATABASES["default"] = dj_database_url.parse(os.environ['DATABASE'])
 
 
 # Password validation
