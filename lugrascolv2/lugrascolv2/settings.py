@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import logging
 import dj_database_url
+from decouple import config, Csv
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,15 +25,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = 'django-insecure-b0j(fwb-retx0q5v^kau**j*jj9r#921lzj)!44z_mm-ek@p$-'
+SECRET_KEY = config("SECRET_KEY")
 
-SECRET_KEY = os.environ['SECRET']
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ['DEBUG']
+DEBUG = config("DEBUG", cast=bool)
 
-ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['HOSTNAME']]
+ALLOWED_HOSTS = config("ALLOWED_HOST").split(",")
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
 
 
 # Application definition
@@ -115,7 +117,7 @@ DATABASES = {
     }
 }
 
-DATABASES["default"] = dj_database_url.parse(os.environ['DATABASE'])
+DATABASES["default"] = dj_database_url.parse(config("DATABASE_URL"))
 
 
 # Password validation
