@@ -8,10 +8,11 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/wsgi/
 """
 
 import os
+from decouple import config
 from django.core.wsgi import get_wsgi_application
 
-settings_module = 'lugrascolv2.deployment' if 'WEBSITE_HOSTNAME' in os.environ else  'lugrascolv2.settings'
+#settings_module = 'lugrascolv2.deployment' if 'WEBSITE_HOSTNAME' in os.environ else  'lugrascolv2.settings'
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE',  config('DJANGO_SETTINGS_MODULE'))
 
 application = get_wsgi_application()
