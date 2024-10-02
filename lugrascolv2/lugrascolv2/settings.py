@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import logging
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,7 +28,7 @@ SECRET_KEY = 'django-insecure-b0j(fwb-retx0q5v^kau**j*jj9r#921lzj)!44z_mm-ek@p$-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['lugrascol-d7dnhpdkgagxdpc6.israelcentral-01.azurewebsites.net']
+ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['https://lugrascol-d7dnhpdkgagxdpc6.israelcentral-01.azurewebsites.net']
 
 
@@ -112,6 +113,7 @@ DATABASES = {
     }
 }
 
+DATABASES["default"] = dj_database_url.parse("postgresql://kevin:K6FtwgKJv8mdgkMTfI4WJLeqAvAbSR7g@dpg-cruajktumphs73ekapqg-a.oregon-postgres.render.com/lugrascoldb")
 
 
 # Password validation
