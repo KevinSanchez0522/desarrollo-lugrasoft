@@ -8,6 +8,7 @@ colorama==0.4.6
 crispy-bootstrap5==2024.2
 cssselect2==0.7.0
 dill==0.3.8
+dj-database-url==2.2.0
 Django==5.0.4
 django-cors-headers==4.4.0
 django-crispy-forms==2.1
