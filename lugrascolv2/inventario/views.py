@@ -419,7 +419,7 @@ def upload_excel(request):
             if 'fecha de ingreso (dd/mm/aaaa)' in df.columns:
                 df['fecha de ingreso (dd/mm/aaaa)'] = pd.to_datetime(df['fecha de ingreso (dd/mm/aaaa)'], errors='coerce').dt.date
 
-            data = df.head().to_dict(orient='records')
+            data = df.to_dict(orient='records')
             
              # Imprimir los datos procesados para depuración
             
