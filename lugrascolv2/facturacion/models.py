@@ -20,7 +20,7 @@ class Clientes(models.Model):
     nit = models.BigIntegerField(db_column='Nit', primary_key=True)  # Field name made lowercase.
     nombre = models.TextField()
     direccion = models.TextField()
-    telefono = models.DecimalField(max_digits=10, decimal_places=2)
+    telefono = models.BigIntegerField()
     email = models.TextField()
 
     class Meta:
