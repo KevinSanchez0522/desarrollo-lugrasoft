@@ -33,7 +33,7 @@ def add_cliente(request):
             # Verificar si ya existe un proveedor con el mismo NIT
             if Clientes.objects.filter(nit=nit).exists():
                 # Mostrar una alerta indicando que el proveedor ya existe
-                return render(request, 'orden_compra.html', {'Clientes_existente': True})
+                return render(request, 'orden_compra.html', {'clientes_existente': True})
 
             # Crear una nueva instancia del modelo Proveedor y guardarla en la base de datos
             nuevo_Cliente = Clientes(nit=nit, nombre=nombre, direccion=direccion, telefono=telefono, email=email)
