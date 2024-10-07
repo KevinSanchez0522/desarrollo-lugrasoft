@@ -415,6 +415,7 @@ def precio_producto(request):
         try:
             # Obtener la fórmula correspondiente al cod_inventario
             formula = Transformulas.objects.get(cod_inventario=cod_inventario)
+            print('codigo', formula.cod_inventario.cod_inventario)
             
             # Calcular los valores para la fórmula
             subtotal_costo = 0.0
@@ -458,7 +459,7 @@ def precio_producto(request):
             
             # Crear un diccionario con los datos de la fórmula actual
             formula_data = {
-                'id_producto': formula.cod_inventario.cod_inventario,
+                'id_producto': formula.cod_inventario.id,
                 'nombre': formula.nombre,
                 'iva': formula.porcentajeiva,
                 'subtotal_costo': subtotal_costo,
@@ -476,8 +477,27 @@ def precio_producto(request):
             return JsonResponse({'datos': datos})
         
         except Transformulas.DoesNotExist:
-            # Manejar el caso donde no se encontró la fórmula
-            return JsonResponse({'error': 'Fórmula no encontrada'}, status=404)
+                        # Si no se encuentra la fórmula, buscar en TransMp
+            materia_prima = TransMp.objects.filter(cod_inventario=cod_inventario).order_by('-fecha_ingreso').first()
+            if materia_prima:
+                # Crear un diccionario con los datos del producto
+                producto_data = {
+                    'id_producto': materia_prima.id,  # Asumir que es el ID del producto
+                    'nombre': materia_prima.nombre_mp,
+                    'iva': 0.0,  # No tiene IVA en este caso, pero puedes agregar la lógica
+                    'subtotal_costo': materia_prima.costo_unitario,  # Suponiendo que el costo unitario es el costo del producto
+                    'total_costo': materia_prima.costo_unitario,  # Suponiendo que no hay costos adicionales
+                    'subtotal_venta': materia_prima.costo_unitario,  # Similar, dependiendo de la lógica de tu negocio
+                    'total_venta': materia_prima.costo_unitario,  # Sin cálculo de IVA si no hay detalles
+                    'iva_costo': 0.0,  # Suponiendo que no hay IVA
+                    'utilidad_bruta': 0.0,  # Sin cálculo de utilidad si no es necesario
+                }
+                datos.append(producto_data)
+                return JsonResponse({'datos': datos})
+
+            else:
+                # Si no se encuentra el producto en TransMp
+                return JsonResponse({'error': 'Producto no encontrado en TransMp'}, status=404)
     
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
