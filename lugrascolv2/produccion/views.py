@@ -39,9 +39,8 @@ def add_cliente(request):
             nuevo_Cliente = Clientes(nit=nit, nombre=nombre, direccion=direccion, telefono=telefono, email=email)
             nuevo_Cliente.save()
 
-            # Devolver al usuario a la URL anterior
-            previous_url = request.META.get('HTTP_REFERER')
-            return redirect(previous_url)
+            # Devolver al usuario a la URL anterio
+            return redirect('pedidos')
 
 def obtener_numero_produccion(request):
     ultima_averia = None  # Define la variable antes del bloque try
