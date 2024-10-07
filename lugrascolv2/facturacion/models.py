@@ -17,7 +17,7 @@ class Averias(models.Model):
 
 
 class Clientes(models.Model):
-    nit = models.DecimalField(db_column='Nit', primary_key=True, max_digits=10, decimal_places=2)  # Field name made lowercase.
+    nit = models.BigIntegerField(db_column='Nit', primary_key=True)  # Field name made lowercase.
     nombre = models.TextField()
     direccion = models.TextField()
     telefono = models.DecimalField(max_digits=10, decimal_places=2)
