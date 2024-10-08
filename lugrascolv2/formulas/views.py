@@ -182,7 +182,7 @@ def verformulas (request):
         formula.utilidad_bruta = round(utilidad_bruta,2)
 
     
-    return render(request, 'verformula.html', {'formulas': formulas})
+    return render(request, 'verformula1.html', {'formulas': formulas})
 
 
 
@@ -251,3 +251,112 @@ def eliminarFormula(request, cod_inventario):
         transaccion.delete()
         producto.delete()
         return JsonResponse({'mensaje': f'Producto {cod_inventario} eliminado correctamente.'}, status=200)
+    
+    
+    
+    
+    
+def editar_formula(request, cod_inventario):
+    producto = Inventario.objects.filter(tipo='m')
+    # Obtener la fórmula que quieres editar
+    formula = get_object_or_404(Transformulas, cod_inventario=cod_inventario)
+    print('Código de la fórmula:', formula.cod_inventario)
+    
+    # Obtener las materias primas asociadas (solo las que no son None)
+    materias_primas = []
+    for i in range(1, 9):
+        materia_field = getattr(formula, f'materia{i}')
+        cantidad_field = getattr(formula, f'cant_materia{i}')
+        
+        if materia_field:
+            # Obtener la materia prima del modelo Inventario
+            materia = get_object_or_404(Inventario, cod_inventario=materia_field)
+            
+            # Obtener el último precio de compra de esta materia
+            ultimo_precio_compra = TransMp.objects.filter(cod_inventario=materia).order_by('-fecha_ingreso').first()
+
+            # Si no hay compras previas, puedes asignar un precio predeterminado o None
+            precio_compra = ultimo_precio_compra.costo_unitario if ultimo_precio_compra else None
+            
+            # Agregar los datos de la materia prima a la lista
+            materias_primas.append({
+                'materia': materia,
+                'cantidad': cantidad_field,
+                'precio_compra': precio_compra
+            })
+    
+    # Pasa las materias primas a la plantilla
+    return render(request, 'editarFormula.html', {
+        'formula': formula,
+        'materias_primas': materias_primas,
+        'productos': producto
+    })
+    
+def update_transformula(request):   
+    if request.method == 'POST':
+        # Obtener los datos del cuerpo de la solicitud POST
+        data = json.loads(request.body)
+        print("Cuerpo de la solicitud:", request.body)
+
+        # Obtener el ID de la transformula y el resto de los datos
+        transformula_id = data.get('codig')  # Aquí usamos 'transformulasId' como en el frontend
+        print(transformula_id)
+        costos_indirectos = data.get('costos_indirectos')  # Asegurándonos de que coincida con el nombre
+        print(costos_indirectos)
+        utilidad = data.get('utilidad')
+        print(utilidad)
+        iva = data.get('iva')
+        print(iva)
+        cantidades = data.get('materias_primas', [])  # Lista de las materias primas con cantidades
+        print(cantidades)
+        nombre = data.get('nombre')
+        print(nombre)
+        
+                # Imprimir las cantidades y los productos (materias primas)
+
+
+
+        # Buscar la transformula correspondiente en la base de datos
+        try:
+            transformula = Transformulas.objects.get(cod_inventario=transformula_id)
+            
+            # Actualizar los campos del objeto Transformulas
+            transformula.costosindirectos = costos_indirectos
+            transformula.pocentajeutilidad = utilidad
+            transformula.porcentajeiva = iva
+            transformula.nombre = nombre
+
+
+            for i in range(1, 8):  # Asumiendo que el máximo número de materias es 5
+                setattr(transformula, f'materia{i}', None)
+                setattr(transformula, f'cant_materia{i}', None)
+            
+            # Actualizar los campos de materia y cantidad
+            for i, materia_data in enumerate(cantidades, start=1):
+                cod_inventario = materia_data.get('cod_inventario')
+                cantidad = int(float(materia_data.get('cantidad', 0))) 
+                print('codigo, cantidad', cod_inventario, cantidad)
+                try:
+                    # Obtener la materia prima
+                    materia = Inventario.objects.get(cod_inventario=cod_inventario)
+
+                    # Verificar si la materia existe (si no lanza la excepción se procesará)
+                    setattr(transformula, f'materia{i}', materia.cod_inventario)
+                    setattr(transformula, f'cant_materia{i}', cantidad)
+
+                except Inventario.DoesNotExist:
+                    print(f"Materia prima con código {cod_inventario} no encontrada")
+            # Guardar los cambios en la base de datos
+            transformula.save()
+
+            # Devolver una respuesta JSON
+            return JsonResponse({'status': 'success', 'message': 'Datos actualizados correctamente'})
+        except Transformulas.DoesNotExist:
+            # Manejar el caso donde no se encuentra una transformula con el ID dado
+            return JsonResponse({'status': 'error', 'message': 'Transformula no encontrada'})
+        except Inventario.DoesNotExist:
+            # Manejar el caso donde no se encuentra alguna materia prima
+            return JsonResponse({'status': 'error', 'message': 'Una o más materias primas no existen'})
+    else:
+        # Devolver una respuesta de error si la solicitud no es POST
+        return JsonResponse({'status': 'error', 'message': 'Método no permitido'})

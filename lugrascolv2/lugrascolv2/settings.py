@@ -182,15 +182,21 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'level': 'INFO',  # Mostrar solo mensajes INFO y superiores
             'class': 'logging.StreamHandler',
         },
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'INFO',  # Mostrar solo logs de nivel INFO o superior (por ejemplo, las URLs de solicitudes)
             'propagate': True,
+        },
+        # Logger para tu propia aplicación (esto es opcional)
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'INFO',  # Solo para mostrar las solicitudes HTTP
+            'propagate': False,
         },
     },
 }

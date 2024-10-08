@@ -1,0 +1,90 @@
+{% extends "dashboard.html" %}
+{% load static%}
+
+{% block title %}
+	<title>Formulas</title>
+{% endblock title %}
+{% block titulohoja%}
+	<h2 class="titulo">Editar Formulas</h2>
+{% endblock titulohoja %}
+
+
+
+{% block areatrabajo%}
+
+<script>
+    var ver = "{% url 'ver'%}"
+    var actualizar = "{%url 'actualizar'%}"
+</script>
+
+<link rel="stylesheet" href="{%static 'formula.css'%}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'editarFormula.js' %}"></script>
+
+<div class="compact-form-container">
+    <div class="compact-form">
+        <div class="form-row">
+            <label for="codig">Codigo :</label>
+            <input type="number" id="Codig" name="codig" value="{{formula.cod_inventario.cod_inventario}}" required>
+        </div>
+        <div class="form-row">
+            <label for="nombre">Nombre : </label>
+            <input type="text" id="Nombre" name="nombre" value="{{formula.nombre}}" required>
+        </div>
+        <div class="form-row">
+            <label for="costinderec">Costos Indirectos :</label>
+            <input type="number" id="C_indirecto" name="costinderec" value="{{formula.costosindirectos}}" required>
+        </div>
+        <div class="form-row">
+            <label for="utilidad">% Utilidad :</label>
+            <input type="number" id="Utilidad" value="{{formula.pocentajeutilidad}}" name="Utilidad">
+        </div>
+        <div class="form-row">
+            <label for="V_Iva"> % Valor IVA :</label>
+            <input type="number" id="V_Iva" value="{{formula.porcentajeiva}}" name="V_Iva">
+        </div>
+        <div class="form-row">
+            <button  class="enviar" type="submit" id="guardarFormula">Guardar Formula</button>
+        </div>
+    </div>    
+
+</div>
+
+
+<select class="js-example-basic-single"  id="materias">
+    <option value="">Seleccione las Materias Primas </option>
+    {% for producto in productos %}
+    <option value="{{producto.cod_inventario}}" data-precio = "{{precio_unitario}}">{{producto.nombre}}</option>
+    {%endfor%}
+</select>
+
+<div class= "tabla">
+    <table class="table" id="tabla-formulario">
+        <thead class="table">
+            <tr class="encabezado">
+                <td>Id Materia Prima</td>
+                <td> Nombre </td>
+                <td>Cantidad</td>
+                <td>Precio unitario</td>
+                <td>Opciones</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for materia in materias_primas %}
+            <tr>
+                <td>{{materia.materia.cod_inventario}}</td>
+                <td>{{materia.materia.nombre}}</td>
+                <td><input type="text" value="{{materia.cantidad}}"></td>
+                <td>{{materia.precio_compra}}</td>
+                <td><a href="#" class="delete-materia" data-id="{{ materia.materia.cod_inventario }}">
+                    <i class="bi bi-trash"></i></td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>	
+    
+</div>
+
+{%endblock %}

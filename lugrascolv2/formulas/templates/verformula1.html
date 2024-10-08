@@ -29,11 +29,11 @@
         </thead>
         <tbody>
             {% for formula in formulas %}
-            <tr>
+            <tr class="fila-transaccion" data-id="{{ formula.cod_inventario.cod_inventario }}">
                 <td>{{formula.cod_inventario.cod_inventario}}</td>
                 <td>{{formula.nombre}}</td>
                 <td><a href="#" class="open-modal" data-modal-target="#viewModal{{ forloop.counter }}"><i class="bi bi-eye-fill"></i></a>
-                    <a href="#" class="open-modal" data-modal-target="#editModal{{ forloop.counter }}"><i class="bi bi-pencil-square"></i></a>
+                    <a href="{% url 'editaFormula' formula.cod_inventario.cod_inventario %}" class="open-modal" data-id="{{formula.cod_inventario.cod_inventario}}"><i class="bi bi-pencil-square"></i></a>
                     <a href="{% url 'EliminarFormula' formula.cod_inventario.cod_inventario%}" class="deleteFormula"  onclick="return confirm('¿Estás seguro de que quieres eliminar este elemento?');"><i class="bi bi-trash"></i></a>
                 </td>
             </tr>

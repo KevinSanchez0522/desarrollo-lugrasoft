@@ -4,7 +4,7 @@ import random
 from django.forms import DecimalField
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse,FileResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from facturacion.models import  Inventario, TransaccionAjuste, Ajustes, Averias, TransaccionAverias, TransMp, Proveedores, Transformulas, TransaccionFactura, TransaccionRemision, TransaccionRemision, SalidasMpOrden, Compras
+from facturacion.models import  Inventario, TransaccionAjuste, Ajustes, Averias, TransaccionAverias, TransMp, Proveedores, Transformulas, TransaccionFactura, TransaccionRemision, TransaccionRemision, SalidasMpOrden, Compras, TransaccionOrden
 from django.db.models import Max, F, IntegerField, Sum
 from django.db.models.functions import Coalesce
 from docx import Document # type: ignore
@@ -308,6 +308,10 @@ def kardex_view(request):
                 cod_inventario=cod_producto,
                 fecha_e_produccion__range=[fecha_inicio, fecha_final]
             ),
+            'entrada_produccion': TransaccionOrden.objects.filter(
+                cod_inventario = cod_producto,
+                fecha_terminacion_orden__range=[fecha_inicio, fecha_final]
+            ),
             'factura': TransaccionFactura.objects.filter(
                 cod_inventario=cod_producto,
                 fecha_factura__range=[fecha_inicio, fecha_final]
@@ -335,15 +339,15 @@ def kardex_view(request):
                 if key == 'factura':
                     fecha = transaccion.fecha_factura
                     cantidad = transaccion.cantidad
-                    referencia = transaccion.nfactura
-                    entradas = cantidad
-                    salidas = 0
+                    referencia = transaccion.nfactura.nfactura
+                    entradas = 0
+                    salidas = cantidad
                 elif key == 'remision':
                     fecha = transaccion.fecha_remision
                     cantidad = transaccion.cantidad
                     referencia = transaccion.nremision
-                    entradas = cantidad
-                    salidas = 0
+                    entradas = 0
+                    salidas = cantidad
                 elif key == 'ajuste':
                     fecha = transaccion.fecha_ajuste
                     cantidad = transaccion.cant_ajuste
@@ -368,7 +372,13 @@ def kardex_view(request):
                     referencia = transaccion.id_compra.id_compra
                     entradas = cantidad
                     salidas = 0
-                    
+                elif key == 'entrada_produccion':
+                    fecha = transaccion.fecha_terminacion_orden
+                    cantidad = transaccion.cantidad
+                    referencia = transaccion.id_orden.id_orden
+                    entradas = cantidad
+                    salidas = 0
+                        
                 
 
                 saldo += entradas - salidas

@@ -2,7 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
     $(document).ready(function() {
         $('#cliente').select2();
         $('#Bproducto').select2();
-        $('#orden').select2();
+        $('#orden').select2({
+            allowClear:true
+        });
 
         
         });
@@ -98,18 +100,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         });
         $('#orden').on('change', function() {
-            var idOrden = $(this).val();  // Obtener el valor seleccionado (id_orden)
-
-            
+            var idOrdenes = $(this).val();  // Obtener el valor seleccionado (id_ordenes)
+            console.log('ids: ', idOrdenes)
         
             // Verificar si se seleccionó una opción válida
-            if (idOrden) {
+            if (idOrdenes && idOrdenes.length > 0) {
                 // Llamar a la función para enviar la solicitud AJAX con el id_orden seleccionado
                 $.ajax({
                     url: DatosFacturacion,  // URL donde se procesará la solicitud en Django
                     type: 'GET',  // Método de solicitud (GET o POST según tu configuración en Django)
                     data: {
-                        id_orden: idOrden  // Datos a enviar, en este caso el id_orden seleccionado
+                        ordenes: idOrdenes  // Datos a enviar, en este caso el id_ordenes seleccionado
                     },
                     success: function(response) {
                         // Manejar la respuesta exitosa de la vista Django aquí
@@ -120,38 +121,49 @@ document.addEventListener('DOMContentLoaded', function() {
         
                         // Verificar el estado del checkbox de IVA
                         var incluirIVA = $('#checkIva').prop('checked');
-                        
-                        
-                        // Iterar sobre los datos recibidos y agregar filas a la tabla
-                        $.each(response.datos, function(index, dato) {
-                            // Determinar qué subtotal mostrar dependiendo de si se incluye IVA o no
-                            var subtotal_venta_mostrar = incluirIVA ? dato.total_venta : dato.subtotal_venta;
-                            var subtotal_venta_formateado = formatearNumero(subtotal_venta_mostrar);
         
-                            var fila = '<tr>' +
-                                        '<td>' + dato.id_producto + '</td>' +
-                                        '<td>' + dato.nombre + '</td>' +
-                                        '<td>' + dato.cantidad + '</td>' +
-                                        '<td><input type = "text"  value = "' + subtotal_venta_formateado +'" </td>' +
-                                        '</tr>';
-                                        iva = dato.iva;
-                            $('#tabla-formulario tbody').append(fila);
-                            
-                            
-                             // Calcular subtotal total solo si se incluye IVA
-                            var valorProducto = incluirIVA ? dato.total_venta * dato.cantidad : dato.subtotal_venta * dato.cantidad;
-                            precioTotal += valorProducto;
-                            
-                            if (incluirIVA) {
-                                
-                                ivaSobreSubtotalTotal += valorProducto * (iva / 100);
-                            }else{
-                                ivaSobreSubtotalTotal += 0;                                
-                            }
-
+                        // Variable para los totales
+                        var precioTotal = 0;
+                        var ivaSobreSubtotalTotal = 0;
+        
+                        // Iterar sobre las órdenes recibidas
+                        $.each(response.ordenes, function(index, orden) {
+                            // Mostrar el ID de la orden (si es necesario)
+                            var filaOrden = '<tr><td colspan="4"><strong>Orden #: ' + orden.id_orden + '</strong></td></tr>';
+                            $('#tabla-formulario tbody').append(filaOrden);
+        
+                            // Iterar sobre los productos de la orden
+                            $.each(orden.productos, function(i, dato) {
+                                // Determinar qué subtotal mostrar dependiendo de si se incluye IVA o no
+                                var subtotal_venta_mostrar = incluirIVA ? dato.total_venta : dato.subtotal_venta;
+                                var subtotal_venta_formateado = formatearNumero(subtotal_venta_mostrar);
+        
+                                // Crear la fila para el producto
+                                var filaProducto = '<tr>' +
+                                    '<td>' + dato.id_producto + '</td>' +
+                                    '<td>' + dato.nombre + '</td>' +
+                                    '<td>' + dato.cantidad + '</td>' +
+                                    '<td><input type="text" value="' + subtotal_venta_formateado + '" readonly /></td>' +
+                                    '</tr>';
+        
+                                // Agregar la fila a la tabla
+                                $('#tabla-formulario tbody').append(filaProducto);
+        
+                                // Calcular el subtotal total solo si se incluye IVA
+                                var valorProducto = incluirIVA ? dato.total_venta * dato.cantidad : dato.subtotal_venta * dato.cantidad;
+                                precioTotal += valorProducto;
+        
+                                if (incluirIVA) {
+                                    ivaSobreSubtotalTotal += valorProducto * (dato.iva / 100);
+                                } else {
+                                    ivaSobreSubtotalTotal += 0;
+                                }
+                            });
                         });
+        
+                        // Actualizar los totales
                         actualizarTotales(precioTotal, ivaSobreSubtotalTotal);
-                    },  
+                    },
                     error: function(xhr, status, error) {
                         // Manejar errores de la solicitud AJAX aquí
                         console.error('Error en la solicitud AJAX:', error);
@@ -161,6 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Seleccionó una opción inválida');
             }
         });
+        
         
         $('#tabla-formulario').on('input', 'input',function() {
             recalcularTotales();
@@ -515,13 +528,14 @@ document.addEventListener('DOMContentLoaded', function() {
             var costoUnitario = $(this).find('td:eq(3) input').length ? 
                                 $(this).find('td:eq(3) input').val() : 
                                 $(this).find('td:eq(3)').text();
-
-            productos.push({
-                id_producto: idProducto,
-                nombre: nombreProducto,
-                cantidad: cantidad,
-                costo_unitario: costoUnitario
-            });
+            if (idProducto && idProducto !== 'Orden #' && cantidad && costoUnitario) {
+                productos.push({
+                    id_producto: idProducto,
+                    nombre: nombreProducto,
+                    cantidad: cantidad,
+                    costo_unitario: costoUnitario
+                });
+            }
         });
 
         // Obtener estado de los checkboxes de IVA e ICA

@@ -85,90 +85,104 @@ def obtenerOrdenCliente(request):
 
 def productos_facturar(request):
     if request.method == 'GET':
-        id_orden = request.GET.get('id_orden')
+        # Obtener los IDs de las órdenes seleccionadas
+        id_ordenes = request.GET.getlist('ordenes[]')  # Usamos getlist para capturar un array de órdenes
         
-        # Obtener los códigos de inventario desde TransaccionOrden para la id_orden dada
-        transacciones = TransaccionOrden.objects.filter(id_orden=id_orden)
+        print('array ids', id_ordenes)
         
-        # Lista para almacenar los datos de cada fórmula
-        datos = []
+        # Lista para almacenar los datos organizados por orden
+        ordenes_data = []
+
+        # Iterar sobre cada id de orden
+        for id_orden in id_ordenes:
+            print('ordenes', id_orden)
+            # Obtener las transacciones de la orden actual
+            transacciones = TransaccionOrden.objects.filter(id_orden=id_orden)
+
+            # Lista para almacenar los productos de la orden actual
+            productos = []
+
+            # Iterar sobre cada transacción de la orden
+            for transaccion in transacciones:
+                cod_inventario = transaccion.cod_inventario
+                print('codigos: ', cod_inventario)
+                cantidad_transaccion = transaccion.cantidad
+
+                # Obtener la fórmula correspondiente al cod_inventario
+                try:
+                    formula = Transformulas.objects.get(cod_inventario=cod_inventario)
+                except Transformulas.DoesNotExist:
+                    continue  # O retornar un JsonResponse con un mensaje de error
+                
+                # Calcular los valores para la fórmula
+                subtotal_costo = 0.0
+                total_costo = 0.0
+                subtotal_venta = 0.0
+                total_venta = 0.0
+                iva_costo = 0.0
+                utilidad_bruta = 0.0
+
+                # Iterar sobre los campos materia1 hasta materia8
+                for i in range(1, 9):
+                    campo_materia = getattr(formula, f"materia{i}")
+                    if campo_materia:
+                        materia_prima = TransMp.objects.filter(cod_inventario=campo_materia).order_by('-fecha_ingreso').first()
+                        if materia_prima:
+                            setattr(formula, f"nombre_mp{i}", materia_prima.nombre_mp)
+                            setattr(formula, f"costo_unitario{i}", materia_prima.costo_unitario)
+                            cantidad = getattr(formula, f"cant_materia{i}")
+                            costo_unitario = getattr(materia_prima, f"costo_unitario")
+                            subtotal_costo += cantidad * costo_unitario
+                        else:
+                            setattr(formula, f"nombre_mp{i}", "Materia prima no encontrada")
+                            setattr(formula, f"costo_unitario{i}", 0.0)
+
+                # Calcular otros valores necesarios para la fórmula
+                iva_costo = (subtotal_costo * formula.porcentajeiva) / 100
+                total_costo = subtotal_costo + formula.costosindirectos + iva_costo
+                utilidad_bruta = ((subtotal_costo + formula.costosindirectos) * formula.pocentajeutilidad) / 100
+                subtotal_venta = subtotal_costo + formula.costosindirectos + utilidad_bruta
+                total_venta = subtotal_venta + (subtotal_venta * formula.porcentajeiva) / 100
+
+                # Redondear los valores a dos decimales
+                subtotal_costo = round(subtotal_costo, 2)
+                total_costo = round(total_costo, 2)
+                subtotal_venta = round(subtotal_venta, 2)
+                total_venta = round(total_venta, 2)
+                iva_costo = round(iva_costo, 2)
+                utilidad_bruta = round(utilidad_bruta, 2)
+
+                # Crear un diccionario con los datos de la fórmula actual
+                formula_data = {
+                    'id_producto': formula.cod_inventario.cod_inventario,
+                    'nombre': formula.nombre,
+                    'cantidad': cantidad_transaccion,
+                    'iva': formula.porcentajeiva,
+                    'subtotal_costo': subtotal_costo,
+                    'total_costo': total_costo,
+                    'subtotal_venta': subtotal_venta,
+                    'total_venta': total_venta,
+                    'iva_costo': iva_costo,
+                    'utilidad_bruta': utilidad_bruta,
+                }
+
+                # Agregar el producto a la lista de productos de la orden actual
+                productos.append(formula_data)
+            
+            # Una vez que hemos procesado todos los productos de la orden, agregamos la orden con sus productos
+            ordenes_data.append({
+                'id_orden': id_orden,
+                'productos': productos
+            })
         
-        # Iterar sobre cada transacción encontrada
-        for transaccion in transacciones:
-            cod_inventario = transaccion.cod_inventario
-            cantidad_transaccion = transaccion.cantidad
-            
-            
-            # Obtener la fórmula correspondiente al cod_inventario
-            try:
-                formula = Transformulas.objects.get(cod_inventario=cod_inventario)
-            except Transformulas.DoesNotExist:
-                # Manejar el caso donde no se encontró la fórmula
-                continue  # O retornar un JsonResponse con un mensaje de error
-            
-            # Calcular los valores para la fórmula
-            subtotal_costo = 0.0
-            total_costo = 0.0
-            subtotal_venta = 0.0
-            total_venta = 0.0
-            iva_costo = 0.0
-            utilidad_bruta = 0.0
-            
-            for i in range(1, 9):  # Iterar sobre los campos materia1 hasta materia8
-                campo_materia = getattr(formula, f"materia{i}")
-                if campo_materia:  # Verificar si hay un código de materia prima en el campo actual
-                    # Consultar la materia prima por su código
-                    materia_prima = TransMp.objects.filter(cod_inventario=campo_materia).order_by('-fecha_ingreso').first()
-                    if materia_prima:
-                        # Asignar el nombre y el costo unitario de la materia prima a la fórmula
-                        setattr(formula, f"nombre_mp{i}", materia_prima.nombre_mp)
-                        setattr(formula, f"costo_unitario{i}", materia_prima.costo_unitario)
-                        cantidad = getattr(formula, f"cant_materia{i}")
-                        costo_unitario = getattr(materia_prima, f"costo_unitario")
-                        subtotal_costo += cantidad * costo_unitario
-                    else:
-                        # Asignar valores predeterminados si la materia prima no se encuentra
-                        setattr(formula, f"nombre_mp{i}", "Materia prima no encontrada")
-                        setattr(formula, f"costo_unitario{i}", 0.0)
-            
-            # Calcular otros valores necesarios para la fórmula
-            iva_costo = (subtotal_costo * formula.porcentajeiva) / 100            
-            total_costo = subtotal_costo + formula.costosindirectos + iva_costo
-            utilidad_bruta = ((subtotal_costo + formula.costosindirectos) * formula.pocentajeutilidad) / 100
-            subtotal_venta = subtotal_costo + formula.costosindirectos + utilidad_bruta
-            total_venta = subtotal_venta + (subtotal_venta * formula.porcentajeiva) / 100
-            
-            # Redondear los valores a dos decimales
-            subtotal_costo = round(subtotal_costo, 2)
-            total_costo = round(total_costo, 2)
-            subtotal_venta = round(subtotal_venta, 2)
-            total_venta = round(total_venta, 2)
-            iva_costo = round(iva_costo, 2)
-            utilidad_bruta = round(utilidad_bruta, 2)
-            print('cantidad producto: ', cantidad_transaccion)
-            
-            # Crear un diccionario con los datos de la fórmula actual
-            formula_data = {
-                'id_producto': formula.cod_inventario.cod_inventario,
-                'nombre': formula.nombre,
-                'cantidad': cantidad_transaccion,# Ajustar según tus modelos
-                'iva': formula.porcentajeiva,
-                #'costo_unitario': formula.costo_unitario,
-                'subtotal_costo': subtotal_costo,
-                'total_costo': total_costo,
-                'subtotal_venta': subtotal_venta,
-                'total_venta': total_venta,
-                'iva_costo': iva_costo,
-                'utilidad_bruta': utilidad_bruta,
-            }
-            
-            # Agregar el diccionario a la lista de datos
-            datos.append(formula_data)
-        
-        # Devolver los datos en formato JSON
-        return JsonResponse({'datos': datos})
+        # Devolver los datos de las órdenes con sus productos en formato JSON
+        return JsonResponse({'ordenes': ordenes_data})
+    
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    
+    
 from .models import Facturas, OrdenProduccion, TransaccionFactura, TransaccionRemision
 from django.http import JsonResponse
 import json
@@ -186,6 +200,7 @@ def PFacturar(request):
             telefono = datos_facturacion['telefono']
             correo = datos_facturacion['correo']
             orden_id = datos_facturacion['orden']  # Obtener el ID de la orden
+            print(orden_id[0])
             productos = datos_facturacion['productos']
             incluir_iva = datos_facturacion['incluir_iva']
             subtotal = datos_facturacion['subtotal']
@@ -195,13 +210,18 @@ def PFacturar(request):
             estado = datos_facturacion['estado']
 
             try:
+                
+                
+                
+
+
             
                 total_float= total.replace('.','').replace(',','')
                 total_guardar = convertir_a_numero(total)
+                for orden in orden_id:
+                    updateEstado = TransaccionOrden.objects.filter(id_orden=orden)
+                    updateEstado.update(estado=estado)
                 
-                updateEstado = TransaccionOrden.objects.filter(id_orden=orden_id)
-                
-                updateEstado.update(estado=estado)
                 
                 
 
@@ -214,7 +234,7 @@ def PFacturar(request):
                         defaults={
                             'fecha_facturacion': fecha,
                             'total_factura': total_guardar,  # Asegurar formato correcto
-                            'id_orden_field': orden_id,
+                            'id_orden_field': int(orden_id[0]),
                             'cliente':cliente,
                             'estado': estado
                         }
@@ -227,7 +247,7 @@ def PFacturar(request):
                         defaults={
                             'fecha_remision': fecha,
                             'total_remision': total_guardar,  # Asegurar formato correcto
-                            'id_orden': orden_id,
+                            'id_orden': int(orden_id[0]),
                             'cliente': cliente,
                             'estado': estado
                         }
