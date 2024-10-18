@@ -319,12 +319,15 @@ def update_transformula(request):
         # Buscar la transformula correspondiente en la base de datos
         try:
             transformula = Transformulas.objects.get(cod_inventario=transformula_id)
+            inventario = Inventario.objects.get(cod_inventario=transformula_id)
             
             # Actualizar los campos del objeto Transformulas
             transformula.costosindirectos = costos_indirectos
             transformula.pocentajeutilidad = utilidad
             transformula.porcentajeiva = iva
             transformula.nombre = nombre
+            inventario.nombre= nombre
+            inventario.save()
 
 
             for i in range(1, 8):  # Asumiendo que el máximo número de materias es 5

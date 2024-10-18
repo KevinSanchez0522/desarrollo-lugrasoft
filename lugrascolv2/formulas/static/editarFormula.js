@@ -114,6 +114,8 @@ $(document).ready(function() {
             },
             success: function(response) {
                 alert('Fórmula actualizada exitosamente');
+                // Actualiza la página o redirige al usuario según sea necesario
+                location.reload();
             },
             error: function(xhr, status, error) {
                 console.error('Error al actualizar la fórmula', error);
