@@ -334,7 +334,7 @@ def update_transformula(request):
             # Actualizar los campos de materia y cantidad
             for i, materia_data in enumerate(cantidades, start=1):
                 cod_inventario = materia_data.get('cod_inventario')
-                cantidad = int(float(materia_data.get('cantidad', 0))) 
+                cantidad = float(materia_data.get('cantidad', 0))
                 print('codigo, cantidad', cod_inventario, cantidad)
                 try:
                     # Obtener la materia prima
