@@ -152,3 +152,7 @@
     margin-left: 5px; /* Espacio entre el icono y el selector */
 }
 
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #4CAF50 !important; 
+    color: white !important; 
+}

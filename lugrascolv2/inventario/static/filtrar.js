@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+
+    $('.js-example-basic-single').select2();
     // Función para filtrar la tabla
     document.getElementById('filtro').addEventListener('change', function () {
         var filtro = this.value;
@@ -31,6 +33,26 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     fila.style.display = 'none';
                 }
+            }
+        });
+    });
+    $('#filtroCodigo').on('change', function() {
+        var filtro = $(this).val(); // Valor seleccionado
+        var filas = $('.tabla tbody tr');
+
+        filas.each(function() {
+            var fila = $(this);
+            var codigoInventario = fila.children('td').first().text(); // Obtener el ID del producto
+
+            // Mostrar u ocultar la fila
+            if (filtro) {
+                if (codigoInventario === filtro) {
+                    fila.show(); // Mostrar fila si coincide con el código
+                } else {
+                    fila.hide(); // Ocultar si no coincide
+                }
+            } else {
+                fila.show(); // Si no hay filtro, mostrar todas las filas
             }
         });
     });

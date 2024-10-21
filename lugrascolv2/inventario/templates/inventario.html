@@ -13,6 +13,8 @@
 <script src="{% static 'filtrar.js' %}"></script>
 
 <link rel="stylesheet" href="{% static 'tabla1.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
 
 <div class="sobretabla">
 	<div class="filtro">
@@ -21,6 +23,15 @@
 			<option value="">Filtrar</option>
 			<option value="materias">Materias Primas</option>
 			<option value="P_terminados">Productos terminados</option>
+		</select>
+	</div>
+	<div class="filtro">
+		<i class="bi bi-funnel-fill"></i>
+		<select name="filtro" class="js-example-basic-single" id="filtroCodigo">filtrar
+			<option value="">Codigo</option>
+			{%for inv in inventario%}
+			<option value="{{inv.cod_inventario}}">{{inv.cod_inventario}}</option>
+			{%endfor%}
 		</select>
 	</div>
 	<div class="ejuste">
