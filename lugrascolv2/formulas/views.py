@@ -78,10 +78,10 @@ def guardar_datos(request):
         nombre = request.POST.get('nombre')
         codig = int(request.POST.get('codig'))  # Se supone que este es el cod_inventario
         cantidad =0
-        id_proveedor = 1019161271
-        nombre_proveedor = 'Lugrascol SAS'
-        direccion_proveedor = 'Giron Santander '
-        telefono = '3224799858'
+        id_proveedor = 901452546
+        nombre_proveedor = 'LUGRASCOL S.A.S'
+        direccion_proveedor = 'KM 2 VDA LAGUNETAS FINCA LOS DOMINGUEZ'
+        telefono = '3192404446'
         tipo ='pt'
         
         
