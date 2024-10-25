@@ -8,35 +8,37 @@ from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
 
 def verFormula(request):
-    
-    # Obtener todos los productos para renderizar el formulario
-    productos = Inventario.objects.all()
-    productos = Inventario.objects.filter(tipo='m')
-    
-    # Inicializar el precio unitario como None por defecto
-    precio_unitario = None
-    
-    if request.method == 'POST':
-        # Obtener el producto seleccionado del formulario
-        cod_producto = request.POST.get('cod_producto')
+    if not (request.user.groups.filter(name="Contabilidad").exists() or request.user.groups.filter(name="Gerencia").exists()):
+        return render(request, '403.html', status=403)
+    else:
+        # Obtener todos los productos para renderizar el formulario
+        productos = Inventario.objects.all()
+        productos = Inventario.objects.filter(tipo='m')
         
-        # Obtener el último precio unitario del producto seleccionado desde TransMp
-        ultimo_transaccion = TransMp.objects.filter(cod_producto=cod_producto).order_by('-fecha').first()
-        if ultimo_transaccion:
-            precio_unitario = ultimo_transaccion.precio_unitario
-        else:
-            # Si no hay transacciones, establecer un precio predeterminado
-            precio_unitario = 0
+        # Inicializar el precio unitario como None por defecto
+        precio_unitario = None
         
-        # Obtener el producto desde Inventario
-        producto = Inventario.objects.get(cod_producto=cod_producto)
-        
-        # Agregar el producto a la tabla (aquí debes implementar la lógica para agregarlo a la tabla)
+        if request.method == 'POST':
+            # Obtener el producto seleccionado del formulario
+            cod_producto = request.POST.get('cod_producto')
+            
+            # Obtener el último precio unitario del producto seleccionado desde TransMp
+            ultimo_transaccion = TransMp.objects.filter(cod_producto=cod_producto).order_by('-fecha').first()
+            if ultimo_transaccion:
+                precio_unitario = ultimo_transaccion.precio_unitario
+            else:
+                # Si no hay transacciones, establecer un precio predeterminado
+                precio_unitario = 0
+            
+            # Obtener el producto desde Inventario
+            producto = Inventario.objects.get(cod_producto=cod_producto)
+            
+            # Agregar el producto a la tabla (aquí debes implementar la lógica para agregarlo a la tabla)
 
 
-    
-    # Pasar el precio unitario como parte del contexto
-    contexto = {'productos': productos, 'precio_unitario': precio_unitario}
+        
+        # Pasar el precio unitario como parte del contexto
+        contexto = {'productos': productos, 'precio_unitario': precio_unitario}
     
     return render(request, 'formulas.html', contexto)
 
