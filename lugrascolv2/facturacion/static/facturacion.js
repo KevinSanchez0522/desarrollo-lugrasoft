@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#cliente').select2();
         $('#Bproducto').select2();
         $('#orden').select2({
+            placeholder: "Selecciona # Orden",
             allowClear:true
         });
 
@@ -155,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
                                 if (incluirIVA) {
                                     ivaSobreSubtotalTotal += valorProducto * (dato.iva / 100);
+                                    console.log('iva orden', ivaSobreSubtotalTotal)
                                 } else {
                                     ivaSobreSubtotalTotal += 0;
                                 }
@@ -202,11 +204,12 @@ document.addEventListener('DOMContentLoaded', function() {
             var incluirIVA = $('#checkIva').prop('checked');
             precioTotal = 0;
             ivaSobreSubtotalTotal = 0;
+            console.log('iva en recalcular totales', ivaSobreSubtotalTotal)
         
             $('#tabla-formulario tbody tr').each(function() {
                 var cantidad = parseInt($(this).find('td:nth-child(3)').text().replace(/[^0-9.-]+/g, "")) || 0;
                 var subtotal_venta = $(this).find('input').val()
-                var numero = parseFloat(subtotal_venta.replace(/\./g, '').replace(',', '.'));
+                var numero = parseFloat(String(subtotal_venta).replace(/\./g, '').replace(',', '.'));
 
                 numero = isNaN(numero) ? 0 : numero;
                 if (isNaN(subtotal_venta)) {
@@ -217,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (incluirIVA) {
                     ivaSobreSubtotalTotal  += subtotalFila * (iva / 100);  // IVA del 19%
-                    
+                    console.log('iva', ivaSobreSubtotalTotal)
                     }
                 });
                 actualizarTotales(precioTotal, ivaSobreSubtotalTotal);
@@ -225,6 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function recalcularTotalesProducto(){
             var incluirIVA = $('#checkIva').prop('checked');
+            var ivart= 19;
     
             $('#tabla-formulario tbody tr').each(function() {
                 var cantidad = parseInt($(this).find('.cantidad').val()) || 0;
@@ -258,15 +262,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('precio total antes al cambiar', precioTotal)
                 precioTotal += valorProducto;
                 console.log('precio total despues al cambiar', precioTotal)
+                
+                
+                
+                console.log('iva rt', iva)
 
                 // Calcular IVA sobre subtotal
                 if (incluirIVA) {
-                    ivaSobreSubtotalTotal += valorProducto * (iva / 100);
+                    ivaSobreSubtotalTotal += valorProducto * (ivart / 100);
                 }
+                else{
+                    ivaSobreSubtotalTotal = 0;
+                }
+
+                actualizarTotales(precioTotal, ivaSobreSubtotalTotal);
             });
 
             // Actualizar los totales
-            actualizarTotales(precioTotal, ivaSobreSubtotalTotal);
+            
+            
         }
         // Mostrar los valores recalculados
     function actualizarTotales(precioTotal, ivaSobreSubtotalTotal) {
@@ -359,6 +373,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (incluirIVA) {
                 ivaSobreSubtotalTotal += valorProducto * (ivarespaldo / 100);
+                console.log('iva al agregar el producto', ivaSobreSubtotalTotal)
             }else{
                 ivaSobreSubtotalTotal += 0;                                
             }

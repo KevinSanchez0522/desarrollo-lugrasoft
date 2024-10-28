@@ -1,0 +1,85 @@
+{% extends "dashboard.html" %}
+{% load static%}
+
+{% block title %}
+	<title>Inventario</title>
+{% endblock title %}
+{% block titulohoja%}
+	<h2 class="titulo">AVERIAS</h2>
+{% endblock titulohoja %}
+
+
+{% block areatrabajo %}
+
+
+
+
+<link rel="stylesheet" href="{% static 'verAverias.css' %}">
+
+<script>
+    BuscarAveriasXfecha = "{% url 'buscarAveria'%}"
+    imprimir = "{%static 'verAverias.css'%}"
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{%static 'verAverias.js'%}"></script>
+
+
+
+<div class="impresion">
+    <div class="contenedor-fecha">
+        <div class="filtroFecha">
+            <label for="fecha_inicio">Fecha Inicio</label>
+            <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" >
+        </div>
+        <div  class="filtroFecha">
+            <label for="fecha_fin">Fecha Fin</label>
+            <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" >
+        </div>
+        <div  class="filtroFecha" >
+            <button class="BuscarAverias">BUSCAR</button>
+        </div>
+        <div class="filtroFecha2">
+            <label for="fecha_fin">Observaciones</label>
+            <textarea name="" id="descripcion" placeholder="Observacion corta"></textarea>
+        </div>
+        <div class="filtroFecha">
+            <label for="">filtrar por averias</label>
+            <select class="js-example-basic-multiple"  multiple="multiple" id="filtroAverias">
+                <option value="">Seleccione las averias</option>
+                {%for averia in averias%}
+                <option value="{{averia.id_averia.id_averia}}">{{averia.id_averia.id_averia}}</option>
+                {%endfor%}
+            </select>
+        </div>
+    </div>
+    
+    
+    <div class= "tabla">
+        <table class="table" id="tabla-formulario">
+            <thead class="table">
+                <tr class="encabezado">
+                    <td>ID Averia</td>
+                    <td>Nombre Producto</td>
+                    <td>Cantidad</td>
+                    <td>Costo</td>
+                    <td>Fecha</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>	
+        
+    </div>
+    
+    <div id="floating-container" class="floating-container">
+        <p>Total costo averias: <span id="total-value">Cargando...</span></p> <!-- Mostrar mensaje de carga inicial -->
+        <button class="imprimir">imprimir reporte</button>
+    </div>
+</div>
+
+
+
+
+{% endblock areatrabajo %}

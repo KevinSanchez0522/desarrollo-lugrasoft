@@ -59,6 +59,9 @@
     margin-bottom: 15px;
 }
 
+.js-example-basic-multiple {
+    width: 90% !important; /* Asegura que el select ocupe todo el ancho del contenedor */
+}
 .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
     background-color: #4CAF50 !important; 
     color: #fff !important; 

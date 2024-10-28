@@ -16,6 +16,7 @@ from decimal import Decimal
 from .forms import ExcelUploadForm
 import pandas as pd
 from django.db import IntegrityError, OperationalError
+from django.utils.dateparse import parse_date
 
 import logging
 
@@ -571,3 +572,46 @@ def guardarDatos(request):
     
     # Manejar el caso en que el método no sea POST
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+def verAverias(request):
+    averia = TransaccionAverias.objects.all()
+    return render(request, 'verAverias.html',{'averias':averia})
+
+def buscarAverias(request):
+    fecha_inicio_str = request.GET.get('fecha_inicio')
+    fecha_fin_str = request.GET.get('fecha_fin')
+
+    # Convertir las fechas de cadena a objetos de fecha
+    fecha_inicio = parse_date(fecha_inicio_str) if fecha_inicio_str else None
+    fecha_fin = parse_date(fecha_fin_str) if fecha_fin_str else None
+
+    # Filtrar facturas por rango de fechas
+    averias_query = TransaccionAverias.objects.all()
+    if fecha_inicio and fecha_fin:
+        averias_query = averias_query.filter(fecha_averia__range=(fecha_inicio, fecha_fin))
+
+    # Convertir y formatear las facturas filtradas
+    averias_formateadas = []
+    for averia in averias_query:
+        id_averia = averia.id_averia.id_averia
+        nombre_producto = get_object_or_404(Inventario, cod_inventario=averia.cod_inventario.cod_inventario)
+        producto= nombre_producto.nombre
+        costo= TransMp.objects.filter(cod_inventario=nombre_producto.cod_inventario).order_by('-fecha_ingreso').first()
+        ultimo_precio = costo.costo_unitario if costo else 0.0 
+        fecha = averia.fecha_averia
+        cantidad = averia.cant_averia
+
+        averia_formateada = {
+            'id_averia': id_averia,
+            'fecha_averia': fecha,
+            'costo': float(ultimo_precio),
+            'nombreProducto': producto,
+            'cantidad': cantidad
+            
+            
+        }
+        
+        averias_formateadas.append(averia_formateada)
+
+    return JsonResponse({'averias': averias_formateadas})
