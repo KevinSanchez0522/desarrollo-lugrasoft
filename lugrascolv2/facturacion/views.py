@@ -210,13 +210,7 @@ def PFacturar(request):
             estado = datos_facturacion['estado']
 
             try:
-                
-                
-                
-
-
             
-                total_float= total.replace('.','').replace(',','')
                 total_guardar = convertir_a_numero(total)
                 for orden in orden_id:
                     updateEstado = TransaccionOrden.objects.filter(id_orden=orden)
@@ -258,17 +252,18 @@ def PFacturar(request):
                     
                     if incluir_iva:
                         print('valor producto', producto['costo_unitario'])
+                        producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
+                        nueva_cantidad = producto_inventario.cantidad - convertir_a_numero_entero(producto['cantidad'])
                         instancia_transaccion = modelo_transaccion(
                             nfactura=factura_instance,
-                            cod_inventario=producto['id_producto'],
+                            cod_inventario=producto_inventario,
                             cantidad= convertir_a_numero_entero(producto['cantidad']),
                             fecha_factura=fecha,
                             precio_venta = convertir_a_numero(producto['costo_unitario']),
                             
                         )
                         
-                        producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
-                        nueva_cantidad = producto_inventario.cantidad - convertir_a_numero_entero(producto['cantidad'])
+                        
                         
                         producto_inventario.cantidad = nueva_cantidad
                         producto_inventario.save()
@@ -479,7 +474,7 @@ def precio_producto(request):
             
             # Crear un diccionario con los datos de la fórmula actual
             formula_data = {
-                'id_producto': formula.cod_inventario.id,
+                'id_producto': formula.cod_inventario.cod_inventario,
                 'nombre': formula.nombre,
                 'iva': formula.porcentajeiva,
                 'subtotal_costo': subtotal_costo,
@@ -502,7 +497,7 @@ def precio_producto(request):
             if materia_prima:
                 # Crear un diccionario con los datos del producto
                 producto_data = {
-                    'id_producto': materia_prima.id,  # Asumir que es el ID del producto
+                    'id_producto': materia_prima.cod_inventario.cod_inventario,  # Asumir que es el ID del producto
                     'nombre': materia_prima.nombre_mp,
                     'iva': 0.0,  # No tiene IVA en este caso, pero puedes agregar la lógica
                     'subtotal_costo': materia_prima.costo_unitario,  # Suponiendo que el costo unitario es el costo del producto
