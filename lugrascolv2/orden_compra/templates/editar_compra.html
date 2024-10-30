@@ -45,9 +45,9 @@
 				
 				<div class="selector-container">
 					<select class="js-example-basic-single" name="producto" id="producto">
-                        {% for producto in productos %}
+                        
 						<option value="{{ producto.id }}" data-costo_unitario="{{ producto.costo_unitario }}">Producto</option>
-                        {% endfor %}
+                        
 					</select>
 					<button id="addprod" class="addprod">+</button>
 				</div>
@@ -151,14 +151,15 @@
             },
             success: function(data) {
                 // Limpiar el selector de productos
-                $('#producto').empty();
+                
                 // Agregar las opciones de productos obtenidas
                 $.each(data, function(index, producto) {
                     $('#producto').append($('<option>', {
                         value: producto.id,
-                        text: producto.nombre,
+                        text: producto.id + '-' + producto.nombre,
                     }));
                 });
+                // Volver a inicializar Select2
             },
             error: function(xhr, status, error) {
                 console.error('Error al obtener productos:', error);
@@ -189,7 +190,14 @@
                                 '<td><input type="number" class="costounitario"> </td>' +
                                 '<td></td>' +
                                 '<td>' + fechaIngreso + '</td>' +
-                                '<td><input type="text" class="unidad_medida"> </td>' +
+                                '<td>' +
+                                    '<select class="unidad_medida">' +
+                                        '<option value="Unidad">Unidad</option>' +
+                                        '<option value="Galon">Galón</option>' +
+                                        '<option value="Kg">Kg</option>' +
+                                        '<option value="Gr">Gr</option>' +
+                                    '</select>' +
+                                '</td>' +
                                 '<td>'+ proveedorId +'</td>' +
                                 '<td>'+ id_compra +'</td>' +
                                 '<td><button class="eliminar-btn"><i class="bi bi-trash3-fill"></i></button></td>' +
@@ -222,9 +230,8 @@
             
             var fechaIngreso = $(this).find('td').eq(5).text(); // Suponiendo que la fecha de ingreso está en la 6ta celda
             var celdaUnidadMedida = $(this).find('td').eq(6)
-            if (celdaUnidadMedida.find('input').length > 0) {
-                // Si hay un input, obtén su valor
-                unidadMedida = celdaUnidadMedida.find('input').val();
+            if (celdaUnidadMedida.find('select').length > 0) {
+                unidadMedida = celdaUnidadMedida.find('select').val(); 
             } else {
                 // Si no hay un input, simplemente obtén el texto
                 unidadMedida = celdaUnidadMedida.text();
