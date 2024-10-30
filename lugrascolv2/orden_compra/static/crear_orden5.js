@@ -51,7 +51,7 @@ $('#proveedor').on('change', function() {
                 
                 // Agregar opciones de productos obtenidos
                 data.forEach(function(producto) {
-                    var optionText = producto.nombre;
+                    var optionText = producto.id + '-' + producto.nombre;
                     var option = new Option(optionText, producto.id, false, false);
                     $(option).data('id', producto.id);
                     $('#producto').append(option);
