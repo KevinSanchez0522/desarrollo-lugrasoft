@@ -194,3 +194,10 @@ input[type="number"]:focus {
     box-sizing: border-box; /* Asegurarse de que el padding y el borde se incluyan en el ancho total */
     transition: border-color 0.3s ease; /* Transición suave para el borde */
 }
+.selector-formulas{
+    width: 100%;
+    
+}
+.js-example-basic-multiple {
+    width: 40% !important; /* Asegura que el select ocupe todo el ancho del contenedor */
+}

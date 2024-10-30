@@ -2,6 +2,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const openModalButtons = document.querySelectorAll('.open-modal');
     const closeModalButtons = document.querySelectorAll('.close-modal');
     const overlay = document.querySelector('.modal');
+    $(document).ready(function() {
+        $('#selec-form').select2({
+            placeholder: "codigos",
+        })
+    });
 
     openModalButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -93,6 +98,28 @@ document.addEventListener('DOMContentLoaded', function () {
             }    
         })
     })
+
+
+
+    $('#selec-form').on('change', function() {
+        var selectedValues = $(this).val(); // Obtiene los valores seleccionados
+        console.log('IDs seleccionados:', selectedValues);
+
+        // Si no hay valores seleccionados, muestra todas las filas
+        if (!selectedValues || selectedValues.length === 0) {
+            $('.fila-transaccion').show(); // Muestra todas las filas
+        } else {
+            // Filtra las filas de la tabla según los valores seleccionados
+            $('.fila-transaccion').each(function() {
+                var rowId = $(this).data('id').toString(); // Obtiene el ID del atributo de datos
+                if (selectedValues.includes(rowId)) {
+                    $(this).show(); // Muestra la fila si está en los valores seleccionados
+                } else {
+                    $(this).hide(); // Oculta la fila si no está
+                }
+            });
+        }
+    });
     
 });
 

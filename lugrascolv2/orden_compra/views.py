@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 # Create your views here. 
@@ -11,6 +12,7 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.contrib.auth.decorators import user_passes_test
+from dateutil import parser
 
 
 
@@ -319,21 +321,27 @@ def guardar_producto(request):
 def edita_orden_compra(request, numero_compra):
     # Recuperar todas las transacciones asociadas a la compra
     transacciones = TransMp.objects.filter(id_compra=numero_compra)
-    proveedor = Proveedores.objects.all()
+    primer_objeto = transacciones[0]
+    Proveedor = Proveedores.objects.get(id_proveedor=primer_objeto.id_proveedor)
+    proveedorId= Proveedor.id_proveedor
+    nombreProveedor= Proveedor.nombre_proveedor
+    print('proveedor', proveedorId)
+
     
         # Acceder al nombre del proveedor a través de la relación con la llave foránea
     
         
     for objeto in transacciones:
+        
         objeto.fecha_ingreso_str = objeto.fecha_ingreso.strftime('%Y-%m-%d')
-        Proveedor =  Proveedores.objects.get(id_proveedor= objeto.id_proveedor)
-        objeto.nombre_proveedor = Proveedor.nombre_proveedor
+        
+        
         objeto.direccion = Proveedor.direccion
         objeto.telefono = Proveedor.telefono
         costo_unitario = objeto.costo_unitario
         objeto.costo_unitario = costo_unitario
     
-    return render(request, 'editar_compra.html' ,{'objetos': transacciones, 'proveedores': proveedor})
+    return render(request, 'editar_compra.html' ,{'objetos': transacciones, 'proveedores': proveedorId, 'nombres':nombreProveedor})
 
 
 def obtener(request):
@@ -382,28 +390,76 @@ def actualizarTMP(request):
         # Procesar los datos recibidos
         try:
             data = json.loads(request.body.decode('utf-8'))
-            # Convertir los datos JSON a un diccionario Python
-            nfactura = data.get('nfactura')  # Obtener el número de factura enviado desde el frontend
-            datos_filas = data.get('datos')  # Obtener los datos de cada fila para actualizar
+            nfactura = data.get('nfactura')
+            total_factura= data.get('total')
+            datos_filas = data.get('datos')
+            recibir = False
+            print('factura', 'total', nfactura, total_factura)
+            
+            
+            proveedor = datos_filas[0]
+            
+            idproveedor = proveedor.get('idProveedor')
+            fecha = proveedor.get('fechaIngreso').replace('.', '')
+            print(fecha)
+            
+            fechaobj = parser.parse(fecha)
+            print(fechaobj)
+            fechasolo = fechaobj.date()
+            print(fechasolo)
+            TransMp.objects.filter(id_compra=nfactura).delete()
+            Compras.objects.get(id_compra=nfactura).delete()
+            
 
-            # Iterar sobre los datos de cada fila
-            for fila in datos_filas:
-                cod_inventario = fila.get('codInventario')
-                cantidad = fila.get('cantidad')
-                costo = fila.get('costo')
-                total_linea = fila.get('totalLinea')
+            
+            for objeto in datos_filas:
+                idproducto= objeto['codInventario']
+                cantidad = objeto['cantidad']
+                costo = objeto['costo']
+                total_linea = objeto['totalLinea']
 
-                # Buscar el registro en el modelo TransMP por número de factura y código de inventario
-                transmp_objeto = TransMp.objects.get(id_compra__id_compra=nfactura, cod_inventario=cod_inventario)
+        
+                unidadM = objeto['unidadMedida']
+                idProveedor = objeto['idProveedor']
+                idCompra = objeto['idCompra']
+                tipo = objeto['tipo']
+                try:
 
-                # Actualizar los campos del objeto TransMP
-                transmp_objeto.cant_mp = cantidad
-                transmp_objeto.costo_unitario = costo
-                transmp_objeto.total_linea = total_linea
+                    
+                    compra, _ = Compras.objects.get_or_create(id_compra=idCompra, defaults={'total_factura': total_factura, 'estado':recibir})
+                    inventario = Inventario.objects.get(pk=idproducto)
+                    nombre = inventario.nombre
+                    
+                    print('Creando nuevo elemento con cod_inventario:', inventario.cod_inventario)
+                    
+                    # Crear una nueva instancia de TransMp
+                    nuevo_elemento = TransMp.objects.create(
+                        cod_inventario=inventario,
+                        nombre_mp=nombre,
+                        cant_mp=cantidad,
+                        costo_unitario=costo,
+                        total_linea= total_linea,
+                        fecha_ingreso= fechasolo,
+                        unidad_medida= unidadM,
+                        id_proveedor=idProveedor,  # Asegúrate de usar el ID correcto
+                        id_compra=compra,  # Asignar la instancia de compra
+                        tipo= tipo
+                    )
+                    nuevo_elemento.save()
+                    
+                    print('Elemento guardado:', nuevo_elemento)
+                    
+                except Proveedores.DoesNotExist:
+                    print(f'Error: Proveedor con ID {objeto["idProveedor"]} no encontrado.')
+                    return JsonResponse({'error': f'Proveedor no encontrado: {objeto["idProveedor"]}'}, status=400)
+                except Inventario.DoesNotExist:
+                    print(f'Error: Inventario con código {objeto["codInventario"]} no encontrado.')
+                    return JsonResponse({'error': f'Inventario no encontrado: {objeto["codInventario"]}'}, status=400)
 
-                # Guardar los cambios en la base de datos
-                transmp_objeto.save()
-
+                
+            
+                
+            
             # Si todo sale bien, puedes devolver una respuesta JSON con un mensaje de éxito
             return JsonResponse({'message': 'Datos actualizados correctamente.'}, status=200)
 

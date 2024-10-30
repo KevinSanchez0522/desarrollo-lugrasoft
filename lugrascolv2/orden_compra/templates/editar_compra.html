@@ -35,14 +35,8 @@
 				<div class="selector-container">
                     
 					<select class="selector" name="proveedor" id="proveedor">
-                        {% for prov in proveedores %}
-                            {% if prov.id_proveedor == objeto.id_proveedor.id_proveedor %}
-                            <option value="{{ prov.id_proveedor }}" selected data-nit="{{ prov.nit }}" data-direc="{{ prov.direccion }}" data-tel="{{ prov.telefono }}">{{ prov.nombre_proveedor }}</option>
-						<!-- Itera sobre tus datos de proveedores -->
-                            {% else %}
-                                <option value="{{ prov.id_proveedor }}" data-nit="{{ prov.nit }}" data-direc="{{ prov.direccion }}" data-tel="{{ prov.telefono }}">{{ prov.nombre_proveedor }}</option>
-                            {% endif %}
-                        {% endfor %}
+                        
+                        <option value="{{proveedores}}" selected>{{nombres}}</option>
 					</select>
 					<button id="addprov" class="addprov" >+</button>
 				</div>
@@ -144,6 +138,9 @@
         $.ajax({
             url: "{% url 'obtener' %}",
             type: 'GET',
+            headers: {
+                    "X-CSRFToken": csrftoken
+            },
             data: {
                 proveedor_id: proveedorId
             },
@@ -180,11 +177,11 @@
             
 
             // Crear una nueva fila para la tabla
-            var nuevaFila = '<tr>' +
+            var nuevaFila = '<tr data-cod-inventario="' + idProducto +'">' +
                                 '<td>' + idProducto + '</td>' +
                                 '<td>' + nombreProducto + '</td>' +
                                 '<td><input type="number" class="cantidad"></td>' +
-                                '<td><input type="number" class="costo_unitario"> </td>' +
+                                '<td><input type="number" class="costounitario"> </td>' +
                                 '<td></td>' +
                                 '<td>' + fechaIngreso + '</td>' +
                                 '<td><input type="text" class="unidad_medida"> </td>' +
@@ -207,6 +204,7 @@
     $('#enviarFormularioBtn').click(function() {
         var nfactura = $('#numeroFactura').val();
         console.log('factura', nfactura)
+        var total =0;
 
     // Crear un array para almacenar los datos de cada fila
         var datosFilas = [];
@@ -216,15 +214,35 @@
             var cantidad = $(this).find('.cantidad').val();
             var costo = $(this).find('.costounitario').val();
             var totallinea = cantidad * costo;
+            
+            var fechaIngreso = $(this).find('td').eq(5).text(); // Suponiendo que la fecha de ingreso está en la 6ta celda
+            var celdaUnidadMedida = $(this).find('td').eq(6)
+            if (celdaUnidadMedida.find('input').length > 0) {
+                // Si hay un input, obtén su valor
+                unidadMedida = celdaUnidadMedida.find('input').val();
+            } else {
+                // Si no hay un input, simplemente obtén el texto
+                unidadMedida = celdaUnidadMedida.text();
+            }
+// Suponiendo que la unidad de medida está en la 7ma celda
+            // Suponiendo que la unidad de medida está en la 7ma celda
+            var idProveedor = $(this).find('td').eq(7).text(); // Suponiendo que el ID del proveedor está en la 8va celda
+            var idCompra = $(this).find('td').eq(8).text();
+            var tipo = 'm'
 
             // Crear un objeto con los datos de la fila actual
                 var datosFila = {
                     codInventario: codInventario,
                     cantidad: cantidad,
                     costo: costo,
-                    totalLinea: totallinea
+                    totalLinea: totallinea,
+                    fechaIngreso: fechaIngreso,
+                    unidadMedida: unidadMedida,
+                    idProveedor: idProveedor,
+                    idCompra: idCompra,
+                    tipo: tipo
                 };
-
+                total += totallinea
                 // Agregar el objeto al array
                 datosFilas.push(datosFila);
             });
@@ -232,7 +250,8 @@
         // Objeto con los datos a enviar al backend
         var datosEnviar = {
             nfactura: nfactura,
-            datos: datosFilas
+            datos: datosFilas,
+            total: total
         };
 
         console.log('Datos a enviar al backend:', datosEnviar);

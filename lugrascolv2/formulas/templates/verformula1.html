@@ -13,12 +13,20 @@
 
 {% block areatrabajo%}
 <link rel="stylesheet" href="{% static 'verformula4.css'%}">
-<script src="{% static 'verformula.js'%}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'verformula.js'%}"></script>
 
 
 
-
+<div class="selector-formulas">
+    <select name="formulas" id="selec-form"  class="js-example-basic-multiple" multiple="multiple">
+        {% for formula in formulas %}
+        <option value="{{ formula.cod_inventario.cod_inventario }}">{{formula.cod_inventario.cod_inventario}}-{{formula.nombre }}</option>
+        {% endfor %}
+    </select>
+</div>
 <div class= "tabla">
     <table class="table" id="tabla-formulario">
         <thead class="table">
