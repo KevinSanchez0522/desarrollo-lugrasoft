@@ -12,6 +12,8 @@
 {% block areatrabajo %}
 	<link rel="stylesheet" href="{%static 'editar_compra.css' %}">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 	<h4>Proveedor</h4>
     
 	<div class="container">
@@ -42,7 +44,7 @@
 				</div>
 				
 				<div class="selector-container">
-					<select class="selector" name="producto" id="producto">
+					<select class="js-example-basic-single" name="producto" id="producto">
                         {% for producto in productos %}
 						<option value="{{ producto.id }}" data-costo_unitario="{{ producto.costo_unitario }}">Producto</option>
                         {% endfor %}
@@ -117,6 +119,8 @@
 
 {% block javascrips %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
     $(document).ready(function() {
@@ -125,12 +129,13 @@
             // Eliminar la fila correspondiente
             $(this).closest('tr').remove();
         });
+    
     });
     $(document).ready(function() {
         var proveedorSeleccionado = $('#proveedor').find('option:selected');
         var proveedorId = proveedorSeleccionado.val();
         var proveedorNit = proveedorSeleccionado.data('nit');
-        
+        $('#producto').select2();
         console.log('ID:', proveedorId);
         
 

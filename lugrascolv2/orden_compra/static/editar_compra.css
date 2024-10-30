@@ -134,7 +134,7 @@ label, h4 {
     align-items: center; /* Para alinear verticalmente los elementos internos */
 }
 
-.campofactura input, .campofecha input, .selector, .addprod, .addprov, #enviarFormularioBtn {
+.campofactura input, .campofecha input, .selector, .addprod, .addprov, #enviarFormularioBtn, #producto {
     padding: 8px 12px;
     border-radius: 4px;
     border: 1px solid #ccc;
@@ -335,4 +335,42 @@ select{
     border-radius: 4px;
     border: 1px solid #ccc;
     margin-right: 10px;
+}
+.js-example-basic-single {
+    width: 100%;
+    background-color: #f9f9f9;
+}
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #4CAF50 !important; 
+    color: #fff !important; 
+    
+}
+
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    background-color: #f9f9f9;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #f9f9f9;
+    height: 25px; /* Asegura que la altura sea similar a los otros inputs */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Agrega una sombra suave */
+    transition: box-shadow 0.3s ease; 
+    
+}
+
+span.select2-selection.select2-selection--single {
+    text-align: start;
+    border: none;
+    
+}
+.selector-container {
+    margin-bottom: 50px;
+    gap: 10px; /* Espacio entre el select2 y el botón */
+    background-color: #f9f9f9;
+    align-items: center;
+    
+}
+.addprod .addprov{
+    margin-top: 5px;
 }
