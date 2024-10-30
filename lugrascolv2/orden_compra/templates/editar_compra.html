@@ -242,6 +242,10 @@
             var idCompra = $(this).find('td').eq(8).text();
             var tipo = 'm'
 
+            if (!codInventario || !cantidad || !costo || !unidadMedida || !idProveedor || !idCompra) {
+            todosCamposLlenos = false; // Si algún campo está vacío, cambia a false
+            return false; // Salir del each si se encuentra un campo vacío
+            }
             // Crear un objeto con los datos de la fila actual
                 var datosFila = {
                     codInventario: codInventario,
@@ -257,7 +261,12 @@
                 total += totallinea
                 // Agregar el objeto al array
                 datosFilas.push(datosFila);
-            });
+        });
+
+        if (!todosCamposLlenos) {
+            alert('Por favor, completa todos los campos requeridos.');
+            return; // Detener el proceso si hay campos vacíos
+        }
 
         // Objeto con los datos a enviar al backend
         var datosEnviar = {
