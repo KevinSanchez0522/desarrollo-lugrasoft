@@ -218,6 +218,7 @@
         var nfactura = $('#numeroFactura').val();
         console.log('factura', nfactura)
         var total =0;
+        let todosCamposLlenos = true;
 
     // Crear un array para almacenar los datos de cada fila
         var datosFilas = [];
@@ -242,6 +243,7 @@
             var idCompra = $(this).find('td').eq(8).text();
             var tipo = 'm'
 
+            console.log(codInventario,cantidad,costo,unidadMedida,idProveedor,idCompra)
             if (!codInventario || !cantidad || !costo || !unidadMedida || !idProveedor || !idCompra) {
             todosCamposLlenos = false; // Si algún campo está vacío, cambia a false
             return false; // Salir del each si se encuentra un campo vacío
