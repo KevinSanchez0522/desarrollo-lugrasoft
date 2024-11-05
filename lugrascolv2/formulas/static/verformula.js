@@ -2,11 +2,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const openModalButtons = document.querySelectorAll('.open-modal');
     const closeModalButtons = document.querySelectorAll('.close-modal');
     const overlay = document.querySelector('.modal');
-    $(document).ready(function() {
-        $('#selec-form').select2({
-            placeholder: "codigos",
-        })
-    });
+
+    $('#selec-form').select2({
+        placeholder: "codigos",
+    })
 
     openModalButtons.forEach(button => {
         button.addEventListener('click', () => {
