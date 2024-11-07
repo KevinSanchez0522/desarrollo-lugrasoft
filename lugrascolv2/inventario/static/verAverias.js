@@ -35,11 +35,21 @@ document.addEventListener('DOMContentLoaded', function() {
         var fechaInicio = $('#fecha_inicio').val();
         var fechaFin = $('#fecha_fin').val();
         var selectedIds = $(this).val(); // Obtener los IDs seleccionados
-        var averiasFiltradas = todasAverias.filter(function(averia) {
-            return selectedIds.includes(averia.id_averia.toString()); // Filtrar averías
-        });
-        actualizarTabla(averiasFiltradas); // Actualizar la tabla con las averías filtradas
-        calcularTotalfiltrado(fechaInicio,fechaFin);
+        
+        // Si no hay elementos seleccionados, mostrar todas las averías
+        if (selectedIds.length === 0) {
+            // Mostrar todas las averías (sin filtrar por motivo)
+            actualizarTabla(todasAverias);  // Actualiza la tabla con todas las averías
+        } else {
+            // Filtrar las averías según los motivos seleccionados
+            var averiasFiltradas = todasAverias.filter(function(averia) {
+                return selectedIds.includes(averia.motivo.toString()); // Filtrar averías por motivo
+            });
+            actualizarTabla(averiasFiltradas); // Actualizar la tabla con las averías filtradas
+        }
+        
+        // Calcular total con las fechas (de todos o de las filtradas)
+        calcularTotalfiltrado(fechaInicio, fechaFin);
     });
 
     function calcularTotalfiltrado(fechaInicio, fechaFin) {
@@ -87,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 '<td>' + averia.cantidad + '</td>' +
                 '<td>$ ' + averia.costo + '</td>' +
                 '<td>' + averia.fecha_averia + '</td>' +
+                '<td>' + averia.motivo + '</td>' +
                 '</tr>';
             tbody.append(fila);
         });

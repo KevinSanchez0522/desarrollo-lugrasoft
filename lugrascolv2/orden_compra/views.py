@@ -107,15 +107,17 @@ def compras(request):
     # Iterar sobre las transacciones agrupadas
     for id_compra, transacciones_grupo in transacciones_agrupadas.items():
         # Obtener el total de la factura sumando los total_linea de las transacciones
-        total_factura = sum(transaccion.total_linea for transaccion in transacciones_grupo)
+        #total_factura = sum(transaccion.total_linea for transaccion in transacciones_grupo)
 
         # Obtener la fecha de ingreso de la primera transacción
         fecha_ingreso = transacciones_grupo[0].fecha_ingreso
         
         compra = Compras.objects.get(id_compra=id_compra)
+        total_factura = compra.total_factura
+        total_formateado = f"{total_factura:,.2f}"
 
         # Agregar los datos a la lista de la tabla
-        datos_tabla.append({'id_compra': id_compra, 'total_factura': total_factura, 'fecha_ingreso': fecha_ingreso, 'compra': compra})
+        datos_tabla.append({'id_compra': id_compra, 'total_factura': total_formateado, 'fecha_ingreso': fecha_ingreso, 'compra': compra})
 
     # Pasar los datos de la tabla al contexto
     context = {'datos_tabla': datos_tabla}

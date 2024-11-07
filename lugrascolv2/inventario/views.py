@@ -113,6 +113,7 @@ def agregar_transaccion_averias(request):
                         fecha_ajuste = datos['fecha']
                         producto = datos['id_producto']
                         cantidad = datos['cantidad']
+                        motivo = datos['motivo']
                         
                     
                         
@@ -124,7 +125,8 @@ def agregar_transaccion_averias(request):
                         fecha_averia = fecha_ajuste,
                         cant_averia = cantidad,
                         id_averia = averiaN,
-                        cod_inventario = inventario
+                        cod_inventario = inventario,
+                        motivo = motivo
                         )
                         nuevo_averia.save();
                         # Aquí puedes procesar y guardar los datos adicionales si es necesario
@@ -575,8 +577,8 @@ def guardarDatos(request):
 
 
 def verAverias(request):
-    averia = TransaccionAverias.objects.all()
-    return render(request, 'verAverias.html',{'averias':averia})
+    
+    return render(request, 'verAverias.html')
 
 def buscarAverias(request):
     fecha_inicio_str = request.GET.get('fecha_inicio')
@@ -601,13 +603,16 @@ def buscarAverias(request):
         ultimo_precio = costo.costo_unitario if costo else 0.0 
         fecha = averia.fecha_averia
         cantidad = averia.cant_averia
+        motivo = averia.motivo
 
         averia_formateada = {
             'id_averia': id_averia,
             'fecha_averia': fecha,
             'costo': float(ultimo_precio),
             'nombreProducto': producto,
-            'cantidad': cantidad
+            'cantidad': cantidad,
+            'motivo': motivo
+            
             
             
         }

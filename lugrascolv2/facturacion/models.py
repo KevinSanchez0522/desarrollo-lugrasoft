@@ -114,6 +114,7 @@ class TransaccionAverias(models.Model):
     fecha_averia = models.DateField()
     id_averia = models.ForeignKey(Averias, models.DO_NOTHING, db_column='id_averia')
     cod_inventario = models.ForeignKey('Inventario', models.DO_NOTHING, db_column='cod_inventario')
+    motivo = models.CharField(max_length=255, default='Envase Roto')
 
     class Meta:
         managed = True

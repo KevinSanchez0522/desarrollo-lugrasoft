@@ -48,9 +48,10 @@
             <label for="">filtrar por averias</label>
             <select class="js-example-basic-multiple"  multiple="multiple" id="filtroAverias">
                 <option value="">Seleccione las averias</option>
-                {%for averia in averias%}
-                <option value="{{averia.id_averia.id_averia}}">{{averia.id_averia.id_averia}}</option>
-                {%endfor%}
+                
+                <option value="Envase Roto">Envase Roto</option>
+                <option value="Otros">Otros</option>
+                
             </select>
         </div>
     </div>
@@ -65,6 +66,7 @@
                     <td>Cantidad</td>
                     <td>Costo</td>
                     <td>Fecha</td>
+                    <td>Motivo</td>
                 </tr>
             </thead>
             <tbody>
