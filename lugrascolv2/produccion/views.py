@@ -76,6 +76,8 @@ def obtener_materias_primas(request):
                 'materia6': (formula.materia6, formula.cant_materia6),
                 'materia7': (formula.materia7, formula.cant_materia7),
                 'materia8': (formula.materia8, formula.cant_materia8),
+                'materia9': (formula.materia9, formula.cant_materia9),
+                'materia10': (formula.materia10, formula.cant_materia10),
             }
             # Filtrar los campos vacíos y obtener nombres y cantidades del inventario
             materias_primas = {k: v for k, v in materias_primas.items() if v[0] is not None}

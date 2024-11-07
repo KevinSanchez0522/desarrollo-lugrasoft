@@ -176,6 +176,22 @@
                         <td>{{formula.costo_unitario8}}</td>
                     </tr>
                     {% endif %}
+                    {% if formula.materia9 or formula.nombre_mp9 or formula.cant_materia9 or formula.costo_unitario9 %}
+                    <tr>   
+                        <td>{{formula.materia9}}</td>
+                        <td>{{formula.nombre_mp9}}</td>
+                        <td>{{formula.cant_materia9}}</td>
+                        <td>{{formula.costo_unitario9}}</td>
+                    </tr>
+                    {% endif %}
+                    {% if formula.materia10 or formula.nombre_mp10 or formula.cant_materia10 or formula.costo_unitario10 %}
+                    <tr>   
+                        <td>{{formula.materia10}}</td>
+                        <td>{{formula.nombre_mp10}}</td>
+                        <td>{{formula.cant_materia10}}</td>
+                        <td>{{formula.costo_unitario10}}</td>
+                    </tr>
+                    {% endif %}
                 </tbody>
             </table>	
             
@@ -307,6 +323,22 @@
                         <td>{{formula.nombre_mp8}}</td>
                         <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia8 }}"></td>
                         <td>{{formula.costo_unitario8}}</td>
+                    </tr>
+                    {% endif %}
+                    {% if formula.materia9 or formula.nombre_mp9 or formula.cant_materia9 or formula.costo_unitario9 %}
+                    <tr>   
+                        <td>{{formula.materia9}}</td>
+                        <td>{{formula.nombre_mp9}}</td>
+                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia9 }}"></td>
+                        <td>{{formula.costo_unitario9}}</td>
+                    </tr>
+                    {% endif %}
+                    {% if formula.materia10 or formula.nombre_mp10 or formula.cant_materia10 or formula.costo_unitario10 %}
+                    <tr>   
+                        <td>{{formula.materia10}}</td>
+                        <td>{{formula.nombre_mp10}}</td>
+                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia10 }}"></td>
+                        <td>{{formula.costo_unitario10}}</td>
                     </tr>
                     {% endif %}
                 </tbody>

@@ -3,7 +3,7 @@ import os
 from pydoc import doc
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from .models import Clientes, TransaccionFactura, TransaccionRemision, Facturas, Remisiones , Inventario, OrdenProduccion, TransaccionOrden, Transformulas, TransMp
+from .models import Clientes, TransaccionFactura, TransaccionRemision, Facturas, Remisiones , Inventario, OrdenProduccion, TransaccionOrden, Transformulas, TransMp,Proveedores, Compras
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, F
 from django.http import HttpResponse
@@ -122,8 +122,8 @@ def productos_facturar(request):
                 iva_costo = 0.0
                 utilidad_bruta = 0.0
 
-                # Iterar sobre los campos materia1 hasta materia8
-                for i in range(1, 9):
+                # Iterar sobre los campos materia1 hasta materia10
+                for i in range(1, 11):
                     campo_materia = getattr(formula, f"materia{i}")
                     if campo_materia:
                         materia_prima = TransMp.objects.filter(cod_inventario=campo_materia).order_by('-fecha_ingreso').first()
@@ -186,6 +186,7 @@ def productos_facturar(request):
 from .models import Facturas, OrdenProduccion, TransaccionFactura, TransaccionRemision
 from django.http import JsonResponse
 import json
+
 def PFacturar(request):
     if request.method == 'POST':
         try:
@@ -200,7 +201,6 @@ def PFacturar(request):
             telefono = datos_facturacion['telefono']
             correo = datos_facturacion['correo']
             orden_id = datos_facturacion['orden']  # Obtener el ID de la orden
-            print(orden_id[0])
             productos = datos_facturacion['productos']
             incluir_iva = datos_facturacion['incluir_iva']
             subtotal = datos_facturacion['subtotal']
@@ -208,98 +208,161 @@ def PFacturar(request):
             total = datos_facturacion['total']
             fecha = datos_facturacion['fecha']
             estado = datos_facturacion['estado']
+            lugrascol = 901452546
+            print('cliente', cliente)
 
             try:
-            
-                total_guardar = convertir_a_numero(total)
-                for orden in orden_id:
-                    updateEstado = TransaccionOrden.objects.filter(id_orden=orden)
-                    updateEstado.update(estado=estado)
-                
-                
-                
-
-
-                # Crear instancia de Facturas
-                if incluir_iva:
-                    modelo_transaccion = TransaccionFactura
-                    factura_instance, created_factura = Facturas.objects.get_or_create(
-                        nfactura=factura_numero,
-                        defaults={
-                            'fecha_facturacion': fecha,
-                            'total_factura': total_guardar,  # Asegurar formato correcto
-                            'id_orden_field': int(orden_id[0]),
-                            'cliente':cliente,
-                            'estado': estado
-                        }
-                    )
-                else:
-                    modelo_transaccion = TransaccionRemision
-                    numero_remision = obtener_numero_remision()
-                    remision, created_remision = Remisiones.objects.get_or_create(
-                        nremision=numero_remision,
-                        defaults={
-                            'fecha_remision': fecha,
-                            'total_remision': total_guardar,  # Asegurar formato correcto
-                            'id_orden': int(orden_id[0]),
-                            'cliente': cliente,
-                            'estado': estado
-                        }
-                    )
-
-                # Iterar sobre los productos y guardar en el modelo correspondiente
-                for producto in productos:
+                # Validación de cliente "lugrascol"
+                if cliente == lugrascol:
                     
+                    
+                    compra_propia = 'Inventario Propio'
+                    compra_instance, created_compra = Compras.objects.get_or_create(
+                        id_compra=compra_propia,  # Puedes usar el número de factura como 'id_compra', o cualquier otra clave única
+                        defaults={
+                            'total_factura': 0,  # Asignamos 0 ya que es una transacción especial para "lugrascol"
+                            'estado': True  # Asignamos el estado que desees (o como corresponda)
+                        }
+                    )
+                    
+                    # Aquí puedes poner lo que deseas hacer si el cliente es "lugrascol"
+                    # Por ejemplo, realizar una acción especial, o simplemente permitir continuar con la factura.
+                    print("Cliente es Lugrascol, realizando acción especial.")
+                    for orden in orden_id:
+                        updateEstado = TransaccionOrden.objects.filter(id_orden=orden)
+                        updateEstado.update(estado=estado)
+                        
+                        
+                                        # Crear instancia de Facturas
                     if incluir_iva:
-                        print('valor producto', producto['costo_unitario'])
-                        producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
-                        nueva_cantidad = producto_inventario.cantidad - convertir_a_numero_entero(producto['cantidad'])
-                        instancia_transaccion = modelo_transaccion(
-                            nfactura=factura_instance,
-                            cod_inventario=producto_inventario,
-                            cantidad= convertir_a_numero_entero(producto['cantidad']),
-                            fecha_factura=fecha,
-                            precio_venta = convertir_a_numero(producto['costo_unitario']),
-                            
+                        modelo_transaccion = TransaccionFactura
+                        factura_instance, created_factura = Facturas.objects.get_or_create(
+                            nfactura=factura_numero,
+                            defaults={
+                                'fecha_facturacion': fecha,
+                                'total_factura': 0,  # Asegurar formato correcto
+                                'id_orden_field': int(orden_id[0]),
+                                'cliente': cliente,
+                                'estado': estado
+                            }
                         )
-                        
-                        
-                        
-                        producto_inventario.cantidad = nueva_cantidad
-                        producto_inventario.save()
-                        print(f'Inventario actualizado para el producto {producto["id_producto"]}. Nueva cantidad: {nueva_cantidad}')
-                
                     else:
-                        instancia_transaccion = modelo_transaccion(
-                            nremision=remision,
-                            cod_inventario=producto['id_producto'],
-                            cantidad=convertir_a_numero_entero(producto['cantidad']),
-                            fecha_remision=fecha,
-                            precio_venta = convertir_a_numero(producto['costo_unitario']),
-                        )
-                        producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
-                        nueva_cantidad = producto_inventario.cantidad - convertir_a_numero_entero(producto['cantidad'])
-                        
-                        producto_inventario.cantidad = nueva_cantidad
-                        producto_inventario.save()
-                        print(f'Inventario actualizado para el producto {producto["id_producto"]}. Nueva cantidad: {nueva_cantidad}')
+                        modelo_transaccion = TransaccionRemision
+                        numero_remision = obtener_numero_remision()
+                        remision, created_remision = Remisiones.objects.get_or_create(
+                            nremision=numero_remision,
+                            defaults={
+                                'fecha_remision': fecha,
+                                'total_remision': 0,  # Asegurar formato correcto
+                                'id_orden': int(orden_id[0]),
+                                'cliente': cliente,
+                                'estado': estado
+                            }
+                        )    
 
-                    # Guardar la instancia en la base de datos
-                    instancia_transaccion.save()   
                     
-    
+                    
+                    for producto in productos:
+                        # Crear instancia de TransMp
+                        
+                        proveedor = Proveedores.objects.get(id_proveedor=cliente)
+                        producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
+                        total_linea = convertir_a_numero_entero(producto['cantidad'])*convertir_a_numero(producto['costo_unitario'])
+                        transmp_instance = TransMp.objects.create(
+                            nombre_mp=producto_inventario.nombre,  # Asegúrate de que 'nombre_mp' está en 'producto'
+                            cant_mp=convertir_a_numero_entero(producto['cantidad']),  # Usamos la función para convertir cantidad
+                            costo_unitario=convertir_a_numero(producto['costo_unitario']),  # Convierte a número el costo
+                            total_linea=total_linea,  # Puedes calcular el total aquí si es necesario
+                            fecha_ingreso=fecha,  # Usa la fecha que recibes en el cuerpo de la solicitud
+                            unidad_medida='Unidad',
+                            id_proveedor=proveedor.id_proveedor,  # Asegúrate de que 'id_proveedor' esté en 'producto'
+                            cod_inventario=producto_inventario,  # Relacionamos con el inventario
+                            tipo='m',  # Si no hay 'tipo', se usa un valor vacío
+                            id_compra=compra_instance  # Asegúrate de que 'id_compra' esté en 'producto'
+                        )
+                    
 
 
-                pdf_buffer = generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos, total, fecha, estado)
-                response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
-                response['Content-Disposition'] = f'attachment; filename=factura_{factura_numero}.pdf'
-                return response
+                else:
+                    # Si no es "lugrascol", proceder con el proceso de facturación normal
+                    total_guardar = convertir_a_numero(total)
+                    for orden in orden_id:
+                        updateEstado = TransaccionOrden.objects.filter(id_orden=orden)
+                        updateEstado.update(estado=estado)
+
+                    # Crear instancia de Facturas
+                    if incluir_iva:
+                        modelo_transaccion = TransaccionFactura
+                        factura_instance, created_factura = Facturas.objects.get_or_create(
+                            nfactura=factura_numero,
+                            defaults={
+                                'fecha_facturacion': fecha,
+                                'total_factura': total_guardar,  # Asegurar formato correcto
+                                'id_orden_field': int(orden_id[0]),
+                                'cliente': cliente,
+                                'estado': estado
+                            }
+                        )
+                    else:
+                        modelo_transaccion = TransaccionRemision
+                        numero_remision = obtener_numero_remision()
+                        remision, created_remision = Remisiones.objects.get_or_create(
+                            nremision=numero_remision,
+                            defaults={
+                                'fecha_remision': fecha,
+                                'total_remision': total_guardar,  # Asegurar formato correcto
+                                'id_orden': int(orden_id[0]),
+                                'cliente': cliente,
+                                'estado': estado
+                            }
+                        )
+
+                    # Iterar sobre los productos y guardar en el modelo correspondiente
+                    for producto in productos:
+                        if incluir_iva:
+                            print('valor producto', producto['costo_unitario'])
+                            producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
+                            nueva_cantidad = producto_inventario.cantidad - convertir_a_numero_entero(producto['cantidad'])
+                            instancia_transaccion = modelo_transaccion(
+                                nfactura=factura_instance,
+                                cod_inventario=producto_inventario,
+                                cantidad=convertir_a_numero_entero(producto['cantidad']),
+                                fecha_factura=fecha,
+                                precio_venta=convertir_a_numero(producto['costo_unitario']),
+                            )
+
+                            producto_inventario.cantidad = nueva_cantidad
+                            producto_inventario.save()
+                            print(f'Inventario actualizado para el producto {producto["id_producto"]}. Nueva cantidad: {nueva_cantidad}')
+                        else:
+                            instancia_transaccion = modelo_transaccion(
+                                nremision=remision,
+                                cod_inventario=producto['id_producto'],
+                                cantidad=convertir_a_numero_entero(producto['cantidad']),
+                                fecha_remision=fecha,
+                                precio_venta=convertir_a_numero(producto['costo_unitario']),
+                            )
+                            producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
+                            nueva_cantidad = producto_inventario.cantidad - convertir_a_numero_entero(producto['cantidad'])
+
+                            producto_inventario.cantidad = nueva_cantidad
+                            producto_inventario.save()
+                            print(f'Inventario actualizado para el producto {producto["id_producto"]}. Nueva cantidad: {nueva_cantidad}')
+
+                        # Guardar la instancia en la base de datos
+                        instancia_transaccion.save()
+
+                    # Generar y devolver el PDF de la factura
+                    pdf_buffer = generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos, total, fecha, estado)
+                    response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
+                    response['Content-Disposition'] = f'attachment; filename=factura_{factura_numero}.pdf'
+                    return response
 
             except OrdenProduccion.DoesNotExist:
                 # Manejar caso donde no se encuentra la orden de producción
                 return JsonResponse({'error': 'Orden de producción no encontrada'}, status=404)
 
-            # Devolver una respuesta JSON si lo deseas
+            # Devolver una respuesta JSON si todo se ha procesado correctamente
             return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
 
         except json.JSONDecodeError as e:
@@ -440,7 +503,7 @@ def precio_producto(request):
             iva_costo = 0.0
             utilidad_bruta = 0.0
             
-            for i in range(1, 9):  # Iterar sobre los campos materia1 hasta materia8
+            for i in range(1, 11):  # Iterar sobre los campos materia1 hasta materia8
                 campo_materia = getattr(formula, f"materia{i}")
                 if campo_materia:  # Verificar si hay un código de materia prima en el campo actual
                     # Consultar la materia prima por su código

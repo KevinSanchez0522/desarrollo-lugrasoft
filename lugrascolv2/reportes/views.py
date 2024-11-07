@@ -98,7 +98,7 @@ def costeoInventario(request):
                 total_costo = 0.0
                 
                 # Calcular el subtotal_costo usando las materias primas de la fórmula
-                for i in range(1, 9):  # Iterar sobre los campos materia1 hasta materia8
+                for i in range(1, 11):  # Iterar sobre los campos materia1 hasta materia8
                     campo_materia = getattr(formula, f"materia{i}")
                     if campo_materia:  # Verificar si hay un código de materia prima en el campo actual
                         materia_prima = TransMp.objects.filter(cod_inventario=campo_materia).order_by('-fecha_ingreso').first()

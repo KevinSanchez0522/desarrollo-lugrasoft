@@ -10,8 +10,8 @@ from django.core.exceptions import ObjectDoesNotExist
 def verFormula(request):
     
     # Obtener todos los productos para renderizar el formulario
+    
     productos = Inventario.objects.all()
-    productos = Inventario.objects.filter(tipo='m')
     
     # Inicializar el precio unitario como None por defecto
     precio_unitario = None
@@ -50,7 +50,7 @@ def vertabla(request):
 
         try:
             # Intentar obtener el producto desde Inventario
-            producto = Inventario.objects.get(cod_inventario=codigo, tipo='m')
+            producto = Inventario.objects.get(cod_inventario=codigo)
             # Obtener el último precio unitario del producto seleccionado desde TransMp
             ultimo_transaccion = TransMp.objects.filter(cod_inventario=codigo).order_by('-fecha_ingreso').first()
             precio_unitario = ultimo_transaccion.costo_unitario if ultimo_transaccion else 0
@@ -109,12 +109,12 @@ def guardar_datos(request):
         )
 
         # Asignar materiales desde tabla_data
-        materiales = [f'materia{i+1}' for i in range(8)]
-        cantidades = [f'cant_materia{i+1}' for i in range(8)]
+        materiales = [f'materia{i+1}' for i in range(10)]
+        cantidades = [f'cant_materia{i+1}' for i in range(10)]
 
         # Procesar los elementos de tabla_data que contienen datos válidos
         for index, item in enumerate(tabla_data):
-            if index < 8 and item.get('cod_producto') and item.get('cantidad'):
+            if index < 10 and item.get('cod_producto') and item.get('cantidad'):
                 try:
                     cod_producto = int(item['cod_producto'])
                     cantidad = float(item['cantidad'])
@@ -147,7 +147,7 @@ def verformulas (request):
             iva_costo = 0.0
             utilidad_bruta = 0.0
             
-            for i in range(1, 9):  # Iterar sobre los campos materia1 hasta materia8
+            for i in range(1, 11):  # Iterar sobre los campos materia1 hasta materia8
                 campo_materia = getattr(formula, f"materia{i}")
                 if campo_materia:  # Verificar si hay un código de materia prima en el campo actual
                     # Consultar la materia prima por su código
@@ -266,7 +266,7 @@ def editar_formula(request, cod_inventario):
     
     # Obtener las materias primas asociadas (solo las que no son None)
     materias_primas = []
-    for i in range(1, 9):
+    for i in range(1, 11):
         materia_field = getattr(formula, f'materia{i}')
         cantidad_field = getattr(formula, f'cant_materia{i}')
         
@@ -332,7 +332,7 @@ def update_transformula(request):
             inventario.save()
 
 
-            for i in range(1, 8):  # Asumiendo que el máximo número de materias es 5
+            for i in range(1, 11):  # Asumiendo que el máximo número de materias es 5
                 setattr(transformula, f'materia{i}', None)
                 setattr(transformula, f'cant_materia{i}', None)
             
