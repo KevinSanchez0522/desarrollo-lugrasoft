@@ -280,7 +280,32 @@ def PFacturar(request):
                             tipo='m',  # Si no hay 'tipo', se usa un valor vacío
                             id_compra=compra_instance  # Asegúrate de que 'id_compra' esté en 'producto'
                         )
-                    
+                        if incluir_iva:
+                            
+                            instancia_transaccion = modelo_transaccion(
+                                nfactura=factura_instance,
+                                cod_inventario=producto['id_producto'],
+                                cantidad=convertir_a_numero_entero(producto['cantidad']),
+                                fecha_factura=fecha,
+                                precio_venta=0,
+                            )
+
+
+                        else:
+                            instancia_transaccion = modelo_transaccion(
+                                nremision=remision,
+                                cod_inventario=producto['id_producto'],
+                                cantidad=convertir_a_numero_entero(producto['cantidad']),
+                                fecha_remision=fecha,
+                                precio_venta=0,
+                            )
+
+
+
+
+                        # Guardar la instancia en la base de datos
+                        instancia_transaccion.save()
+                            
 
 
                 else:
