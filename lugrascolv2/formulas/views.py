@@ -259,7 +259,7 @@ def eliminarFormula(request, cod_inventario):
     
     
 def editar_formula(request, cod_inventario):
-    producto = Inventario.objects.filter(tipo='m')
+    producto = Inventario.objects.all()
     # Obtener la fórmula que quieres editar
     formula = get_object_or_404(Transformulas, cod_inventario=cod_inventario)
     print('Código de la fórmula:', formula.cod_inventario)
