@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     '<td>' + dato.id_producto + '</td>' +
                                     '<td>' + dato.nombre + '</td>' +
                                     '<td>' + dato.cantidad + '</td>' +
-                                    '<td><input type="text" value="' + subtotal_venta_formateado + '" readonly /></td>' +
+                                    '<td><input type="text" value="' + subtotal_venta_formateado + '"/></td>' +
                                     '</tr>';
         
                                 // Agregar la fila a la tabla
