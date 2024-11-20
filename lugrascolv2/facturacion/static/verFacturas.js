@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         $('.fecha').text('Fecha: ' + producto.fecha_factura);
                         $('.valorTOTAL').text('$'+ '' + producto.total_factura);
                         $('.valorIVA').text('$' + '' + producto.iva);
+                        $('.ICA').text('$' + '' + producto.ica);
 
                         
                         $('.valorSUBTOTAL').text('$' + '' + producto.subtotal);

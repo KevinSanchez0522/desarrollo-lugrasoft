@@ -210,7 +210,7 @@ def PFacturar(request):
             fecha = datos_facturacion['fecha']
             estado = datos_facturacion['estado']
             lugrascol = 901452546
-            print('cliente', cliente)
+            print('cliente', cliente, incluir_ica)
 
             try:
                 # Validación de cliente "lugrascol"
@@ -327,7 +327,8 @@ def PFacturar(request):
                                 'total_factura': total_guardar,  # Asegurar formato correcto
                                 'id_orden_field': int(orden_id[0]),
                                 'cliente': cliente,
-                                'estado': estado
+                                'estado': estado,
+                                'ica': incluir_ica
                             }
                         )
                     else:
@@ -352,7 +353,7 @@ def PFacturar(request):
                             nueva_cantidad = producto_inventario.cantidad - convertir_a_numero_entero(producto['cantidad'])
                             instancia_transaccion = modelo_transaccion(
                                 nfactura=factura_instance,
-                                cod_inventario=producto_inventario,
+                                cod_inventario=producto['id_producto'],
                                 cantidad=convertir_a_numero_entero(producto['cantidad']),
                                 fecha_factura=fecha,
                                 precio_venta=convertir_a_numero(producto['costo_unitario']),
@@ -620,15 +621,26 @@ def detallesFactura(request):
             factura= get_object_or_404(Facturas, nfactura= factura_id)
             cliente = get_object_or_404(Clientes, nit=factura.cliente)
             
-            iva= factura.total_factura* 0.19
-            iva_redondeado = round(iva,2)
-            subtotal = factura.total_factura - iva_redondeado
-            
+            #iva= factura.total_factura* 0.19
+            #iva_redondeado = round(iva,2)
+            #subtotal = factura.total_factura - iva_redondeado
+            ica= factura.ica
+            print('tiene ica:', ica)
+            total=0 
+            valorIca=0   
             
             productos = []
             for transaccion in transacciones:
                 # Obtener detalles del producto desde el modelo Inventario
                 producto = Inventario.objects.get(cod_inventario=transaccion.cod_inventario)
+                transaccion_total = transaccion.cantidad * transaccion.precio_venta
+                total+=transaccion_total
+                iva= (total*19)/100
+                subtotal=total-iva
+                if ica:
+                    valorIca=total*2.5/100
+                else:
+                    valorIca=0
                 
                 # Agregar los detalles del producto a la lista
                 productos.append({
@@ -637,14 +649,15 @@ def detallesFactura(request):
                     'cantidad': transaccion.cantidad,
                     'fecha_factura': transaccion.fecha_factura,
                     'precio_unitario': f"{transaccion.precio_venta:,}",
-                    'total_factura': f"{factura.total_factura:,}",
+                    'total_factura': f"{total:,}",
                     'nit_cliente': cliente.nit,
                     'nombre_cliente': cliente.nombre,
                     'telefono_cliente': cliente.telefono,
                     'direccion_cliente': cliente.direccion,
                     'correo_cliente': cliente.email,
-                    'iva': f"{iva_redondeado:,}",
-                    'subtotal': f"{subtotal:,}"
+                    'iva': f"{iva:,}",
+                    'subtotal': f"{subtotal:,}",
+                    'ica': f"{valorIca:,}"
                 })
             
             # Preparar los datos para enviar en la respuesta JSON
