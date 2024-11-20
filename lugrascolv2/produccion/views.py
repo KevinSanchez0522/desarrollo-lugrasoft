@@ -331,13 +331,15 @@ def irAfacturar (request):
 def eliminarOrdenProduccion(request):
     if request.method == 'POST':
         id_orden = request.POST.get('id_orden')
-        orden = get_object_or_404(TransaccionOrden, id_orden=id_orden)
-        modeloOrden = get_object_or_404(OrdenProduccion, id_orden=id_orden)
-
-        if orden.estado == 'creado':  # Suponiendo que el estado se guarda como un string
-            # Aquí puedes proceder a eliminar la orden o marcarla como eliminada
-            orden.delete()  # O cualquier otra lógica que necesites
-            modeloOrden.delete()
+        ordenes = TransaccionOrden.objects.filter(id_orden=id_orden, estado='creado')
+        
+        if ordenes.exists():  # Si hay alguna orden con estado 'creado'
+            for orden in ordenes:
+                # Eliminar las órdenes
+                orden.delete()
+                
+            modeloOrden = get_object_or_404(OrdenProduccion, id_orden=id_orden)    
+            modeloOrden.delete()        
             return JsonResponse({'status': 'success', 'message': 'Orden eliminada.'})
         else:
             return JsonResponse({'status': 'error', 'message': 'La orden no está en estado creado.'})
