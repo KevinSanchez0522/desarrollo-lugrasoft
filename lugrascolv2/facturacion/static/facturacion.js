@@ -124,8 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         var incluirIVA = $('#checkIva').prop('checked');
         
                         // Variable para los totales
-                        var precioTotal = 0;
-                        var ivaSobreSubtotalTotal = 0;
+                        
         
                         // Iterar sobre las órdenes recibidas
                         $.each(response.ordenes, function(index, orden) {
@@ -285,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mostrar los valores recalculados
     function actualizarTotales(precioTotal, ivaSobreSubtotalTotal) {
         var incluirIVA = $('#checkIva').prop('checked');
-        
+        ivaSobreSubtotalTotal= (precioTotal*19)/100
         var subtotalTotal = incluirIVA ? (precioTotal - ivaSobreSubtotalTotal) : precioTotal;
         
 

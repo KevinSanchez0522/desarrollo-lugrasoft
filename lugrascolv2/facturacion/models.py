@@ -35,6 +35,7 @@ class Facturas(models.Model):
     id_orden_field = models.IntegerField(db_column='id_orden ')    # Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
     cliente = models.IntegerField()
     estado = models.TextField()
+    ica= models.BooleanField(default=False)
 
     class Meta:
         managed = True

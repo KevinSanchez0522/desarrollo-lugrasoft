@@ -203,6 +203,7 @@ def PFacturar(request):
             orden_id = datos_facturacion['orden']  # Obtener el ID de la orden
             productos = datos_facturacion['productos']
             incluir_iva = datos_facturacion['incluir_iva']
+            incluir_ica = datos_facturacion['incluir_ica']
             subtotal = datos_facturacion['subtotal']
             iva = datos_facturacion['iva']
             total = datos_facturacion['total']
@@ -243,7 +244,8 @@ def PFacturar(request):
                                 'total_factura': 0,  # Asegurar formato correcto
                                 'id_orden_field': int(orden_id[0]),
                                 'cliente': cliente,
-                                'estado': estado
+                                'estado': estado,
+                                'ica': incluir_ica
                             }
                         )
                     else:
