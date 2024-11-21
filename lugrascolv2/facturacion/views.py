@@ -635,8 +635,9 @@ def detallesFactura(request):
                 producto = Inventario.objects.get(cod_inventario=transaccion.cod_inventario)
                 transaccion_total = transaccion.cantidad * transaccion.precio_venta
                 total+=transaccion_total
-                iva= (total*19)/100
-                subtotal=total-iva
+                
+                subtotal= round(total/1.19)
+                iva= round(total-subtotal)
                 if ica:
                     valorIca=total*2.5/100
                 else:
