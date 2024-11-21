@@ -413,7 +413,7 @@ def generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos,
     styleN = styles['Normal']
     
     # Datos de cabecera
-    content.append(Paragraph(f'Factura Número: {factura_numero}', title_style))
+    content.append(Paragraph(f'Orden de Salida: {factura_numero}', title_style))
     content.append(Paragraph(f'Cliente: {cliente}', normal_style))
     content.append(Paragraph(f'Dirección: {direccion}', normal_style))
     content.append(Paragraph(f'Teléfono: {telefono}', normal_style))

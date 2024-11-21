@@ -301,8 +301,42 @@ function printModal() {
     // Ruta al archivo CSS
     var cssLink = imprimir
 
+    var styles = `<style>
+                    @media print {
+                        body {
+                            margin: 0;
+                            font-family: Arial, sans-serif; /* Fuente común para evitar variaciones */
+                            font-size: 12pt; /* Tamaño de fuente fijo */
+                        }
+
+                        .modal-content {
+                            margin-top: 4cm; /* Margen superior de 4 cm */
+                            padding: 20px; /* Padding para separar contenido */
+                            background-color: #fff; /* Fondo blanco */
+                            border: 1px solid #000; /* Borde alrededor del contenido */
+                        }
+
+                        /* Ocultar pie de página y otros elementos si no se desean imprimir */
+                        .invoice-footer, #closeButton {
+                            display: none;
+                        }
+
+                        /* Ajuste de desbordamiento y salto de línea */
+                        .modal-content {
+                            word-wrap: break-word;
+                            overflow-wrap: break-word;
+                            max-width: 100%; /* Asegura que el contenido no se desborde */
+                        }
+                    }
+                </style>
+            `;
+
     printWindow.document.write('<html><head><title>facturación lugrascol SAS </title>');
     printWindow.document.write('<link rel="stylesheet" href="' + cssLink + '">');
+    printWindow.document.write(styles);
+    printWindow.document.write('<style>');
+    printWindow.document.write('body { margin-top: 4cm; }'); // Aplica margen superior de 4 cm
+    printWindow.document.write('</style>');
     printWindow.document.write('</head><body >');
     printWindow.document.write(modalContent);
     printWindow.document.write('</body></html>');
