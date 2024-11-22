@@ -625,7 +625,8 @@ def detallesFactura(request):
             #iva_redondeado = round(iva,2)
             #subtotal = factura.total_factura - iva_redondeado
             ica= factura.ica
-            print('tiene ica:', ica)
+            total_factura= factura.total_factura
+            print('tiene ica:', ica, 'factura', total_factura)
             total=0 
             valorIca=0   
             
@@ -639,7 +640,8 @@ def detallesFactura(request):
                 subtotal= round(total/1.19)
                 iva= round(total-subtotal)
                 if ica:
-                    valorIca=subtotal*2.5/100
+                    valorIca=total*2.5/100
+                    
                 else:
                     valorIca=0
                 
@@ -650,7 +652,7 @@ def detallesFactura(request):
                     'cantidad': transaccion.cantidad,
                     'fecha_factura': transaccion.fecha_factura,
                     'precio_unitario': f"{transaccion.precio_venta:,}",
-                    'total_factura': f"{total:,}",
+                    'total_factura': f"{total_factura:,}",
                     'nit_cliente': cliente.nit,
                     'nombre_cliente': cliente.nombre,
                     'telefono_cliente': cliente.telefono,

@@ -122,6 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
                         // Verificar el estado del checkbox de IVA
                         var incluirIVA = $('#checkIva').prop('checked');
+                        var incluirICA = $('#checkIca').prop('checked');
         
                         // Variable para los totales
                         
@@ -159,7 +160,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 } else {
                                     ivaSobreSubtotalTotal += 0;
                                 }
+                                if (incluirICA){
+                                    var totaltotal= precioTotal*2.5/100
+                                    console.log('total en ica al cargar los datos',totaltotal)
+                                }
                             });
+
                         });
         
                         // Actualizar los totales
@@ -284,8 +290,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mostrar los valores recalculados
     function actualizarTotales(precioTotal, ivaSobreSubtotalTotal) {
         var incluirIVA = $('#checkIva').prop('checked');
+        var incluirICA = $('#checkIca').prop('checked')
         ivaSobreSubtotalTotal= (precioTotal*19)/100
         var subtotalTotal = incluirIVA ? (precioTotal - ivaSobreSubtotalTotal) : precioTotal;
+        if (incluirICA){
+            valorIca= precioTotal*2.5/100
+            precioTotal= precioTotal-valorIca
+        }
+        else{
+            valorIca=0
+        }
         
 
         $('.ValorSubtotal').text('$ ' + subtotalTotal.toLocaleString('es-ES', {
@@ -296,6 +310,10 @@ document.addEventListener('DOMContentLoaded', function() {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         })) : '');
+        $('.ValorIca').text('$ ' + valorIca.toLocaleString('es-ES', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }));
         $('.Ptotal').text('$ ' + precioTotal.toLocaleString('es-ES', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
