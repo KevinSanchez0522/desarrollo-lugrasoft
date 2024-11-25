@@ -14,6 +14,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.units import inch
 from django.utils.dateparse import parse_date
+from django.db import transaction 
 
 # Create your views here.
 def facturar(request):
@@ -187,6 +188,7 @@ from .models import Facturas, OrdenProduccion, TransaccionFactura, TransaccionRe
 from django.http import JsonResponse
 import json
 
+@transaction.atomic
 def PFacturar(request):
     if request.method == 'POST':
         try:
