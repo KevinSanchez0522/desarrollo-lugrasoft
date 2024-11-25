@@ -212,7 +212,7 @@ def PFacturar(request):
             fecha = datos_facturacion['fecha']
             estado = datos_facturacion['estado']
             lugrascol = 901452546
-            print('cliente', cliente, incluir_ica)
+            print('cliente', cliente, incluir_ica, 'total', total)
 
             try:
                 # Validación de cliente "lugrascol"
@@ -315,6 +315,7 @@ def PFacturar(request):
                 else:
                     # Si no es "lugrascol", proceder con el proceso de facturación normal
                     total_guardar = convertir_a_numero(total)
+                    print('total guardar', total_guardar)
                     for orden in orden_id:
                         updateEstado = TransaccionOrden.objects.filter(id_orden=orden)
                         updateEstado.update(estado=estado)
