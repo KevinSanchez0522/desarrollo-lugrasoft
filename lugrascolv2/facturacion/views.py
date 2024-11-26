@@ -640,8 +640,9 @@ def detallesFactura(request):
                 transaccion_total = transaccion.cantidad * transaccion.precio_venta
                 total+=transaccion_total
                 
-                subtotal= round(total/1.19)
-                iva= round(total-subtotal)
+                
+                iva= total*19/100
+                subtotal= total-iva
                 if ica:
                     valorIca=subtotal*2.5/100
                     
