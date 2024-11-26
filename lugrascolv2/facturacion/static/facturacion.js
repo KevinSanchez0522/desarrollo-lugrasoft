@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 precioTotal += valorProducto;
         
                                 if (incluirIVA) {
-                                    ivaSobreSubtotalTotal += valorProducto * (dato.iva / 100);
+                                    ivaSobreSubtotalTotal += valorProducto*(19/100);
                                     console.log('iva orden', ivaSobreSubtotalTotal)
                                 } else {
                                     ivaSobreSubtotalTotal += 0;
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 precioTotal += subtotalFila;
                 
                 if (incluirIVA) {
-                    ivaSobreSubtotalTotal  += subtotalFila * (iva / 100);  // IVA del 19%
+                    ivaSobreSubtotalTotal  += subtotalFila*(19/100);  // IVA del 19%
                     console.log('iva', ivaSobreSubtotalTotal)
                     }
                 });
@@ -291,8 +291,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function actualizarTotales(precioTotal, ivaSobreSubtotalTotal) {
         var incluirIVA = $('#checkIva').prop('checked');
         var incluirICA = $('#checkIca').prop('checked')
-        ivaSobreSubtotalTotal= (precioTotal*19)/100
-        var subtotalTotal = incluirIVA ? (precioTotal - ivaSobreSubtotalTotal) : precioTotal;
+        
+        console.log('IVA EN ACTUALIZAR TOTALES', ivaSobreSubtotalTotal,'PRECIO TOTAL', precioTotal)
+        var subtotalTotal = incluirIVA ? (precioTotal/1.19) : precioTotal;
+        ivaSobreSubtotalTotal= precioTotal-subtotalTotal
         if (incluirICA){
             valorIca= subtotalTotal*2.5/100
             precioTotal= precioTotal-valorIca
@@ -347,8 +349,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Convertir la cadena limpia a un número
                 var total = parseFloat(numeroLimpio);
                 console.log('total', total)
-                var iva = total*19/100
-                var subtotal= total-iva
+                
+                var subtotal= total/1.19
+                
                 console.log('subtotal en ica',subtotal)
                 var valorIca = (subtotal*2.5)/100 // Calcular el 2.5%
                 console.log('ica', valorIca)
