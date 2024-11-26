@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ivaSobreSubtotalTotal= (precioTotal*19)/100
         var subtotalTotal = incluirIVA ? (precioTotal - ivaSobreSubtotalTotal) : precioTotal;
         if (incluirICA){
-            valorIca= precioTotal*2.5/100
+            valorIca= subtotalTotal*2.5/100
             precioTotal= precioTotal-valorIca
         }
         else{
@@ -347,7 +347,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Convertir la cadena limpia a un número
                 var total = parseFloat(numeroLimpio);
                 console.log('total', total)
-                var valorIca = (total * ica) /100; // Calcular el 2.5%
+                subtotal = total/1.19
+                var valorIca = (subtotal*2.5)/100 // Calcular el 2.5%
         
                 // Actualizar el valor de .ValorIca
                 $('.ValorIca').text('$ ' + valorIca.toLocaleString()); // Actualizar el contenido de .ValorIca con el valor calculado

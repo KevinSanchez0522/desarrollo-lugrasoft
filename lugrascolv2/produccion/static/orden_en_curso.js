@@ -150,11 +150,37 @@ document.addEventListener('DOMContentLoaded', function(){
                         var cellProducto = row.insertCell(0);
                         var cellNombre = row.insertCell(1);
                         var cellCantidad = row.insertCell(2);
+                        var cellEtiquetado = row.insertCell(3);
+                        var cellTerminado = row.insertCell(4);
 
     
                         cellProducto.innerHTML = detalle.cod_inventario;
                         cellNombre.innerHTML = detalle.nombre;
                         cellCantidad.innerHTML = detalle.cantidad;
+
+                        // Crear sliders para etiquetado y terminado
+                        var etiquetadoSlider = document.createElement("input");
+                        etiquetadoSlider.type = "range";
+                        etiquetadoSlider.min = "0";
+                        etiquetadoSlider.max = "1";
+                        etiquetadoSlider.value = 0; // Inicializar en 0 (false)
+                        etiquetadoSlider.classList.add("slider");
+                        etiquetadoSlider.setAttribute("data-status", "etiquetado");  // Asignamos una clase para identificarlo
+
+                        // Crear slider para 'Terminado' (True/False)
+                        var terminadoSlider = document.createElement("input");
+                        terminadoSlider.type = "range";
+                        terminadoSlider.min = "0";
+                        terminadoSlider.max = "1";
+                        terminadoSlider.value = 0; // Inicializar en 0 (false)
+                        terminadoSlider.classList.add("slider");
+                        terminadoSlider.setAttribute("data-status", "terminado");  // Asignamos una clase para identificarlo
+
+                        // Insertar sliders en las celdas correspondientes
+                        cellEtiquetado.appendChild(etiquetadoSlider);
+                        cellTerminado.appendChild(terminadoSlider);
+
+
                         estado = detalle.estado;
                         console.log('estado: ', estado)
                         console.log('detalles de orden:', detalles)

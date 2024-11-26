@@ -643,7 +643,7 @@ def detallesFactura(request):
                 subtotal= round(total/1.19)
                 iva= round(total-subtotal)
                 if ica:
-                    valorIca=total*2.5/100
+                    valorIca=subtotal*2.5/100
                     
                 else:
                     valorIca=0

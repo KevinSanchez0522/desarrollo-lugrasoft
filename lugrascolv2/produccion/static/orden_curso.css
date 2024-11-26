@@ -230,3 +230,53 @@ span{
 .campoestado label {
     margin-bottom: 2px; /* Espacio entre el label y el h4 */
 }
+
+/* Estilo básico para los sliders */
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 40%;
+    height: 18px;
+    background: #ddd; /* Color por defecto */
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .15s ease-in-out, background 0.3s ease-in-out; /* Transición suave */
+}
+
+/* Estilo cuando el slider está en estado 'activo' */
+.slider:hover {
+    opacity: 1;
+}
+
+/* Cambio de color cuando el valor es 1 (verde) */
+.slider[value="1"] {
+    background: #4CAF50;
+}
+
+/* Cambio de color cuando el valor es 0 (rojo) */
+.slider[value="0"] {
+    background: #FF4C4C; /* Rojo */
+}
+
+/* Estilo para el pulgar del slider */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #4CAF50; /* Borde verde por defecto */
+}
+
+/* Estilo para el pulgar en Firefox */
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #4CAF50; /* Borde verde por defecto */
+}
