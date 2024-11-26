@@ -347,8 +347,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Convertir la cadena limpia a un número
                 var total = parseFloat(numeroLimpio);
                 console.log('total', total)
-                subtotal = total/1.19
+                var iva = total*19/100
+                var subtotal= total-iva
+                console.log('subtotal en ica',subtotal)
                 var valorIca = (subtotal*2.5)/100 // Calcular el 2.5%
+                console.log('ica', valorIca)
         
                 // Actualizar el valor de .ValorIca
                 $('.ValorIca').text('$ ' + valorIca.toLocaleString()); // Actualizar el contenido de .ValorIca con el valor calculado
