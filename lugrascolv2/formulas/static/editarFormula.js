@@ -68,6 +68,7 @@ $(document).ready(function() {
             utilidad: $('#Utilidad').val(),
             iva: $('#V_Iva').val(),
             costos_indirectos: $('#C_indirecto').val(),
+            peso:$('#Peso').val(),
             materias_primas: []
         };
 

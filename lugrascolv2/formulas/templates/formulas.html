@@ -35,11 +35,15 @@
         </div>
         <div class="form-row">
             <label for="utilidad">% Utilidad:</label>
-            <input type="number" id="Utilidad" name="Utilidad">
+            <input type="number" id="Utilidad" name="Utilidad" required>
         </div>
         <div class="form-row">
             <label for="V_Iva"> % Valor IVA:</label>
-            <input type="number" id="V_Iva" name="V_Iva">
+            <input type="number" id="V_Iva" name="V_Iva" required>
+        </div>
+        <div class="form-row">
+            <label for="Peso">Peso KG:</label>
+            <input type="number" id="Peso" name="Peso" step="0.01" min="0" required>
         </div>
         <div class="form-row">
             <button  class="enviar" type="submit">Guardar Formula</button>

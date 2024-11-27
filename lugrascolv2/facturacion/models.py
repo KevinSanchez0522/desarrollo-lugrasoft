@@ -360,6 +360,7 @@ class Transformulas(models.Model):
     porcentajeiva = models.FloatField()
     pocentajeutilidad = models.FloatField()
     costosindirectos = models.FloatField()
+    peso= models.FloatField(default=0)
 
     class Meta:
         managed = True

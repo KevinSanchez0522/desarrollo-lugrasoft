@@ -104,6 +104,7 @@ def guardar_datos(request):
             porcentajeiva=float(request.POST.get('V_Iva')),
             pocentajeutilidad=float(request.POST.get('Utilidad')),
             costosindirectos=float(request.POST.get('costinderec')),
+            peso= float(request.POST.get('Peso'))
             
             
         )
@@ -313,6 +314,8 @@ def update_transformula(request):
         print(cantidades)
         nombre = data.get('nombre')
         print(nombre)
+        peso = data.get('peso')
+        print(peso)
         
                 # Imprimir las cantidades y los productos (materias primas)
 
@@ -328,6 +331,7 @@ def update_transformula(request):
             transformula.pocentajeutilidad = utilidad
             transformula.porcentajeiva = iva
             transformula.nombre = nombre
+            transformula.peso = peso
             inventario.nombre= nombre
             inventario.save()
 
