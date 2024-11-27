@@ -76,6 +76,10 @@
                 <span>{{formula.porcentajeiva}}</span>
             </div>
             <div class="data-item">
+                <label for="Peso">Peso KG:</label>
+                <span>{{ formula.peso|floatformat:"2"|intcomma }}</span>
+            </div>
+            <div class="data-item">
                 <label for="iva_Costo"> Iva Costo:</label>
                 <span>{{ formula.iva_costo|floatformat:"2"|intcomma }}</span>
             </div>
@@ -224,10 +228,7 @@
                 <label for="V_Iva">% Valor IVA:</label>
                 <input type="number" id="iva{{ forloop.counter }}" value="{{ formula.porcentajeiva }}">
             </div>
-            <div class="data-item total-venta">
-                <label for="Peso">Peso KG:</label>
-                <span>{{ formula.peso|floatformat:"2"|intcomma }}</span>
-            </div>
+
             <div class="data-item">
                 <label for="iva_Costo"> Iva Costo:</label>
                 <span>{{ formula.iva_costo|floatformat:"2"|intcomma }}</span>
