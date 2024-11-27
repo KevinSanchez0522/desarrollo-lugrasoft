@@ -638,6 +638,9 @@ def detallesFactura(request):
                 # Obtener detalles del producto desde el modelo Inventario
                 producto = Inventario.objects.get(cod_inventario=transaccion.cod_inventario)
                 transaccion_total = transaccion.cantidad * transaccion.precio_venta
+                producto_transformula = Transformulas.objects.get(cod_inventario=producto.cod_inventario)
+                peso = producto_transformula.peso
+                print('peso producto', producto_transformula.cod_inventario, peso)
                 total+=transaccion_total
                 
                 subtotal= round(total/1.19)
@@ -663,7 +666,8 @@ def detallesFactura(request):
                     'correo_cliente': cliente.email,
                     'iva': f"{iva:,}",
                     'subtotal': f"{subtotal:,}",
-                    'ica': f"{valorIca:,}"
+                    'ica': f"{valorIca:,}",
+                    'peso':peso,
                 })
             
             # Preparar los datos para enviar en la respuesta JSON
