@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 var tbody = $('#tabla-formulario-modal tbody');
                 tbody.empty(); // Limpiar el contenido previo
             
+                let totalCantidad = 0;
                 // Verificar si hay productos en la respuesta
                 if (response.productos && response.productos.length > 0) {
                     response.productos.forEach(function(producto) {
@@ -113,6 +114,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                     '<td>'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
                                     '</tr>';
                         tbody.append(fila);
+
+                        totalCantidad += producto.cantidad;
+
                         $('.valorNit').text('N° de Cliente:  '+ producto.nit_cliente);
                         $('.nombreCliente').text(producto.nombre_cliente);
                         $('.direcCliente').text(producto.direccion_cliente);
@@ -127,6 +131,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         $('.valorSUBTOTAL').text('$' + '' + producto.subtotal);
                         
                     });
+                    var totalFila = '<tr>' +
+                    '<td><strong>Total de Unidades:</strong></td>' +
+                    '<td><strong>' + totalCantidad + '</strong></td>' +
+                    '</tr>';
+                    tbody.append(totalFila);
                 } else {
                     // Si no hay productos, agregar una fila con un mensaje
                     var fila = '<tr><td colspan="5">No se encontraron productos para esta factura.</td></tr>';

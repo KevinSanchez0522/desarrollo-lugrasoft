@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         terminadoSlider.type = "range";
                         terminadoSlider.min = "0";
                         terminadoSlider.max = "1";
-                        terminadoSlider.value =detalle.etiquetado ? "1" : "0"; // Inicializar en 0 (false)
+                        terminadoSlider.value =detalle.terminado ? "1" : "0"; // Inicializar en 0 (false)
                         terminadoSlider.classList.add("slider");
                         terminadoSlider.setAttribute("data-status", "terminado");  // Asignamos una clase para identificarlo
 
