@@ -204,6 +204,10 @@ def detalles_orden(request, id_orden):
                 'prioridad': detalle.prioridad,
                 'responsable': detalle.responsable,
                 'estado': detalle.estado,
+                'etiquetado':  detalle.etiquetado,
+                'responsables': detalle.responsables,
+                'terminado': detalle.terminado
+
             }
             detalle_list.append(detalle_data)
             # Devolver los datos como una respuesta JSON
@@ -345,3 +349,49 @@ def eliminarOrdenProduccion(request):
             return JsonResponse({'status': 'error', 'message': 'La orden no está en estado creado.'})
 
     return JsonResponse({'status': 'error', 'message': 'Método no permitido.'})
+
+
+def ActualizarInfoItem(request):
+    if request.method == 'POST':
+        # Obtener los datos enviados desde el frontend
+        data = json.loads(request.body)
+        id_orden = data.get('idOrden')  # Obtener el id de la orden
+        productos = data.get('productos')  # Obtener la lista de productos  
+        print('productos desde el front', productos)
+
+        # Verificar si los datos están presentes
+        if not id_orden or not productos:
+            return JsonResponse({'error': 'Datos incompletos'}, status=400)
+        
+        # Obtener la transacción (orden) a actualizar
+        try:
+            transaccion = TransaccionOrden.objects.filter(id_orden=id_orden)  # Asume que hay una relación entre id_orden y la orden
+        except TransaccionOrden.DoesNotExist:
+            return JsonResponse({'error': 'Orden no encontrada'}, status=404)
+        
+        # Procesar los productos enviados
+        for producto in productos:
+            cod_inventario = producto['cod_inventario']
+            etiquetado = True if producto['etiquetado'] == "1" else False  # Convertir el 1 a True, 0 a False
+            responsable = producto['responsable']
+            terminado = True if producto['terminado'] == "1" else False  # Convertir el 1 a True, 0 a False
+            
+            # Buscar el producto asociado con el código de inventario en la base de datos
+            try:
+                producto_obj = transaccion.get(cod_inventario__cod_inventario=cod_inventario)
+                
+                # Si se encuentra el producto, actualizar los campos
+                producto_obj.etiquetado = etiquetado
+                producto_obj.responsables = responsable
+                producto_obj.terminado = terminado
+                
+                # Guardar los cambios
+                producto_obj.save()
+
+            except producto.DoesNotExist:
+                continue  # Si el producto no se encuentra, pasamos al siguiente producto
+
+        return JsonResponse({'success': True, 'message': 'Datos actualizados correctamente'})
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+        

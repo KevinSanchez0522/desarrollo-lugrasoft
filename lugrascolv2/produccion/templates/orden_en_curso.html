@@ -19,6 +19,8 @@
     var Producir = "{% url 'producir'%}"
     var IrAFacturar = "{% url 'ir_a_facturar' %}"
     var eliminarOrden = "{%url 'eliminarOrden' %}"
+    var ActualizarInfoItems= "{% url 'ActualizarInfo' %}" // Cambiar por la URL de tu servidor
+
 </script>
 
 <link rel="stylesheet" href="{% static 'orden_curso.css' %}">
@@ -64,9 +66,10 @@
             <h1>Detalle de Orden</h1>
             
             <div class="btn-facturacion">
+                <button type="submit" id="actualizar" data-id="{{ transaccion.id_orden.id_orden }}">Actualizar<i class="bi bi-arrow-clockwise"></i></button>
                 <button type="submit" id="bt-producir" data-id="{{ transaccion.id_orden.id_orden }}">Producir <i class="bi bi-gear"></i></button>
                 <button type="submit" id="bt-facturacion" data-id="{{ transaccion.id_orden.id_orden }}">Enviar a Facturación <i class="bi bi-cash"></i></button>
-                <button type="submit" id="bt-eliminar" data-id="{transaccion.id_orden.id_orden}">Eliminar <i class="bi bi-trash"></i></button>
+                <button type="submit" id="bt-eliminar" data-id="{{transaccion.id_orden.id_orden}}">Eliminar <i class="bi bi-trash"></i></button>
             </div>
         </div>
         <div>
@@ -91,6 +94,7 @@
                                 <th>Nombre</th>
                                 <th>Cantidad</th>
                                 <th>Etiquetado</th>
+                                <th>Responsables</th>
                                 <th>Terminado</th>
                             </tr>
                         </thead>

@@ -151,7 +151,8 @@ document.addEventListener('DOMContentLoaded', function(){
                         var cellNombre = row.insertCell(1);
                         var cellCantidad = row.insertCell(2);
                         var cellEtiquetado = row.insertCell(3);
-                        var cellTerminado = row.insertCell(4);
+                        var cellResponsables = row.insertCell(4);
+                        var cellTerminado = row.insertCell(5);
 
     
                         cellProducto.innerHTML = detalle.cod_inventario;
@@ -163,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         etiquetadoSlider.type = "range";
                         etiquetadoSlider.min = "0";
                         etiquetadoSlider.max = "1";
-                        etiquetadoSlider.value = 0; // Inicializar en 0 (false)
+                        etiquetadoSlider.value = detalle.etiquetado ? "1" : "0"; // Inicializar en 0 (false)
                         etiquetadoSlider.classList.add("slider");
                         etiquetadoSlider.setAttribute("data-status", "etiquetado");  // Asignamos una clase para identificarlo
 
@@ -172,11 +173,15 @@ document.addEventListener('DOMContentLoaded', function(){
                         terminadoSlider.type = "range";
                         terminadoSlider.min = "0";
                         terminadoSlider.max = "1";
-                        terminadoSlider.value = 0; // Inicializar en 0 (false)
+                        terminadoSlider.value =detalle.etiquetado ? "1" : "0"; // Inicializar en 0 (false)
                         terminadoSlider.classList.add("slider");
                         terminadoSlider.setAttribute("data-status", "terminado");  // Asignamos una clase para identificarlo
 
+                        var responsableInput = document.createElement("input")
+                        responsableInput.type = "text";  // Asumimos que es un campo de texto
+                        responsableInput.value = detalle.responsables;
                         // Insertar sliders en las celdas correspondientes
+                        cellResponsables.appendChild(responsableInput);
                         cellEtiquetado.appendChild(etiquetadoSlider);
                         cellTerminado.appendChild(terminadoSlider);
 
@@ -346,7 +351,72 @@ document.addEventListener('DOMContentLoaded', function(){
                 $('#modalDetalleOrden').hide();
             }
         });
+
+
+        $('#actualizar').on('click', function(event) {
+            event.preventDefault();
+            
+            
+            
+            // Inicializar un array para almacenar los datos de cada producto
+            var productosActualizados = [];
+        
+            // Obtener todas las filas de la tabla (excluyendo el encabezado)
+            $('#tabla-detalles tbody tr').each(function() {
+                var fila = $(this);
+                
+                // Obtener los valores de cada celda en la fila
+                var cod_inventario = fila.find('td').eq(0).text(); // Código de inventario
+                var nombre = fila.find('td').eq(1).text();          // Nombre del producto
+                var cantidad = fila.find('td').eq(2).text();        // Cantidad
+                var etiquetado = fila.find('input[data-status="etiquetado"]').val(); // Valor del slider etiquetado
+                var responsable = fila.find('td').eq(4).find('input').val();
+                var terminado = fila.find('input[data-status="terminado"]').val();   // Valor del slider terminado
+                 // Valor del campo responsable
+        
+                // Agregar los datos de este producto al array
+                productosActualizados.push({
+                    cod_inventario: cod_inventario,
+                    nombre: nombre,
+                    cantidad: cantidad,
+                    etiquetado: etiquetado,
+                    terminado: terminado,
+                    responsable: responsable
+                });
+                
+            });
+            console.log('productos', productosActualizados)
+            console.log('orden', idOrden)
+        
+            // Enviar los datos a través de AJAX
+            $.ajax({
+                url: ActualizarInfoItems, // Cambiar por la URL de tu servidor
+                type: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'),
+                            'Content-Type': 'application/json' ,
+                },
+                data: JSON.stringify({
+                    idOrden: idOrden,
+                    productos: productosActualizados
+                }),
+                success: function(response) {
+                    console.log('Datos actualizados con éxito:', response);
+                    // Realiza cualquier acción adicional después de la actualización, como cerrar el modal
+                    $('#modalDetalleOrden').hide();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al actualizar los datos:', xhr.responseText);
+                }
+            });
+        });
+
+
+
     });
+
+
+    
+    
 
     
         

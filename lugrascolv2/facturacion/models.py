@@ -132,6 +132,9 @@ class TransaccionOrden(models.Model):
     fecha_creacion = models.DateField()
     responsable = models.TextField()
     fecha_terminacion_orden = models.DateField(blank=True, null=True)
+    etiquetado = models.BooleanField(default=False)
+    terminado = models.BooleanField(default=False)
+    responsables = models.TextField(null=True)
 
     class Meta:
         managed = True
