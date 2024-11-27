@@ -27,12 +27,7 @@
 	</div>
 	<div class="filtro">
 		<i class="bi bi-funnel-fill"></i>
-		<select name="filtro" class="js-example-basic-single" id="filtroCodigo">filtrar
-			<option value="">Codigo</option>
-			{%for inv in inventario%}
-			<option value="{{inv.cod_inventario}}">{{inv.cod_inventario}}</option>
-			{%endfor%}
-		</select>
+		<input type="text" id="filtroCodigo" placeholder="filtrar">
 	</div>
 	<div class="ejuste">
 		<i class="bi bi-gear-fill"></i>

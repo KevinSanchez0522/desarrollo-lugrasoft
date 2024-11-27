@@ -36,23 +36,23 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     });
-    $('#filtroCodigo').on('change', function() {
-        var filtro = $(this).val(); // Valor seleccionado
-        var filas = $('.tabla tbody tr');
+    $('#filtroCodigo').on('keyup', function() {
+        var filtro = $(this).val().toLowerCase(); // Obtener el valor del filtro (convertido a minúsculas)
+        var filas = $('.tabla tbody tr'); // Seleccionar todas las filas de la tabla
 
         filas.each(function() {
             var fila = $(this);
-            var codigoInventario = fila.children('td').first().text(); // Obtener el ID del producto
+            var nombreProducto = fila.children('td').eq(1).text().toLowerCase(); // Obtener el nombre del producto (de la columna que contiene el nombre)
 
-            // Mostrar u ocultar la fila
+            // Mostrar u ocultar la fila en función de si el nombre contiene el filtro
             if (filtro) {
-                if (codigoInventario === filtro) {
-                    fila.show(); // Mostrar fila si coincide con el código
+                if (nombreProducto.indexOf(filtro) !== -1) { // Si el nombre contiene el filtro
+                    fila.show(); // Mostrar la fila
                 } else {
-                    fila.hide(); // Ocultar si no coincide
+                    fila.hide(); // Ocultar la fila si no contiene el filtro
                 }
             } else {
-                fila.show(); // Si no hay filtro, mostrar todas las filas
+                fila.show(); // Si el filtro está vacío, mostrar todas las filas
             }
         });
     });
