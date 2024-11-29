@@ -404,6 +404,7 @@ def EliminarItemOrden(request):
         data = json.loads(request.body)
         id_orden = data.get('idOrden')  # Obtener el id de la orden
         cod_inventario = data.get('id')  # Obtener el código de inventario
+        cantidad =  data.get('cantidad')
         
         transacciones= TransaccionOrden.objects.filter(id_orden=id_orden)
         if transacciones.exists():
@@ -432,8 +433,43 @@ def EliminarItemOrden(request):
 
                 # Ahora 'materias' tiene un diccionario con las materias y sus cantidades
                 print(materias)
-                
-            
+                for materia, cant_materia in materias.items():
+                    try:
+                        # Verificar si 'cant_materia' es un valor numérico válido
+                        if cant_materia is not None:
+                            cant_materia = float(cant_materia)  # Convertir cant_materia a float
+                        else:
+                            raise ValueError(f"Cantidad de materia {materia} es inválida (None).")
+
+                        # Verificar si 'cantidad' es un valor numérico válido
+                        if cantidad is not None:
+                            cantidad = float(cantidad)  # Convertir cantidad a float
+                        else:
+                            raise ValueError(f"Cantidad recibida es inválida (None).")
+
+                        # Buscar la materia en el modelo Inventarios por el código
+                        inventario = Inventario.objects.get(cod_inventario=materia)
+                        
+                        # Calcular la cantidad total
+                        cantidad_total = cant_materia * cantidad
+                        cantidades_actuales = float(inventario.cantidad)
+                        print(cantidades_actuales)
+                        cantidad_a_guardar = cantidad_total+cantidades_actuales
+
+                        # Asegurarnos de que el inventario tiene la cantidad que necesitamos
+                        inventario.cantidad = cantidad_a_guardar  # Sumamos la cantidad al inventario existente
+                        inventario.save()  # Guardamos los cambios
+
+                        print(f'Inventario actualizado para {materia}: nueva cantidad es {inventario.cantidad}')
+
+                    except ValueError as ve:
+                        print(f"Error de valor: {ve}")
+                    except Inventario.DoesNotExist:
+                        print(f'No se encontró la materia con el código {materia} en el inventario')
+                    except Exception as e:
+                        print(f'Ocurrió un error al actualizar el inventario para {materia}: {e}')
+            print(f'Eliminando transacción con código de inventario {cod_inventario}')
+            transaccion.delete()
             
             
             return JsonResponse({'success': True, 'message': 'Item eliminado correctamente'})
