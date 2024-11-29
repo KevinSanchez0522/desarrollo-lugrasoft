@@ -413,6 +413,25 @@ def EliminarItemOrden(request):
                 transaccion.delete()
             elif transaccion.estado == 'en proceso':
                 print('el item  va a devolver las materias primas')
+                materias_primas = Transformulas.objects.get(cod_inventario=cod_inventario)
+                print('codigo de formula', materias_primas.cod_inventario.cod_inventario)
+                materias = {}
+
+                # Iterar para obtener las materias y cantidades
+                for i in range(1, 11):  # Dado que tienes materia1 a materia10, y cant_materia1 a cant_materia10
+                    materia_field = f'materia{i}'  # Forma el nombre del campo materia1, materia2, ..., materia10
+                    cant_materia_field = f'cant_materia{i}'  # Forma el nombre del campo cant_materia1, cant_materia2, ..., cant_materia10
+                    
+                    # Usar getattr para obtener los valores de los campos
+                    materia = getattr(materias_primas, materia_field, None)
+                    cant_materia = getattr(materias_primas, cant_materia_field, None)
+                    
+                    # Si la materia y su cantidad existen, los añadimos al diccionario
+                    if materia and cant_materia:
+                        materias[materia] = cant_materia
+
+                # Ahora 'materias' tiene un diccionario con las materias y sus cantidades
+                print(materias)
                 
             
             

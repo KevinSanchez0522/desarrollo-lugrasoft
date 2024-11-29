@@ -77,7 +77,7 @@ def guardar_datos(request):
         # Obtener los datos del formulario
         nombre = request.POST.get('nombre')
         codig = int(request.POST.get('codig'))  # Se supone que este es el cod_inventario
-        cantidad =0
+        cantidad = float(0)
         id_proveedor = 901452546
         nombre_proveedor = 'LUGRASCOL S.A.S'
         direccion_proveedor = 'KM 2 VDA LAGUNETAS FINCA LOS DOMINGUEZ'

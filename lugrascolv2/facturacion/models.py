@@ -286,7 +286,7 @@ class DjangoSession(models.Model):
 class Inventario(models.Model):
     cod_inventario = models.IntegerField(primary_key=True)
     nombre = models.TextField()
-    cantidad = models.IntegerField()
+    cantidad = models.DecimalField(max_digits=10, decimal_places=2)
     id_proveedor = models.ForeignKey('Proveedores', models.DO_NOTHING, db_column='id_proveedor')
     tipo = models.TextField(blank=True, null=True)
 

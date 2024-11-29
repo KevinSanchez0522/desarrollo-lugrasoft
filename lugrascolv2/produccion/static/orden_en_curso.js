@@ -422,6 +422,7 @@ document.addEventListener('DOMContentLoaded', function(){
             // Obtener la fila correspondiente al icono de eliminar
             var fila = $(this).closest('tr');
             var id = fila.find('td').eq(0).text();  // Suponiendo que el ID está en la primera celda
+            var cantidad = fila.find('td').eq(2).text();
             console.log('id', id, 'orden', idOrden);
             
             // Mostrar un cuadro de confirmación antes de continuar con la eliminación
@@ -438,7 +439,8 @@ document.addEventListener('DOMContentLoaded', function(){
                     },
                     data: JSON.stringify({
                         id: id,
-                        idOrden: idOrden
+                        idOrden: idOrden,
+                        cantidad: cantidad
                     }),
                     success: function(response) {
                         console.log('Item eliminado con éxito:', response);
