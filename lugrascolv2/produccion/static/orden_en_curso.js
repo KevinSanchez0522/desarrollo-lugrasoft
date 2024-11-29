@@ -153,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         var cellEtiquetado = row.insertCell(3);
                         var cellResponsables = row.insertCell(4);
                         var cellTerminado = row.insertCell(5);
+                        var cellEliminar = row.insertCell(6);
 
     
                         cellProducto.innerHTML = detalle.cod_inventario;
@@ -180,10 +181,15 @@ document.addEventListener('DOMContentLoaded', function(){
                         var responsableInput = document.createElement("input")
                         responsableInput.type = "text";  // Asumimos que es un campo de texto
                         responsableInput.value = detalle.responsables;
+
+                        var EliminarItem = document.createElement("i")
+                        EliminarItem.className= "bi bi-trash";
+
                         // Insertar sliders en las celdas correspondientes
                         cellResponsables.appendChild(responsableInput);
                         cellEtiquetado.appendChild(etiquetadoSlider);
                         cellTerminado.appendChild(terminadoSlider);
+                        cellEliminar.appendChild(EliminarItem);
 
 
                         estado = detalle.estado;
@@ -408,6 +414,43 @@ document.addEventListener('DOMContentLoaded', function(){
                     console.error('Error al actualizar los datos:', xhr.responseText);
                 }
             });
+        });
+
+        $(document).on('click', '.bi-trash', function(event) {
+            event.preventDefault();
+            
+            // Obtener la fila correspondiente al icono de eliminar
+            var fila = $(this).closest('tr');
+            var id = fila.find('td').eq(0).text();  // Suponiendo que el ID está en la primera celda
+            console.log('id', id, 'orden', idOrden);
+            
+            // Mostrar un cuadro de confirmación antes de continuar con la eliminación
+            var confirmacion = confirm("¿Estás seguro de que deseas eliminar el ítem?", id);
+            
+            // Si el usuario confirma la eliminación
+            if (confirmacion) {
+                $.ajax({
+                    url: EliminarItem,  // Cambiar por la URL de tu servidor
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json',
+                    },
+                    data: JSON.stringify({
+                        id: id,
+                        idOrden: idOrden
+                    }),
+                    success: function(response) {
+                        console.log('Item eliminado con éxito:', response);
+                        fila.remove();  // Eliminar la fila de la tabla
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al eliminar el item:', xhr.responseText);
+                    }
+                });
+            } else {
+                console.log("Eliminación cancelada por el usuario.");
+            }
         });
 
 

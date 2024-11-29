@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import pedido, add_cliente, obtener_numero_produccion, obtener_materias_primas, crear_transaccion_orden, ver_orden_en_curso, detalles_orden,producir, irAfacturar, eliminarOrdenProduccion, ActualizarInfoItem
+from .views import pedido, add_cliente, obtener_numero_produccion, obtener_materias_primas, crear_transaccion_orden, ver_orden_en_curso, detalles_orden,producir, irAfacturar, eliminarOrdenProduccion, ActualizarInfoItem,EliminarItemOrden
 urlpatterns = [
     path('', pedido, name= 'pedidos'),
     path('cliente/',add_cliente, name='addcliente' ),
@@ -12,6 +12,7 @@ urlpatterns = [
     path('terminado/', irAfacturar, name= 'ir_a_facturar'),
     path('eliminar-orden/', eliminarOrdenProduccion, name= 'eliminarOrden'),
     path('Actualizar/', ActualizarInfoItem, name='ActualizarInfo'),
+    path('eliminarItemOrden', EliminarItemOrden, name='eliminarItem'),
     
     
 ]

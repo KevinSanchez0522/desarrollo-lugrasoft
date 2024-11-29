@@ -394,4 +394,30 @@ def ActualizarInfoItem(request):
         return JsonResponse({'success': True, 'message': 'Datos actualizados correctamente'})
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+
+def EliminarItemOrden(request):
+    if request.method == 'POST':
+        
+        # Obtener los datos enviados desde el frontend
+        data = json.loads(request.body)
+        id_orden = data.get('idOrden')  # Obtener el id de la orden
+        cod_inventario = data.get('id')  # Obtener el código de inventario
+        
+        transacciones= TransaccionOrden.objects.filter(id_orden=id_orden)
+        if transacciones.exists():
+            transaccion = transacciones.get(cod_inventario__cod_inventario=cod_inventario)
+            if transaccion.estado == 'creado':
+                print('el item va a ser eliminado', transaccion.cod_inventario)
+                transaccion.delete()
+            elif transaccion.estado == 'en proceso':
+                print('el item  va a devolver las materias primas')
+                
+            
+            
+            
+            return JsonResponse({'success': True, 'message': 'Item eliminado correctamente'})
+        else:
+            return JsonResponse({'error': 'No se encontró la orden'}, status=404)
         
