@@ -65,7 +65,7 @@ class Remisiones(models.Model):
 
 class SalidasMpOrden(models.Model):
     cod_inventario = models.ForeignKey('Inventario', models.DO_NOTHING, db_column='cod_inventario')
-    cantidad = models.IntegerField()
+    cantidad = models.DecimalField(max_digits=10, decimal_places=2)
     id_orden = models.ForeignKey(OrdenProduccion, models.DO_NOTHING, db_column='id_orden')
     fecha_e_produccion = models.DateField(db_column='fecha_E_produccion', blank=True, null=True)  # Field name made lowercase.
 

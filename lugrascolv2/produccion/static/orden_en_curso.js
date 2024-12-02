@@ -320,6 +320,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 return;
             }
             
+            
             if (!confirm('¿Estás seguro de enviar los datos?')) {
                 return;
             }

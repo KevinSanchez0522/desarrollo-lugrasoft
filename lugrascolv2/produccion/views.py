@@ -275,14 +275,14 @@ def producir(request):
                 # Crear una instancia de SalidasMpOrden y guardarla
                 salida_mp_orden = SalidasMpOrden(
                     cod_inventario=     cod_inventario,
-                    cantidad=cantidad_requerida,
+                    cantidad=float(cantidad_requerida),
                     id_orden=obj_orden,  # Asegúrate de que 'idOrden' sea válido
                     fecha_e_produccion = fechaActual,
                 )
                 salida_mp_orden.save()
                 
                 # Actualizar el inventario correspondiente
-                actualizado = actualizar_inventario(codigo, cantidad_requerida)
+                actualizado = actualizar_inventario(codigo, float(cantidad_requerida))
                 if not actualizado:
                     return JsonResponse({'error': f'Error al actualizar inventario para el código {codigo}.'}, status=500)
 
