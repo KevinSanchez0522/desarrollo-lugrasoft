@@ -371,8 +371,11 @@ def detallesremi(request):
             for transaccion in transacciones:
                 # Obtener detalles del producto desde el modelo Inventario
                 producto = Inventario.objects.get(cod_inventario=transaccion.cod_inventario)
-                producto_transformula = Transformulas.objects.get(cod_inventario=producto.cod_inventario)
-                peso = producto_transformula.peso
+                if Transformulas.objects.filter(cod_inventario=producto.cod_inventario).exists():
+                    producto_transformula = Transformulas.objects.get(cod_inventario=producto.cod_inventario)
+                    peso = producto_transformula.peso
+                else:
+                    peso = 0
                 # Agregar los detalles del producto a la lista
                 productos.append({
                     'cod_inventario': producto.cod_inventario,

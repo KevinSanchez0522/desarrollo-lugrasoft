@@ -638,9 +638,16 @@ def detallesFactura(request):
                 # Obtener detalles del producto desde el modelo Inventario
                 producto = Inventario.objects.get(cod_inventario=transaccion.cod_inventario)
                 transaccion_total = transaccion.cantidad * transaccion.precio_venta
-                producto_transformula = Transformulas.objects.get(cod_inventario=producto.cod_inventario)
-                peso = producto_transformula.peso
-                print('peso producto', producto_transformula.cod_inventario, peso)
+                
+                if Transformulas.objects.filter(cod_inventario=producto.cod_inventario).exists():
+                    producto_transformula = Transformulas.objects.get(cod_inventario=producto.cod_inventario)
+                    peso = producto_transformula.peso
+                else:
+                    peso = 0
+                
+                
+                
+                
                 total+=transaccion_total
                 
                 subtotal= round(total/1.19)
