@@ -224,7 +224,7 @@ def actualizar_inventario(cod_inventario, cantidad_requerida):
         inventario = Inventario.objects.get(cod_inventario=cod_inventario)
         
         # Actualizar la cantidad en el inventario
-        inventario.cantidad -= cantidad_requerida
+        inventario.cantidad = float(inventario.cantidad)-cantidad_requerida
         inventario.save()
 
         return True
