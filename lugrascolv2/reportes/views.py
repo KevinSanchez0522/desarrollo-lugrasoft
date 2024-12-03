@@ -371,7 +371,8 @@ def detallesremi(request):
             for transaccion in transacciones:
                 # Obtener detalles del producto desde el modelo Inventario
                 producto = Inventario.objects.get(cod_inventario=transaccion.cod_inventario)
-                
+                producto_transformula = Transformulas.objects.get(cod_inventario=producto.cod_inventario)
+                peso = producto_transformula.peso
                 # Agregar los detalles del producto a la lista
                 productos.append({
                     'cod_inventario': producto.cod_inventario,
@@ -385,7 +386,8 @@ def detallesremi(request):
                     'telefono_cliente': cliente.telefono,
                     'direccion_cliente': cliente.direccion,
                     'correo_cliente': cliente.email,
-                    'subtotal': f"{subtotal:,}"
+                    'subtotal': f"{subtotal:,}",
+                    'peso':peso
                 })
             
             # Preparar los datos para enviar en la respuesta JSON
