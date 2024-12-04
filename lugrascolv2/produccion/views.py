@@ -183,7 +183,7 @@ def ver_orden_en_curso(request):
 
 def detalles_orden(request, id_orden):
     try:
-        detalles = TransaccionOrden.objects.filter(id_orden = id_orden)
+        detalles = TransaccionOrden.objects.filter(id_orden = id_orden, estado__in=['creado', 'en proceso'])
 
         
         detalle_list = []
@@ -302,27 +302,68 @@ def irAfacturar (request):
         idOrden = request.POST.get('id_orden')
         estado = request.POST.get('CambiarEstado', 'por facturar')
         fechaActual = request.POST.get('fecha')
-        print('fecha actual:' , fechaActual)
+        materias_primas = request.POST.get('productosTerminados')
+        print('productos', materias_primas)
 
         try:
+            materias_primas = json.loads(materias_primas)
             # Filtrar las transacciones relacionadas con la orden
             transacciones = TransaccionOrden.objects.filter(id_orden=idOrden)
 
             # Iterar sobre las transacciones y actualizar el estado
             for transaccion in transacciones:
-                transaccion.estado = estado
-                transaccion.fecha_terminacion_orden = fechaActual
-                transaccion.save()
-                
-
+                #transaccion.estado = estado
+                #transaccion.fecha_terminacion_orden = fechaActual
+                #transaccion.save()
                 # Obtener el cod_inventario y cantidad de la transacción
                 cod_inventario = transaccion.cod_inventario.cod_inventario
+                print('codigo',cod_inventario)
                 cantidad = transaccion.cantidad
+                print('cantidad en la base de datos',cantidad)
+                for producto in materias_primas:
+                    
+                    print('producto', producto['cod_inventario'])
+                    if int(producto['cod_inventario']) == int(cod_inventario):
+                        print('los codigos existen y estan')
+                        cantidad_recibida = int(producto['cantidad'])
+                        print(f'Comparando cantidad recibida: {cantidad_recibida} con cantidad de la transacción: {cantidad}')
+                        if cantidad_recibida == cantidad:
+                            transaccion.estado = estado
+                            transaccion.fecha_terminacion_orden = fechaActual
+                            print(f'Las cantidades coinciden. Actualizando estado de la transacción para facturar el producto {producto["cod_inventario"]}')
+                            transaccion.save()
 
-                # Actualizar el inventario correspondiente
-                inventario = get_object_or_404(Inventario, cod_inventario=cod_inventario)
-                inventario.cantidad += cantidad
-                inventario.save()
+                            # Actualizar el inventario correspondiente
+                            inventario = get_object_or_404(Inventario, cod_inventario=cod_inventario)
+                            inventario.cantidad += cantidad
+                            inventario.save()
+                            print(f'Inventario actualizado: {inventario.cod_inventario}, nueva cantidad: {inventario.cantidad}')
+                        elif cantidad_recibida < cantidad:
+                            print(f'La cantidad recibida es menor. Se va a crear una transacción auxiliar para facturar {producto["cod_inventario"]}')
+                            nueva_transaccion = TransaccionOrden.objects.create(
+                                id_orden=transaccion.id_orden,
+                                cod_inventario=transaccion.cod_inventario,
+                                cantidad=cantidad_recibida,
+                                estado='por facturar',  # O el estado que corresponda
+                                fecha_creacion=transaccion.fecha_creacion,
+                                fecha_entrega= transaccion.fecha_entrega,
+                                prioridad= transaccion.prioridad
+                            )
+                            #nueva_transaccion.save()
+                            print(f'Nueva transacción creada: cod_inventario={producto["cod_inventario"]}, cantidad={cantidad_recibida}')
+                            total = cantidad - cantidad_recibida
+                            print(f'Cantidad restante para producción: {total}')
+                            transaccion.cantidad =  total
+                            
+                            transaccion.save()
+                            
+                            # Actualizamos el inventario, sumando la cantidad recibida
+                            inventario = get_object_or_404(Inventario, cod_inventario=cod_inventario)
+                            inventario.cantidad = cantidad_recibida  # sumamos la cantidad del inventario
+                            inventario.save()  # Guardamos el inventario actualizado
+                            print(f'Inventario actualizado después de la transacción auxiliar: {inventario.cod_inventario}, nueva cantidad: {inventario.cantidad}')
+
+
 
             return JsonResponse({'message': 'Datos recibidos y almacenados correctamente.'})
         
@@ -378,7 +419,7 @@ def ActualizarInfoItem(request):
             
             # Buscar el producto asociado con el código de inventario en la base de datos
             try:
-                producto_obj = transaccion.get(cod_inventario__cod_inventario=cod_inventario)
+                producto_obj = transaccion.get(cod_inventario__cod_inventario=cod_inventario, estado__in=['en proceso'])
                 
                 # Si se encuentra el producto, actualizar los campos
                 producto_obj.etiquetado = etiquetado
@@ -406,7 +447,7 @@ def EliminarItemOrden(request):
         cod_inventario = data.get('id')  # Obtener el código de inventario
         cantidad =  data.get('cantidad')
         
-        transacciones= TransaccionOrden.objects.filter(id_orden=id_orden)
+        transacciones= TransaccionOrden.objects.filter(id_orden=id_orden, estado__in=['en proceso'])
         if transacciones.exists():
             transaccion = transacciones.get(cod_inventario__cod_inventario=cod_inventario)
             if transaccion.estado == 'creado':

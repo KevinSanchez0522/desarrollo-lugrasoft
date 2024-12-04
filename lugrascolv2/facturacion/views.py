@@ -98,7 +98,7 @@ def productos_facturar(request):
         for id_orden in id_ordenes:
             print('ordenes', id_orden)
             # Obtener las transacciones de la orden actual
-            transacciones = TransaccionOrden.objects.filter(id_orden=id_orden)
+            transacciones = TransaccionOrden.objects.filter(id_orden=id_orden, estado__in=['por facturar'])
 
             # Lista para almacenar los productos de la orden actual
             productos = []
@@ -232,7 +232,7 @@ def PFacturar(request):
                     # Por ejemplo, realizar una acción especial, o simplemente permitir continuar con la factura.
                     print("Cliente es Lugrascol, realizando acción especial.")
                     for orden in orden_id:
-                        updateEstado = TransaccionOrden.objects.filter(id_orden=orden)
+                        updateEstado = TransaccionOrden.objects.filter(id_orden=orden,estado__in=['por facturar'])
                         updateEstado.update(estado=estado)
                         
                         
@@ -317,7 +317,7 @@ def PFacturar(request):
                     total_guardar = convertir_a_numero(total)
                     print('total guardar', total_guardar)
                     for orden in orden_id:
-                        updateEstado = TransaccionOrden.objects.filter(id_orden=orden)
+                        updateEstado = TransaccionOrden.objects.filter(id_orden=orden, estado__in=['por facturar'])
                         updateEstado.update(estado=estado)
 
                     # Crear instancia de Facturas

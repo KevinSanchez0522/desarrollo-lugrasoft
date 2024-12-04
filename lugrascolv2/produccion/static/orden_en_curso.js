@@ -154,6 +154,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         var cellResponsables = row.insertCell(4);
                         var cellTerminado = row.insertCell(5);
                         var cellEliminar = row.insertCell(6);
+                        var cellContador = row.insertCell(7);
 
     
                         cellProducto.innerHTML = detalle.cod_inventario;
@@ -190,6 +191,48 @@ document.addEventListener('DOMContentLoaded', function(){
                         cellEtiquetado.appendChild(etiquetadoSlider);
                         cellTerminado.appendChild(terminadoSlider);
                         cellEliminar.appendChild(EliminarItem);
+
+                        // Crear un contenedor para el contador con botones de "+" y "-"
+                        var contadorDiv = document.createElement("div");  // Crear el contenedor div
+                        contadorDiv.classList.add("contador-container");  // Clase para estilos
+
+                        var botonMenos = document.createElement("button");  // Botón de "menos"
+                        botonMenos.textContent = "-";
+                        botonMenos.classList.add("contador-boton");
+
+                        var contadorInput = document.createElement("input");  // Campo de entrada de número
+                        contadorInput.type = "number";
+                        contadorInput.min = "0"; // Mínimo 0
+                        contadorInput.max = detalle.cantidad; // Máximo valor igual a la cantidad
+                        contadorInput.value = "0"; // Inicializamos en 0
+                        contadorInput.classList.add("contador");  // Clase para identificación
+
+                        var botonMas = document.createElement("button");  // Botón de "más"
+                        botonMas.textContent = "+";
+                        botonMas.classList.add("contador-boton");
+
+                        // Insertar los botones y el input en el contenedor
+                        contadorDiv.appendChild(botonMenos);
+                        contadorDiv.appendChild(contadorInput);
+                        contadorDiv.appendChild(botonMas);
+
+                        // Insertar el contenedor en la celda correspondiente
+                        cellContador.appendChild(contadorDiv);
+
+                        // Lógica de los botones para incrementar y decrementar el contador
+                        botonMenos.addEventListener("click", function() {
+                            var currentValue = parseInt(contadorInput.value, 10);
+                            if (currentValue > 0) {
+                                contadorInput.value = currentValue - 1;
+                            }
+                        });
+
+                        botonMas.addEventListener("click", function() {
+                            var currentValue = parseInt(contadorInput.value, 10);
+                            if (currentValue < detalle.cantidad) {
+                                contadorInput.value = currentValue + 1;
+                            }
+                        });
 
 
                         estado = detalle.estado;
@@ -319,7 +362,36 @@ document.addEventListener('DOMContentLoaded', function(){
                 alert('La orden no se puede enviar a facturacion en su estado actual.');
                 return;
             }
-            
+            var productosTerminados = [];
+            var productosNoTerminados = []
+            $('#tabla-detalles tbody tr').each(function() {
+                var row = $(this);
+                var terminado = row.find('input[data-status="terminado"]').val() === "1"; 
+                console.log('valor terminado', terminado)
+                var codInventario = row.find('td').eq(0).text(); // Obtener el cod_inventario de la primera celda
+                console.log('cod', codInventario)
+                var cantidadContada =  row.find('td').eq(7).find('input').val();// Obtener el valor del contador
+                console.log('cantidad', cantidadContada)
+        
+                if (terminado && cantidadContada > 0) {
+                    // Si el producto está terminado y el contador tiene valor, lo agregamos a productosTerminados
+                    productosTerminados.push({ cod_inventario: codInventario, cantidad: cantidadContada });
+                } else if (cantidadContada > 0) {
+                    // Si el producto no está terminado pero el contador tiene valor, lo agregamos a productosNoTerminados
+                    productosNoTerminados.push({ cod_inventario: codInventario, cantidad: cantidadContada });
+                }
+            });
+                // Verificamos si hay productos no terminados
+            if (productosNoTerminados.length > 0) {
+                var confirmPartial = confirm('Hay productos que no están terminados. ¿Deseas enviarlos como entrega parcial?');
+                if (!confirmPartial) {
+                    alert('No se enviarán los productos no terminados.');
+                    return; // Si no se acepta entrega parcial, no se enviarán los productos no terminados
+                }
+            }
+
+
+            console.log('PRODUCTOS TERMINADOS', productosTerminados)
             
             if (!confirm('¿Estás seguro de enviar los datos?')) {
                 return;
@@ -333,6 +405,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     id_orden: idOrden,
                     CambiarEstado: 'por facturar',
                     fecha: fecha,
+                    productosTerminados: JSON.stringify(productosTerminados)
                 },
                 success: function (response){
                     alert('Datos enviados correctamente')

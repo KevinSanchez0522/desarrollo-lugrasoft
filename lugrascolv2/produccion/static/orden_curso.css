@@ -280,3 +280,35 @@ span{
     cursor: pointer;
     border: 2px solid #4CAF50; /* Borde verde por defecto */
 }
+
+
+/*ESTILOOS PARA EL CONTENEDOR DEL CONTADOR */
+.contador-container {
+    display: flex;
+    align-items: center;
+}
+
+.contador-boton {
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    margin: 0 5px;
+}
+
+.contador-boton:hover {
+    background-color: #ddd;
+}
+
+.contador {
+    width: 60px;
+    text-align: center;
+    padding: 5px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
