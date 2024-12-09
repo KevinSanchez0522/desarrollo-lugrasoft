@@ -85,7 +85,7 @@
 		<div class="modal-content">
 			<span class="close">&times;</span>
 			<div class="form-container2">
-				<form action="{%url 'addcliente'%}" method="post" class="form-box" onsubmit="return confirmarEnvio()">
+				<form action="{% url 'addcliente' %}" method="post" class="form-box" onsubmit="return confirmarEnvio()">
 					{% csrf_token %}
 				<h2>Agregar Cliente nuevo</h2>
 				<div class="form-group">

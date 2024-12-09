@@ -9,6 +9,6 @@ urlpatterns = [
     path('actualizar_transformula/', actualizar_transformula, name='actualizar_transformula'),
     path('eliminarF/<int:cod_inventario>/', eliminarFormula , name= 'EliminarFormula'),
     path('editarFormula/<int:cod_inventario>/', editar_formula, name='editaFormula'),
-    path('updateFormula/', update_transformula, name= 'actualizar')
+    path('updateFormula/', update_transformula, name= 'actualizar'),
     
 ]

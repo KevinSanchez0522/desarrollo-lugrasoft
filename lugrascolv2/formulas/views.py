@@ -4,6 +4,7 @@ from facturacion.models import Inventario, TransMp, Transformulas, Proveedores, 
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist 
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -369,3 +370,8 @@ def update_transformula(request):
     else:
         # Devolver una respuesta de error si la solicitud no es POST
         return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
+    
+    
+    
+    
+    

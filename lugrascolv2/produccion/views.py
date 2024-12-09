@@ -29,11 +29,12 @@ def add_cliente(request):
             direccion = request.POST.get('direccion')
             telefono = request.POST.get('telefono')
             email = request.POST.get('email')
+            print('ingresamos a add cliente')
 
             # Verificar si ya existe un proveedor con el mismo NIT
             if Clientes.objects.filter(nit=nit).exists():
                 # Mostrar una alerta indicando que el proveedor ya existe
-                return render(request, 'orden_compra.html', {'clientes_existente': True})
+                return JsonResponse({'clientes_existente': True})
 
             # Crear una nueva instancia del modelo Proveedor y guardarla en la base de datos
             nuevo_Cliente = Clientes(nit=nit, nombre=nombre, direccion=direccion, telefono=telefono, email=email)

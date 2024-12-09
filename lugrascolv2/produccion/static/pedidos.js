@@ -318,7 +318,7 @@ function actualizarVisualizacionMateriasPrimasRequeridas(materiasPrimasRequerida
             modal2.style.display = "none";
         }
     };
-
+    /*
     form.addEventListener("submit", function(event) {
         // Mostrar una confirmación antes de enviar los datos
         var confirmacion = confirm("¿Estás seguro de que deseas enviar los datos?");
@@ -336,7 +336,7 @@ function actualizarVisualizacionMateriasPrimasRequeridas(materiasPrimasRequerida
             }
         }
     });
-
+    */
 
 
 
@@ -487,4 +487,14 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+function confirmarEnvio() {
+    var confirmacion = confirm("¿Estás seguro de que deseas enviar los datos?");
+    if (!confirmacion) {
+        // Si el usuario cancela, evitamos que el formulario se envíe
+        return false;
+    }
+    // Aquí puedes agregar lógica adicional si necesitas validar que el cliente no exista.
+    return true; // Si el usuario confirma, enviamos el formulario
 }

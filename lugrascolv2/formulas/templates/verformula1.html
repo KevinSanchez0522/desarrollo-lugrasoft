@@ -12,6 +12,9 @@
 
 
 {% block areatrabajo%}
+
+
+
 <link rel="stylesheet" href="{% static 'verformula4.css'%}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -22,9 +25,7 @@
 
 <div class="selector-formulas">
     <select name="formulas" id="selec-form"  class="js-example-basic-multiple" multiple="multiple">
-        {% for formula in formulas %}
-        <option value="{{ formula.cod_inventario.cod_inventario }}">{{formula.cod_inventario.cod_inventario}}-{{formula.nombre }}</option>
-        {% endfor %}
+
     </select>
 </div>
 <div class= "tabla">
@@ -203,156 +204,7 @@
     </div>
 </div>
 {%endfor%}
-{%for formula in formulas%}
-<div id= "editModal{{ forloop.counter }}" class="modal">
-    <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <!-- Contenido del modal de vista -->
-        <h2>{{formula.nombre}}</h2>
-        
-        <div class="compact-data-container">
-            
-            <div class="data-item">
-                <label for="codig">Codigo:</label>
-                <span>{{formula.cod_inventario.cod_inventario}}</span>
-            </div>
-            <div class="data-item">
-                <label for="costinderec">Costos Indirectos:</label>
-                <input type="number" id="costos{{ forloop.counter }}" value="{{ formula.costosindirectos }}">
-            </div>
-            <div class="data-item">
-                <label for="utilidad">% Utilidad:</label>
-                <input type="number" id="utilidad{{ forloop.counter }}" value="{{ formula.pocentajeutilidad }}">
-            </div>
-            <div class="data-item">
-                <label for="V_Iva">% Valor IVA:</label>
-                <input type="number" id="iva{{ forloop.counter }}" value="{{ formula.porcentajeiva }}">
-            </div>
 
-            <div class="data-item">
-                <label for="iva_Costo"> Iva Costo:</label>
-                <span>{{ formula.iva_costo|floatformat:"2"|intcomma }}</span>
-            </div>
-            <div class="data-item">
-                <label for="ST_costo"> SubTotal Costo:</label>
-                <span>{{ formula.subtotal_costo|floatformat:"2"|intcomma }}</span>
-            </div>
-            <div class="data-item">
-                <label for="T_costo"> Total Costo:</label>
-                <span>{{ formula.total_costo|floatformat:"2"|intcomma }}</span>
-            </div>
-            <div class="data-item">
-                <label for="ST_Venta"> SubTotal venta:</label>
-                <span>{{ formula.subtotal_venta|floatformat:"2"|intcomma }}</span>
-            </div>
-            <div class="data-item">
-                <label for="utilidad_bruta"> Ganancia:</label>
-                <span>{{formula.utilidad_bruta|floatformat:"2"|intcomma}}</span>
-            </div>
-            <div class="data-item total-venta">
-                <label for="T_Venta"> Total venta:</label>
-                <span>{{ formula.total_venta|floatformat:"2"|intcomma }}</span>
-            </div>
-            
-        
-        </div>
-        <div class= "tabla">
-            <table class="table" id="tabla-formulario">
-                <thead class="table">
-                    <tr class="encabezado">
-                        <td>Id Producto</td>
-                        <td> Nombre </td>
-                        <td>Cantidad</td>
-                        <td>Costo unitario</td>
-                </thead>
-                <tbody>
-                    {% if formula.materia1 or formula.nombre_mp1 or formula.cant_materia1 or formula.costo_unitario1 %}
-                    <tr>   
-                        <td>{{formula.materia1}}</td>
-                        <td>{{formula.nombre_mp1}}</td>
-                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia1 }}"></td>
-                        <td>{{formula.costo_unitario1}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if formula.materia2 or formula.nombre_mp2 or formula.cant_materia2 or formula.costo_unitario2 %}
-                    <tr>   
-                        <td>{{formula.materia2}}</td>
-                        <td>{{formula.nombre_mp2}}</td>
-                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia2 }}"></td>
-                        <td>{{formula.costo_unitario2}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if formula.materia3 or formula.nombre_mp3 or formula.cant_materia3 or formula.costo_unitario3 %}
-                    <tr>   
-                        <td>{{formula.materia3}}</td>
-                        <td>{{formula.nombre_mp3}}</td>
-                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia3 }}"></td>
-                        <td>{{formula.costo_unitario3}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if formula.materia4 or formula.nombre_mp4 or formula.cant_materia4 or formula.costo_unitario4 %}
-                    <tr>   
-                        <td>{{formula.materia4}}</td>
-                        <td>{{formula.nombre_mp4}}</td>
-                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia4 }}"></td>
-                        <td>{{formula.costo_unitario4}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if formula.materia5 or formula.nombre_mp5 or formula.cant_materia5 or formula.costo_unitario5 %}
-                    <tr>   
-                        <td>{{formula.materia5}}</td>
-                        <td>{{formula.nombre_mp5}}</td>
-                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia5 }}"></td>
-                        <td>{{formula.costo_unitario5}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if formula.materia6 or formula.nombre_mp6 or formula.cant_materia6 or formula.costo_unitario6 %}
-                    <tr>   
-                        <td>{{formula.materia6}}</td>
-                        <td>{{formula.nombre_mp6}}</td>
-                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia6 }}"></td>
-                        <td>{{formula.costo_unitario6}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if formula.materia7 or formula.nombre_mp7 or formula.cant_materia7 or formula.costo_unitario7 %}
-                    <tr>   
-                        <td>{{formula.materia7}}</td>
-                        <td>{{formula.nombre_mp7}}</td>
-                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia7 }}"></td>
-                        <td>{{formula.costo_unitario7}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if formula.materia8 or formula.nombre_mp8 or formula.cant_materia8 or formula.costo_unitario8 %}
-                    <tr>   
-                        <td>{{formula.materia8}}</td>
-                        <td>{{formula.nombre_mp8}}</td>
-                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia8 }}"></td>
-                        <td>{{formula.costo_unitario8}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if formula.materia9 or formula.nombre_mp9 or formula.cant_materia9 or formula.costo_unitario9 %}
-                    <tr>   
-                        <td>{{formula.materia9}}</td>
-                        <td>{{formula.nombre_mp9}}</td>
-                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia9 }}"></td>
-                        <td>{{formula.costo_unitario9}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if formula.materia10 or formula.nombre_mp10 or formula.cant_materia10 or formula.costo_unitario10 %}
-                    <tr>   
-                        <td>{{formula.materia10}}</td>
-                        <td>{{formula.nombre_mp10}}</td>
-                        <td><input type="number" id="cantidad{{ forloop.counter }}" value="{{ formula.cant_materia10 }}"></td>
-                        <td>{{formula.costo_unitario10}}</td>
-                    </tr>
-                    {% endif %}
-                </tbody>
-            </table>	
-        </div>
-        <button id="btnEnviar{{ forloop.counter }}" data-formula-id="{{ formula.cod_inventario.cod_inventario }}">Enviar</button>
-    </div>
-</div>
-{%endfor%}
 
 {%endblock areatrabajo%}
 
