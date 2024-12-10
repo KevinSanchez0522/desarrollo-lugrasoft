@@ -26,7 +26,7 @@
 <div class="selector-formulas">
     <select name="formulas" id="selec-form"  class="js-example-basic-multiple" multiple="multiple">
         {%for formula in formulas %}
-        <option value="{{formula.id_formula}}">{{formula.id_formula}}--{{formula.nombre}}</option>
+        <option value="{{formula.cod_inventario.cod_inventario}}">{{formula.cod_inventario.cod_inventario}}--{{formula.nombre}}</option>
         {%endfor%}
     </select>
 </div>
