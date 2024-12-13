@@ -312,3 +312,18 @@ span{
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+.btn-imprimir{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+#imprimir{
+    padding: 6px 18px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+}

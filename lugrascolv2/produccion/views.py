@@ -137,7 +137,7 @@ def crear_transaccion_orden(request):
                     fecha_entrega=fecha_estimada_entrega,
                     estado='creado',
                     cod_inventario=inventario,
-                    cantidad=cantidad,
+                    cantidad=float(cantidad),
                     id_orden=orden_produccion,
                     prioridad=prioridad,
                     fecha_creacion=fecha_actual,

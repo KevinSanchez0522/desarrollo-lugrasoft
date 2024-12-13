@@ -21,6 +21,7 @@
     var eliminarOrden = "{%url 'eliminarOrden' %}"
     var ActualizarInfoItems= "{% url 'ActualizarInfo' %}" // Cambiar por la URL de tu servidor
     var EliminarItem = "{% url 'eliminarItem' %}"
+    var estilos = "{% static 'orden_curso.css'%}"
 
 </script>
 
@@ -64,7 +65,7 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <div class="cabeceraModal">
-            <h1>Detalle de Orden</h1>
+            <h1>Detalle de Orden <span id="ordenModal"></span></h1>
             
             <div class="btn-facturacion">
                 <button type="submit" id="actualizar" data-id="{{ transaccion.id_orden.id_orden }}">Actualizar<i class="bi bi-arrow-clockwise"></i></button>
@@ -128,7 +129,11 @@
                     </div>
                 </div>
             </div>
-    </div>  
+    </div> 
+    <div class="btn-imprimir">
+        <button type="submit" id="imprimir">Imprimir</button>
+    </div>
+    
 </div>
 
 

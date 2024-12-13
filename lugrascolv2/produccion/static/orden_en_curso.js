@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function(){
         $('.open-modal').on('click', function(event) {
             event.preventDefault();
             idOrden = $(this).data('id'); // Captura el ID de la orden desde el botón
+            $('#ordenModal').text(idOrden)
     
             // Mostrar el modal de detalles de la orden
             $('#modalDetalleOrden').show();
@@ -528,12 +529,36 @@ document.addEventListener('DOMContentLoaded', function(){
                 console.log("Eliminación cancelada por el usuario.");
             }
         });
-
-
-
     });
 
 
+    $('#imprimir').on('click', function(event){
+        event.preventDefault();
+            // Obtener el contenido del modal
+        var contenidoModal = $('#modalDetalleOrden').html(); // Aquí seleccionas el contenido del modal
+        var csslink = estilos;
+        
+        // Crear una ventana nueva para imprimir
+        var ventanaImpresion = window.open('', '', 'height=600,width=800');
+        
+        // Escribir el contenido del modal en la ventana de impresión
+        ventanaImpresion.document.write('<html><head><title>Imprimir Modal</title>');
+        // Agregar el enlace al archivo CSS (si tienes la ruta en la variable csslink)
+        ventanaImpresion.document.write('<link rel="stylesheet" type="text/css" href="' + csslink + '">');
+        
+            // Ocultar las columnas a partir de la tercera (índice 2) usando CSS
+        ventanaImpresion.document.write('@media print {');
+        ventanaImpresion.document.write('table tr td:nth-child(n+3), table tr th:nth-child(n+3) { display: none; }');
+        
+
+        ventanaImpresion.document.write('</head><body>');
+        ventanaImpresion.document.write(contenidoModal);
+        ventanaImpresion.document.write('</body></html>');
+        
+        // Cargar y preparar para imprimir
+        ventanaImpresion.document.close();
+        ventanaImpresion.print();
+    })
     
     
 
