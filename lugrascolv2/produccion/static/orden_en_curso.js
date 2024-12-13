@@ -546,10 +546,21 @@ document.addEventListener('DOMContentLoaded', function(){
         // Agregar el enlace al archivo CSS (si tienes la ruta en la variable csslink)
         ventanaImpresion.document.write('<link rel="stylesheet" type="text/css" href="' + csslink + '">');
         
-            // Ocultar las columnas a partir de la tercera (índice 2) usando CSS
+        // Asegurarte de que los estilos de impresión se escriben después de cargar el CSS
+        ventanaImpresion.document.write('<style>');
         ventanaImpresion.document.write('@media print {');
-        ventanaImpresion.document.write('table tr td:nth-child(n+3), table tr th:nth-child(n+3) { display: none; }');
-        
+        ventanaImpresion.document.write('table tr td:nth-child(n+4), table tr th:nth-child(n+4) { display: none; }');
+        // Ocultar el contenedor de botones (btn-facturacion)
+        ventanaImpresion.document.write('.btn-facturacion { display: none; }');
+        // Ocultar el contenedor de tabs (tab-container)
+        ventanaImpresion.document.write('.tab-button { display: none; }');
+        ventanaImpresion.document.write('#imprimir { display: none; }');
+        ventanaImpresion.document.write('.close { display: none; }');
+        ventanaImpresion.document.write('.etiqueta { display: none; }');
+        ventanaImpresion.document.write('.responsable { display: none; }');
+        ventanaImpresion.document.write('#responsableEtiquetado { display: none; }');
+        ventanaImpresion.document.write('}');
+        ventanaImpresion.document.write('</style>');
 
         ventanaImpresion.document.write('</head><body>');
         ventanaImpresion.document.write(contenidoModal);
