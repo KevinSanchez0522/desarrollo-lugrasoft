@@ -222,16 +222,16 @@ document.addEventListener('DOMContentLoaded', function(){
 
                         // Lógica de los botones para incrementar y decrementar el contador
                         botonMenos.addEventListener("click", function() {
-                            var currentValue = parseInt(contadorInput.value, 10);
+                            var currentValue = parseFloat(contadorInput.value, 10);
                             if (currentValue > 0) {
-                                contadorInput.value = currentValue - 1;
+                                contadorInput.value = (currentValue - 0.1).toFixed(1);
                             }
                         });
 
                         botonMas.addEventListener("click", function() {
-                            var currentValue = parseInt(contadorInput.value, 10);
+                            var currentValue = parseFloat(contadorInput.value, 10);
                             if (currentValue < detalle.cantidad) {
-                                contadorInput.value = currentValue + 1;
+                                contadorInput.value = (currentValue + 0.1).toFixed(1);
                             }
                         });
 
