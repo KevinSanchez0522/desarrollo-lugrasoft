@@ -326,7 +326,7 @@ def irAfacturar (request):
                     print('producto', producto['cod_inventario'])
                     if int(producto['cod_inventario']) == int(cod_inventario):
                         print('los codigos existen y estan')
-                        cantidad_recibida = int(producto['cantidad'])
+                        cantidad_recibida = float(producto['cantidad'])
                         print(f'Comparando cantidad recibida: {cantidad_recibida} con cantidad de la transacción: {cantidad}')
                         if cantidad_recibida == cantidad:
                             transaccion.estado = estado
