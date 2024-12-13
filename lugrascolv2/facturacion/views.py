@@ -355,7 +355,7 @@ def PFacturar(request):
                         if incluir_iva:
                             print('valor producto', producto['costo_unitario'])
                             producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
-                            cantidad_decimal = float(producto['cantidad'])
+                            cantidad_decimal = Decimal(producto['cantidad'])
                             print('valor de cantidad transformado', cantidad_decimal)
                             nueva_cantidad = producto_inventario.cantidad - cantidad_decimal
                             instancia_transaccion = modelo_transaccion(

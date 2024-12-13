@@ -52,7 +52,7 @@
                 <td>{{ transaccion.prioridad }}</td>
                 <td>
                     <a href="{% url 'DetalleOrden' transaccion.id_orden.id_orden %}" title="Ver Detalles" class="open-modal" data-id="{{ transaccion.id_orden.id_orden }}"><i class="bi bi-eye"></i></a>
-                    
+                    <a href="{% url 'remontar_Orden' transaccion.id_orden.id_orden %}" title="Remontar Pedido" data-id="{{ transaccion.id_orden.id_orden }}"><i class="bi bi-database-add"></i></a>
                 </td>
             </tr>
             {% endfor %}

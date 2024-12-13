@@ -522,3 +522,8 @@ def EliminarItemOrden(request):
         else:
             return JsonResponse({'error': 'No se encontró la orden'}, status=404)
         
+        
+        
+def remontarOrden(request, id_orden):
+    print(f"Recibido id_orden: {id_orden}")
+    return render(request, 'remontar_pedido.html',{'id_orden': id_orden})        
