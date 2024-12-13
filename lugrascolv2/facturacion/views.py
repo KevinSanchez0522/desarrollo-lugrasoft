@@ -15,6 +15,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.units import inch
 from django.utils.dateparse import parse_date
 from django.db import transaction 
+from decimal import Decimal
 
 # Create your views here.
 def facturar(request):
@@ -213,6 +214,7 @@ def PFacturar(request):
             estado = datos_facturacion['estado']
             lugrascol = 901452546
             print('cliente', cliente, incluir_ica, 'total', total)
+            cantidad_decimal = 0
 
             try:
                 # Validación de cliente "lugrascol"
@@ -289,7 +291,7 @@ def PFacturar(request):
                             instancia_transaccion = modelo_transaccion(
                                 nfactura=factura_instance,
                                 cod_inventario=producto['id_producto'],
-                                cantidad=convertir_a_numero_entero(producto['cantidad']),
+                                cantidad=float(producto['cantidad']),
                                 fecha_factura=fecha,
                                 precio_venta=0,
                             )
@@ -299,7 +301,7 @@ def PFacturar(request):
                             instancia_transaccion = modelo_transaccion(
                                 nremision=remision,
                                 cod_inventario=producto['id_producto'],
-                                cantidad=convertir_a_numero_entero(producto['cantidad']),
+                                cantidad=float(producto['cantidad']),
                                 fecha_remision=fecha,
                                 precio_venta=0,
                             )
@@ -353,11 +355,13 @@ def PFacturar(request):
                         if incluir_iva:
                             print('valor producto', producto['costo_unitario'])
                             producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
-                            nueva_cantidad = producto_inventario.cantidad - convertir_a_numero_entero(producto['cantidad'])
+                            cantidad_decimal = float(producto['cantidad'])
+                            print('valor de cantidad transformado', cantidad_decimal)
+                            nueva_cantidad = producto_inventario.cantidad - cantidad_decimal
                             instancia_transaccion = modelo_transaccion(
                                 nfactura=factura_instance,
                                 cod_inventario=producto['id_producto'],
-                                cantidad=convertir_a_numero_entero(producto['cantidad']),
+                                cantidad=Decimal(producto['cantidad']),
                                 fecha_factura=fecha,
                                 precio_venta=convertir_a_numero(producto['costo_unitario']),
                             )
@@ -369,12 +373,12 @@ def PFacturar(request):
                             instancia_transaccion = modelo_transaccion(
                                 nremision=remision,
                                 cod_inventario=producto['id_producto'],
-                                cantidad=convertir_a_numero_entero(producto['cantidad']),
+                                cantidad=Decimal(producto['cantidad']),
                                 fecha_remision=fecha,
                                 precio_venta=convertir_a_numero(producto['costo_unitario']),
                             )
                             producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
-                            nueva_cantidad = producto_inventario.cantidad - convertir_a_numero_entero(producto['cantidad'])
+                            nueva_cantidad = producto_inventario.cantidad - cantidad_decimal
 
                             producto_inventario.cantidad = nueva_cantidad
                             producto_inventario.save()
@@ -637,7 +641,7 @@ def detallesFactura(request):
             for transaccion in transacciones:
                 # Obtener detalles del producto desde el modelo Inventario
                 producto = Inventario.objects.get(cod_inventario=transaccion.cod_inventario)
-                transaccion_total = transaccion.cantidad * transaccion.precio_venta
+                transaccion_total = transaccion.cantidad * Decimal(transaccion.precio_venta)
                 
                 if Transformulas.objects.filter(cod_inventario=producto.cod_inventario).exists():
                     producto_transformula = Transformulas.objects.get(cod_inventario=producto.cod_inventario)
@@ -650,7 +654,7 @@ def detallesFactura(request):
                 
                 total+=transaccion_total
                 
-                subtotal= round(total/1.19)
+                subtotal= round(total/Decimal(1.19))
                 iva= round(total-subtotal)
                 if ica:
                     valorIca=subtotal*2.5/100
@@ -662,7 +666,7 @@ def detallesFactura(request):
                 productos.append({
                     'cod_inventario': producto.cod_inventario,
                     'nombre': producto.nombre,
-                    'cantidad': transaccion.cantidad,
+                    'cantidad': '{:.0f}'.format(transaccion.cantidad) if transaccion.cantidad == int(transaccion.cantidad) or round(transaccion.cantidad, 2) == int(transaccion.cantidad) else f"{transaccion.cantidad:.2f}",
                     'fecha_factura': transaccion.fecha_factura,
                     'precio_unitario': f"{transaccion.precio_venta:,}",
                     'total_factura': f"{total_factura:,}",

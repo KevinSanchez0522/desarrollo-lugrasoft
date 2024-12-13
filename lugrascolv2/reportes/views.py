@@ -380,7 +380,7 @@ def detallesremi(request):
                 productos.append({
                     'cod_inventario': producto.cod_inventario,
                     'nombre': producto.nombre,
-                    'cantidad': transaccion.cantidad,
+                    'cantidad': '{:.0f}'.format(transaccion.cantidad) if transaccion.cantidad == int(transaccion.cantidad) or round(transaccion.cantidad, 2) == int(transaccion.cantidad) else f"{transaccion.cantidad:.2f}",
                     'fecha_factura': transaccion.fecha_remision,
                     'precio_unitario': f"{transaccion.precio_venta:,}",
                     'total_factura': f"{remision.total_remision:,}",

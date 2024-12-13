@@ -116,8 +116,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     '<td>'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
                                     '</tr>';
                         tbody.append(fila);
-
-                        totalCantidad += producto.cantidad;
+                        var cantidad = parseFloat(producto.cantidad)
+                        totalCantidad += cantidad;
                         console.log('peso', producto.peso)
                         pesofila= producto.peso * producto.cantidad
                         totalPeso += pesofila
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     var totalFila = '<tr>' +
                     '<td><strong>Total de Unidades:</strong></td>' +
-                    '<td><strong>' + totalCantidad + '</strong></td>' +
+                    '<td><strong>' + (totalCantidad % 1 === 0 ? totalCantidad.toFixed(0) : totalCantidad.toFixed(2)) + '</strong></td>' +
                     '</tr>';
                     tbody.append(totalFila);
 

@@ -77,7 +77,7 @@ class SalidasMpOrden(models.Model):
 class TransaccionFactura(models.Model):
     nfactura = models.ForeignKey(Facturas, models.DO_NOTHING, db_column='Nfactura')  # Field name made lowercase.
     cod_inventario = models.IntegerField()
-    cantidad = models.IntegerField()
+    cantidad =  models.DecimalField(max_digits=10, decimal_places=2)
     fecha_factura = models.DateField()
     precio_venta = models.FloatField()
 
@@ -89,7 +89,7 @@ class TransaccionFactura(models.Model):
 class TransaccionRemision(models.Model):
     nremision = models.ForeignKey(Remisiones, models.DO_NOTHING, db_column='Nremision')  # Field name made lowercase.
     cod_inventario = models.IntegerField()
-    cantidad = models.IntegerField()
+    cantidad =  models.DecimalField(max_digits=10, decimal_places=2)
     fecha_remision = models.DateField()
     precio_venta = models.FloatField()
 
