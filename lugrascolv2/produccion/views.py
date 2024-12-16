@@ -526,4 +526,25 @@ def EliminarItemOrden(request):
         
 def remontarOrden(request, id_orden):
     print(f"Recibido id_orden: {id_orden}")
-    return render(request, 'remontar_pedido.html',{'id_orden': id_orden})        
+    transaccion = TransaccionOrden.objects.filter(id_orden=id_orden).first()
+    datos= []
+    orden = OrdenProduccion.objects.get(id_orden=id_orden)
+    cliente = orden.nit.nit
+    nombreCliente = orden.nit.nombre
+    
+    dato_cliente = Clientes.objects.get(nit=cliente)
+    direccion = dato_cliente.direccion
+    telefono = dato_cliente.telefono
+    
+    fecha_entrega = transaccion.fecha_entrega.strftime('%Y-%m-%d') if transaccion.fecha_entrega else None
+    print('fecha',fecha_entrega)
+    datos.append({ 
+        'cliente': cliente,
+        'nombre': nombreCliente,
+        'fecha_entrega': fecha_entrega,
+        'direccion': direccion,
+        'telefono': telefono
+        
+    })
+    
+    return render(request, 'remontar_pedido.html',{'id_orden': id_orden, 'datos':datos})        

@@ -152,17 +152,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
                                 // Calcular el subtotal total solo si se incluye IVA
                                 var valorProducto = incluirIVA ? dato.total_venta * dato.cantidad : dato.subtotal_venta * dato.cantidad;
+                                //console.log('dato cantidad', dato.cantidad)
                                 precioTotal += valorProducto;
         
                                 if (incluirIVA) {
                                     ivaSobreSubtotalTotal += valorProducto*(19/100);
-                                    console.log('iva orden', ivaSobreSubtotalTotal)
+                                    //console.log('iva orden', ivaSobreSubtotalTotal)
                                 } else {
                                     ivaSobreSubtotalTotal += 0;
                                 }
                                 if (incluirICA){
                                     var totaltotal= precioTotal*2.5/100
-                                    console.log('total en ica al cargar los datos',totaltotal)
+                                    //console.log('total en ica al cargar los datos',totaltotal)
                                 }
                             });
 
@@ -209,10 +210,10 @@ document.addEventListener('DOMContentLoaded', function() {
             var incluirIVA = $('#checkIva').prop('checked');
             precioTotal = 0;
             ivaSobreSubtotalTotal = 0;
-            console.log('iva en recalcular totales', ivaSobreSubtotalTotal)
+            //console.log('iva en recalcular totales', ivaSobreSubtotalTotal)
         
-            $('#tabla-formulario tbody tr').each(function() {
-                var cantidad = parseInt($(this).find('td:nth-child(3)').text().replace(/[^0-9.-]+/g, "")) || 0;
+            $('#tabla-formulario tbody tr').each(function(index) {
+                var cantidad = parseFloat($(this).find('td:nth-child(3)').text().replace(/[^0-9.-]+/g, "")) || 0;
                 var subtotal_venta = $(this).find('input').val()
                 var numero = parseFloat(String(subtotal_venta).replace(/\./g, '').replace(',', '.'));
 
@@ -225,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (incluirIVA) {
                     ivaSobreSubtotalTotal  += subtotalFila*(19/100);  // IVA del 19%
-                    console.log('iva', ivaSobreSubtotalTotal)
+                    //console.log('iva', ivaSobreSubtotalTotal)
                     }
                 });
                 actualizarTotales(precioTotal, ivaSobreSubtotalTotal);
@@ -236,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var ivart= 19;
     
             $('#tabla-formulario tbody tr').each(function() {
-                var cantidad = parseInt($(this).find('.cantidad').val()) || 0;
+                var cantidad = parseFloat($(this).find('.cantidad').val()) || 0;
                 var valor = $(this).find('.valor');
                 var valorelemento = valor.val();
         
@@ -247,11 +248,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
         
                 // Imprimir el valor antes de reemplazar
-                console.log('valor producto antes de reemplazar:', valorelemento);
+                //console.log('valor producto antes de reemplazar:', valorelemento);
         
                 // Reemplazar y convertir el valor a número
                 var valorFormateado = valorelemento.replace(/\./g, '').replace(',', '.');
-                console.log('valor formateado:', valorFormateado);
+                //console.log('valor formateado:', valorFormateado);
         
                 var numero = parseFloat(valorFormateado);
                 if (isNaN(numero)) {
@@ -259,18 +260,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
         
-                console.log('valor convertido:', numero);
+                //console.log('valor convertido:', numero);
 
                 // Calcular el valor del producto
                 var valorProducto = numero * cantidad;
-                console.log('valor producto suma', valorProducto)
-                console.log('precio total antes al cambiar', precioTotal)
+                //console.log('valor producto suma', valorProducto)
+                //console.log('precio total antes al cambiar', precioTotal)
                 precioTotal += valorProducto;
-                console.log('precio total despues al cambiar', precioTotal)
+                //console.log('precio total despues al cambiar', precioTotal)
                 
                 
                 
-                console.log('iva rt', iva)
+                //console.log('iva rt', iva)
 
                 // Calcular IVA sobre subtotal
                 if (incluirIVA) {
@@ -292,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var incluirIVA = $('#checkIva').prop('checked');
         var incluirICA = $('#checkIca').prop('checked')
         
-        console.log('IVA EN ACTUALIZAR TOTALES', ivaSobreSubtotalTotal,'PRECIO TOTAL', precioTotal)
+        //console.log('IVA EN ACTUALIZAR TOTALES', ivaSobreSubtotalTotal,'PRECIO TOTAL', precioTotal)
         var subtotalTotal = incluirIVA ? (precioTotal/1.19) : precioTotal;
         ivaSobreSubtotalTotal= precioTotal-subtotalTotal
         if (incluirICA){
@@ -338,23 +339,23 @@ document.addEventListener('DOMContentLoaded', function() {
             if ($(this).prop('checked')) {
                 // Calcular el 2.5% del total
                 var ica = 2.5
-                console.log('obtencion del numero Ptotal', originalPtotal)
+                //console.log('obtencion del numero Ptotal', originalPtotal)
 
                 var numeroLimpio = originalPtotal;  // Elimina todo excepto dígitos y coma
 
                 // Reemplazar la coma (,) por punto (.) como separador decimal
                 numeroLimpio = numeroLimpio;
-                console.log(numeroLimpio); 
+                //console.log(numeroLimpio); 
 
                 // Convertir la cadena limpia a un número
                 var total = parseFloat(numeroLimpio);
-                console.log('total', total)
+                //console.log('total', total)
                 
                 var subtotal= total/1.19
                 
                 console.log('subtotal en ica',subtotal)
                 var valorIca = (subtotal*2.5)/100 // Calcular el 2.5%
-                console.log('ica', valorIca)
+                //console.log('ica', valorIca)
         
                 // Actualizar el valor de .ValorIca
                 $('.ValorIca').text('$ ' + valorIca.toLocaleString()); // Actualizar el contenido de .ValorIca con el valor calculado
@@ -393,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var valorProducto = incluirIVA ? total_venta * cantidadFila : subtotal_venta * cantidadFila;
             precioTotal += valorProducto;
             
-            console.log('Cantidad de la fila recién agregada:', cantidadFila);
+            //console.log('Cantidad de la fila recién agregada:', cantidadFila);
             
             if (incluirIVA) {
                 ivaSobreSubtotalTotal += valorProducto * (ivarespaldo / 100);
@@ -424,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Datos recibidos:', response);
                     
                     // Aquí puedes actualizar la interfaz de usuario con los datos recibidos
-                console.log('Datos recibidos:', response);
+                //console.log('Datos recibidos:', response);
                     
                     // Aquí puedes actualizar la interfaz de usuario con los datos recibidos
                 var datos = response.datos;  // Array de objetos con los datos de las fórmula
@@ -458,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         var ultimaFila = $('#tabla-formulario tbody tr').last();
                         var valorCampo2 = parseFloat(ultimaFila.find('td:nth-child(4) input').val().replace(/\./g, '').replace(',', '.')) || 0;
                         var valorCampo1 = parseFloat(ultimaFila.find('td:nth-child(3) input').val().replace(/\./g, '').replace(',', '.')) || 0;
-                        console.log('Valor del segundo campo en la última fila:', valorCampo2);
+                        //console.log('Valor del segundo campo en la última fila:', valorCampo2);
             
                         var totalProducto = 0;
                         totalProducto = valorCampo2 * valorCampo1;

@@ -34,9 +34,9 @@
 				<div class="selector-container">
                         <select class="js-example-basic-single" name="state" id="id_cliente">
                             <option value="">Selecciona un cliente</option>
-                            {%for cliente in clientes %}
-                            <option value="{{cliente.nit}}" data-nit="{{cliente.nit}}" data-direccion="{{cliente.direccion}}" data-telefono="{{cliente.telefono}}">{{cliente.nit}} -- {{cliente.nombre}}</option>
-                            {%endfor%}
+                            
+                            <option value="{{datos.0.cliente}}" selected>{{datos.0.nombre}}</option>
+                            
                         </select>
 					<button id="addprov" class="addprov" >+</button>
 				</div>
@@ -53,14 +53,14 @@
 			</div>
 			<div class="right-column">
 				<div class="info">
-					<div id="nitproveedor">NIT</div>
-					<div id="direccion">DIRECCION</div>
-					<div id="telefono">TELEFONO</div>
+					<div id="nitproveedor">{{datos.0.cliente}}</div>
+					<div id="direccion">{{datos.0.direccion}}</div>
+					<div id="telefono">{{datos.0.telefono}}</div>
 				</div>
 				<div id="totalFactura">
 					<div class="campofechacliente">
                         <label for="">Fecha estimada Entrega</label>
-						<input type="date" id="fechaEntrega">
+						<input type="date" id="fechaEntrega" value="{{datos.0.fecha_entrega}}" readonly>
 					</div>
                     <div class="Prioridad">
                         <label for="">Prioridad</label>
