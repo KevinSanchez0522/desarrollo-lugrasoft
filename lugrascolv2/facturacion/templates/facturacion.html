@@ -58,7 +58,7 @@
                 <select name="" class="js-example-basic-single" id="Bproducto">
                     <option value="">Productos</option>
                     {% for producto in productos%}
-                        <option value="{{producto.cod_inventario}}">{{producto.nombre}}</option>
+                        <option value="{{producto.cod_inventario}}">{{producto.cod_inventario}}--{{producto.nombre}}</option>
                         
                     {%endfor%}
                     
