@@ -355,13 +355,14 @@ def PFacturar(request):
                         if incluir_iva:
                             print('valor producto', producto['costo_unitario'])
                             producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
-                            cantidad_decimal = Decimal(producto['cantidad'])
+                            cantidad_decimal = convertir_a_numero(producto['cantidad'])
+                            cantidadF= Decimal(cantidad_decimal)
                             print('valor de cantidad transformado', cantidad_decimal)
-                            nueva_cantidad = producto_inventario.cantidad - cantidad_decimal
+                            nueva_cantidad = producto_inventario.cantidad - cantidadF
                             instancia_transaccion = modelo_transaccion(
                                 nfactura=factura_instance,
                                 cod_inventario=producto['id_producto'],
-                                cantidad=cantidad_decimal,
+                                cantidad=cantidadF,
                                 fecha_factura=fecha,
                                 precio_venta=convertir_a_numero(producto['costo_unitario']),
                             )
@@ -370,15 +371,18 @@ def PFacturar(request):
                             producto_inventario.save()
                             print(f'Inventario actualizado para el producto {producto["id_producto"]}. Nueva cantidad: {nueva_cantidad}')
                         else:
+                            cantidad_decimal = convertir_a_numero(producto['cantidad'])
+                            cantidadF = Decimal(cantidad_decimal)
+                            print('valor de cantidad transformado', cantidad_decimal)
                             instancia_transaccion = modelo_transaccion(
                                 nremision=remision,
                                 cod_inventario=producto['id_producto'],
-                                cantidad=cantidad_decimal,
+                                cantidad=cantidadF,
                                 fecha_remision=fecha,
                                 precio_venta=convertir_a_numero(producto['costo_unitario']),
                             )
                             producto_inventario = Inventario.objects.get(cod_inventario=producto['id_producto'])
-                            nueva_cantidad = producto_inventario.cantidad - cantidad_decimal
+                            nueva_cantidad = producto_inventario.cantidad - cantidadF
 
                             producto_inventario.cantidad = nueva_cantidad
                             producto_inventario.save()

@@ -344,13 +344,13 @@ def kardex_view(request):
                     cantidad = transaccion.cantidad
                     referencia = transaccion.nfactura.nfactura
                     entradas = 0
-                    salidas = cantidad
+                    salidas = float(cantidad)
                 elif key == 'remision':
                     fecha = transaccion.fecha_remision
                     cantidad = transaccion.cantidad
-                    referencia = transaccion.nremision
+                    referencia = transaccion.nremision.nremision
                     entradas = 0
-                    salidas = cantidad
+                    salidas = float(cantidad)
                 elif key == 'ajuste':
                     fecha = transaccion.fecha_ajuste
                     cantidad = transaccion.cant_ajuste
@@ -368,18 +368,18 @@ def kardex_view(request):
                     cantidad = transaccion.cantidad
                     referencia = transaccion.id_orden.id_orden
                     entradas = 0
-                    salidas = cantidad
+                    salidas = float(cantidad)
                 elif key == 'materia_prima':
                     fecha = transaccion.fecha_ingreso
                     cantidad = transaccion.cant_mp
                     referencia = transaccion.id_compra.id_compra
-                    entradas = cantidad
+                    entradas = float(cantidad)
                     salidas = 0
                 elif key == 'entrada_produccion':
                     fecha = transaccion.fecha_terminacion_orden
                     cantidad = transaccion.cantidad
                     referencia = transaccion.id_orden.id_orden
-                    entradas = cantidad
+                    entradas = float(cantidad)
                     salidas = 0
                         
                 
@@ -390,9 +390,9 @@ def kardex_view(request):
                     'fecha': fecha.strftime('%Y-%m-%d'),
                     'descripcion': key,
                     'referencia': referencia,
-                    'entradas': entradas,
-                    'salidas': salidas,
-                    'saldo': saldo,
+                    'entradas': float(entradas),
+                    'salidas': float(salidas),
+                    'saldo': float(saldo),
                 })
                 
                 print("Kardex:")
