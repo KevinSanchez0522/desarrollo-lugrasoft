@@ -361,7 +361,7 @@ def PFacturar(request):
                             instancia_transaccion = modelo_transaccion(
                                 nfactura=factura_instance,
                                 cod_inventario=producto['id_producto'],
-                                cantidad=Decimal(producto['cantidad']),
+                                cantidad=cantidad_decimal,
                                 fecha_factura=fecha,
                                 precio_venta=convertir_a_numero(producto['costo_unitario']),
                             )
@@ -373,7 +373,7 @@ def PFacturar(request):
                             instancia_transaccion = modelo_transaccion(
                                 nremision=remision,
                                 cod_inventario=producto['id_producto'],
-                                cantidad=Decimal(producto['cantidad']),
+                                cantidad=cantidad_decimal,
                                 fecha_remision=fecha,
                                 precio_venta=convertir_a_numero(producto['costo_unitario']),
                             )

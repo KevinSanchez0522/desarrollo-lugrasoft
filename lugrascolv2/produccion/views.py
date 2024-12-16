@@ -535,6 +535,7 @@ def remontarOrden(request, id_orden):
     dato_cliente = Clientes.objects.get(nit=cliente)
     direccion = dato_cliente.direccion
     telefono = dato_cliente.telefono
+    prioridad = transaccion.prioridad
     
     fecha_entrega = transaccion.fecha_entrega.strftime('%Y-%m-%d') if transaccion.fecha_entrega else None
     print('fecha',fecha_entrega)
@@ -543,7 +544,8 @@ def remontarOrden(request, id_orden):
         'nombre': nombreCliente,
         'fecha_entrega': fecha_entrega,
         'direccion': direccion,
-        'telefono': telefono
+        'telefono': telefono,
+        'prioridad': prioridad,
         
     })
     
