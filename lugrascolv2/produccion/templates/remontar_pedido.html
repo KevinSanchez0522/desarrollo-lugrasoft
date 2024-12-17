@@ -11,13 +11,14 @@
 {% endblock title %}
 {% block areatrabajo %}
     <script>
-
+		var materiasprimas ="{% url 'obtenerMateriasPrimas'%}"
+		var remontarPedido = "{% url 'AlmacenarRemonteOrden' %}"
     </script>
     <link rel="stylesheet" href="{% static 'pedidos.css' %}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="{% static 'pedidos.js' %}"></script>
+    <script src="{% static 'remontar_pedidos.js' %}"></script>
 	
     
 	<div class="container">
@@ -104,9 +105,9 @@
 						<label for="Responsable" class="responsable-label">Responsable Etiquetado</label>
 						<select name="responsable" id="Responsable" class="responsable-select">
 							<option value="">Responsable</option>
-							{%for usuario in usuarios%}
-								<option value="{{usuario.id}}" data-nombre="{{ usuario.username }}">{{usuario.username}}</option>
-							{%endfor%}
+							
+								<option value="datos.0.reponsable" data-nombre="{{datos.0.reponsable}}" selected>{{datos.0.responsable}}</option>
+							
 						</select>
 					</div>
 				</div>

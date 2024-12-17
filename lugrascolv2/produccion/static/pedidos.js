@@ -49,7 +49,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     $('#producto').on('change', function() {
         const selectedOption = $(this).find('option:selected');
+        
         const productoId = selectedOption.val();
+        
         const productoNombre = selectedOption.text().split('--')[1];
 
         if (productoId && !selectedProducts.has(productoId)) {

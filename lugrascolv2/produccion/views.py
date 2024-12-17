@@ -527,6 +527,7 @@ def EliminarItemOrden(request):
 def remontarOrden(request, id_orden):
     print(f"Recibido id_orden: {id_orden}")
     transaccion = TransaccionOrden.objects.filter(id_orden=id_orden).first()
+    productos = Inventario.objects.filter(tipo='pt')
     datos= []
     orden = OrdenProduccion.objects.get(id_orden=id_orden)
     cliente = orden.nit.nit
@@ -536,6 +537,7 @@ def remontarOrden(request, id_orden):
     direccion = dato_cliente.direccion
     telefono = dato_cliente.telefono
     prioridad = transaccion.prioridad
+    responsable = transaccion.responsable
     
     fecha_entrega = transaccion.fecha_entrega.strftime('%Y-%m-%d') if transaccion.fecha_entrega else None
     print('fecha',fecha_entrega)
@@ -546,7 +548,82 @@ def remontarOrden(request, id_orden):
         'direccion': direccion,
         'telefono': telefono,
         'prioridad': prioridad,
+        'responsable': responsable
         
     })
     
-    return render(request, 'remontar_pedido.html',{'id_orden': id_orden, 'datos':datos})        
+    return render(request, 'remontar_pedido.html',{'id_orden': id_orden, 'datos':datos, 'productos':productos})        
+
+
+
+
+@transaction.atomic
+def remontar_transaccion_orden(request):
+    if request.method == 'POST':
+        # Obtener los datos enviados desde el frontend en formato JSON
+        try:
+            datosEnviar = json.loads(request.body.decode('utf-8'))
+            
+            # Extraer los datos específicos del objeto JSON principal
+            numero_factura = datosEnviar.get('numero_factura')
+            fecha_actual = datosEnviar.get('fecha_actual')
+            fecha_estimada_entrega = datosEnviar.get('fecha_estimada_entrega')
+            id_cliente = datosEnviar.get('id_cliente')
+            responsable = datosEnviar.get('responsable')
+            prioridad = datosEnviar.get('prioridad')
+            detallesProductos = datosEnviar.get('detallesProductos')
+            
+            # Obtener el cliente
+            cliente = get_object_or_404(Clientes, nit=id_cliente)
+            
+            # Buscar o crear la instancia de OrdenProduccion
+            orden_produccion, creado = OrdenProduccion.objects.get_or_create(
+                id_orden=numero_factura,
+                nit=cliente
+            )
+            
+            # Iterar sobre los detalles de productos
+            for detalle in detallesProductos:
+                producto_id = detalle.get('producto_id')
+                cantidad = detalle.get('cantidad')
+                
+                # Obtener el inventario
+                inventario = get_object_or_404(Inventario, pk=producto_id)
+                
+                # Verificar si ya existe una transacción con este producto en la orden de producción
+                transaccion_existente = TransaccionOrden.objects.filter(
+                    id_orden=orden_produccion,
+                    cod_inventario=inventario
+                ).first()
+                
+                if transaccion_existente:
+                    # Verificar el estado de la transacción
+                    if transaccion_existente.estado == 'creado':
+                        # Si ya existe una transacción y el estado es 'creado', sumar la cantidad
+                        transaccion_existente.cantidad += float(cantidad)
+                        #transaccion_existente.save()  # Guardamos la transacción con la nueva cantidad
+                    elif transaccion_existente.estado == 'en proceso':
+                        # Si el estado es 'en proceso', realizar el proceso para restar las cantidades de materias primas
+                        # Supongamos que restamos de las materias primas asociadas al producto (ajustar según tu modelo)
+                        # Restar la cantidad de materias primas del inventario  
+                        print('restar materias primas')
+                else:
+                    # Si no existe, crear una nueva transacción
+                    nueva_transaccion_orden = TransaccionOrden.objects.create(
+                        fecha_entrega=fecha_estimada_entrega,
+                        estado='creado',  # El estado inicial será 'creado'
+                        cod_inventario=inventario,
+                        cantidad=float(cantidad),
+                        id_orden=orden_produccion,
+                        prioridad=prioridad,
+                        fecha_creacion=fecha_actual,
+                        responsable=responsable,
+                    )
+                    #nueva_transaccion_orden.save()
+            
+            return JsonResponse({'message': 'Transacción procesada correctamente'}, status=201)
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
