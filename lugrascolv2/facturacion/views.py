@@ -320,7 +320,7 @@ def PFacturar(request):
                     print('total guardar', total_guardar)
                     for orden in orden_id:
                         updateEstado = TransaccionOrden.objects.filter(id_orden=orden, estado__in=['por facturar'])
-                        updateEstado.update(estado=estado)
+                        #updateEstado.update(estado=estado)
 
                     # Crear instancia de Facturas
                     if incluir_iva:
@@ -374,7 +374,11 @@ def PFacturar(request):
                             print(f'Inventario actualizado para el producto {producto["id_producto"]}. Nueva cantidad: {nueva_cantidad}')
                         else:
                             print('cantidaad producto original', producto['cantidad'])
-                            cantidad_decimal = Decimal(producto['cantidad'])
+                            
+                            cantidad_str = producto['cantidad']
+                            if ',' in cantidad_str:
+                                cantidad_str = cantidad_str.replace(',', '.')
+                            cantidad_decimal = Decimal(cantidad_str)
                             print('valor de cantidad convertir a numero', cantidad_decimal)
                             #cantidadF = Decimal(cantidad_decimal)
                             #print('valor de cantidad transformado', cantidadF)
@@ -389,11 +393,11 @@ def PFacturar(request):
                             nueva_cantidad = producto_inventario.cantidad - cantidad_decimal
 
                             producto_inventario.cantidad = nueva_cantidad
-                            producto_inventario.save()
+                            #producto_inventario.save()
                             print(f'Inventario actualizado para el producto {producto["id_producto"]}. Nueva cantidad: {nueva_cantidad}')
 
                         # Guardar la instancia en la base de datos
-                        instancia_transaccion.save()
+                        #instancia_transaccion.save()
 
                     # Generar y devolver el PDF de la factura
                     pdf_buffer = generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos, total, fecha, estado)
