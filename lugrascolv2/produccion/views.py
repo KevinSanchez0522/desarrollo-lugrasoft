@@ -628,6 +628,13 @@ def remontar_transaccion_orden(request):
                             transaccion.save()  # Guardamos la transacción con la nueva cantidad
                         elif transaccion.estado == 'en proceso':
                             print('la transaccion tiene estado en proceso')
+                            
+                            cantidad_a_sumar = float(cantidad)  # Convertir a float en caso de que no sea numérico
+                            cantidad_existente = float(transaccion.cantidad)
+                            nueva_cantidad = cantidad_existente + cantidad_a_sumar  # Calcular la nueva cantidad
+                            # Si todo es correcto, actualizamos la cantidad
+                            transaccion.cantidad = nueva_cantidad
+                            transaccion.save()
                             # Si el estado es 'en proceso', realizar el proceso para restar las cantidades de materias primas
                             formula = Transformulas.objects.get(cod_inventario= transaccion.cod_inventario)
                             print('formula encontrada', formula.cod_inventario.cod_inventario)
@@ -677,12 +684,7 @@ def remontar_transaccion_orden(request):
                                     inventario.cantidad = cantidad_a_guardar  # Sumamos la cantidad al inventario existente
                                     #inventario.save()  # Guardamos los cambios
                                     
-                                    cantidad_a_sumar = float(cantidad)  # Convertir a float en caso de que no sea numérico
-                                    cantidad_existente = float(transaccion.cantidad)
-                                    nueva_cantidad = cantidad_existente + cantidad_a_sumar  # Calcular la nueva cantidad
-                                    # Si todo es correcto, actualizamos la cantidad
-                                    transaccion.cantidad = nueva_cantidad
-                                    transaccion.save()
+
 
                                     print(f'Inventario actualizado para {materia}: nueva cantidad es {inventario.cantidad}')
                                 except ValueError as ve:
@@ -710,6 +712,7 @@ def remontar_transaccion_orden(request):
                         
                         
                     elif estado_orden == 'en proceso':
+                        print(cantidad, float(cantidad))
                         
                         nueva_transaccion_orden = TransaccionOrden.objects.create(
                             fecha_entrega=fecha_estimada_entrega,
