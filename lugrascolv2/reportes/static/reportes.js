@@ -605,6 +605,40 @@ function printModal() {
     closeButton.style.display = 'none';
     var printWindow = window.open('', '', 'height=600,width=800');
     var modalContent = document.querySelector('#modalDetalleOrden .modal-content').innerHTML;
+    var secondModalContent = modalContent// Oculta la tabla en la segunda copia o elimina elementos dentro de la tabla si es necesario
+    
+
+
+    secondModalContent = secondModalContent.replace(
+        /<th class="precio">PRECIO UNITARIO<\/th>/g,  // Esto elimina el encabezado de la columna
+        '' 
+    );
+    secondModalContent = secondModalContent.replace(
+        /<td class="precio-unitario">[\s\S]*?<\/td>/g,  // Esto elimina todas las celdas con la clase 'precio'
+        ''
+    );
+    
+    // Ocultar o eliminar los elementos de valor IVA, valor total y ICA en la segunda copia
+    secondModalContent = secondModalContent.replace(
+        /<td class="valorIVA">[\s\S]*?<\/td>/g,  // Esto elimina el valor IVA
+        '' 
+    );
+    secondModalContent = secondModalContent.replace(
+        /<td class="valorTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el valor total
+        '' 
+    );
+    secondModalContent = secondModalContent.replace(
+        /<td class="ICA">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
+        ''
+    );
+    secondModalContent = secondModalContent.replace(
+        /<td class="tasa">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
+        ''
+    );
+    secondModalContent = secondModalContent.replace(
+        /<td class="valorSUBTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
+        ''
+    );
     
     // Ruta al archivo CSS
     var cssLink = imprimir
@@ -647,6 +681,8 @@ function printModal() {
     printWindow.document.write('</style>');
     printWindow.document.write('</head><body >');
     printWindow.document.write(modalContent);
+    printWindow.document.write('<hr>');  // Opcional, para separar las dos copias
+    printWindow.document.write(secondModalContent); // Segunda copia modificada
     printWindow.document.write('</body></html>');
 
     printWindow.document.close();
