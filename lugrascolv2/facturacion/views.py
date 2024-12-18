@@ -320,7 +320,7 @@ def PFacturar(request):
                     print('total guardar', total_guardar)
                     for orden in orden_id:
                         updateEstado = TransaccionOrden.objects.filter(id_orden=orden, estado__in=['por facturar'])
-                        #updateEstado.update(estado=estado)
+                        updateEstado.update(estado=estado)
 
                     # Crear instancia de Facturas
                     if incluir_iva:

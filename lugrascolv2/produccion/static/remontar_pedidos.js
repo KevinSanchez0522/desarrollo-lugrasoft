@@ -226,17 +226,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     $('#enviarFormularioBtn').on('click', function() {
         // Validar que todos los campos necesarios estén completos
-        if (!validarCampos()) {
-            alert('Por favor completa todos los campos obligatorios.');
-            return false; // Cancelar el envío del formulario si faltan datos
-        }
-        var confirmacion = confirm("¿Estás seguro de que deseas enviar los datos?");
+        //if (!validarCampos()) {
+            //alert('Por favor completa todos los campos obligatorios.');
+            //return false; // Cancelar el envío del formulario si faltan datos
+        //}
 
-// Verificar la respuesta del usuario
-        if (confirmacion) {
-            var csrftoken = getCookie('csrftoken');
 
-            var nombreResponsable = $('#Responsable option:selected').data('nombre');
+            var nombreResponsable = $('#Responsable option:selected');
             var prioridadSeleccionada = $('#prioridad').val();
             var numeroFactura = $('#numeroFactura').val();
             var fechaActual = $('#fechaCreacion').val();
@@ -265,14 +261,14 @@ document.addEventListener("DOMContentLoaded", function() {
                     numero_factura: numeroFactura,
                     fecha_actual: fechaActual,
                     fecha_estimada_entrega: fechaEstimada,
-                    prioridad: prioridadSeleccionada,
+                    prioridad: prioridad,
                     id_cliente: idCliente,
-                    responsable: nombreResponsable,
+                    responsable: responsable,
                     detallesProductos : detallesProductos,
                 };
         
                 // Imprimir todos los datos en la consola del navegador (opcional)
-                console.log('Datos a enviar:');
+                console.log('Datos a enviar:', datosEnviar);
                 console.log('Número de Factura:', numeroFactura);
                 console.log('Fecha Actual:', fechaActual);
                 console.log('Fecha Estimada de Entrega:', fechaEstimada);
@@ -281,6 +277,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 console.log('Detalles de Productos:');
                 console.log(detallesProductos);
                 console.log('Responsable:', nombreResponsable);
+                var confirmacion = confirm("¿Estás seguro de que deseas enviar los datos?");
+
+        // Verificar la respuesta del usuario
+                if (confirmacion) {
+                    var csrftoken = getCookie('csrftoken');
         
                 // Enviar los datos mediante AJAX a la vista de Django
                 $.ajax({

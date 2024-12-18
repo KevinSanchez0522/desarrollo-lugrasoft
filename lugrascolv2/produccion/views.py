@@ -573,6 +573,8 @@ def remontar_transaccion_orden(request):
             prioridad = datosEnviar.get('prioridad')
             detallesProductos = datosEnviar.get('detallesProductos')
             
+            print('orden, fecha actual, fecha estimada, cliente, responsable, prioridad', numero_factura, fecha_actual,fecha_estimada_entrega, fecha_actual,id_cliente,responsable,prioridad)
+            
             # Obtener el cliente
             cliente = get_object_or_404(Clientes, nit=id_cliente)
             
@@ -586,27 +588,93 @@ def remontar_transaccion_orden(request):
             for detalle in detallesProductos:
                 producto_id = detalle.get('producto_id')
                 cantidad = detalle.get('cantidad')
+                print('producto y cantidad',producto_id, cantidad)
                 
                 # Obtener el inventario
                 inventario = get_object_or_404(Inventario, pk=producto_id)
+                print('inventario', inventario.cod_inventario)
+                
                 
                 # Verificar si ya existe una transacción con este producto en la orden de producción
                 transaccion_existente = TransaccionOrden.objects.filter(
-                    id_orden=orden_produccion,
-                    cod_inventario=inventario
-                ).first()
-                
-                if transaccion_existente:
+                    id_orden=orden_produccion.id_orden,
+                    cod_inventario=producto_id
+                    
+                    
+                )
+                print('existente', transaccion_existente)
+                if transaccion_existente.exists():
                     # Verificar el estado de la transacción
-                    if transaccion_existente.estado == 'creado':
-                        # Si ya existe una transacción y el estado es 'creado', sumar la cantidad
-                        transaccion_existente.cantidad += float(cantidad)
-                        #transaccion_existente.save()  # Guardamos la transacción con la nueva cantidad
-                    elif transaccion_existente.estado == 'en proceso':
-                        # Si el estado es 'en proceso', realizar el proceso para restar las cantidades de materias primas
-                        # Supongamos que restamos de las materias primas asociadas al producto (ajustar según tu modelo)
-                        # Restar la cantidad de materias primas del inventario  
-                        print('restar materias primas')
+                    print('la transaccion existe')
+                    
+                    
+                    for transaccion in transaccion_existente:
+                        
+                        print('estado de la transaccion', transaccion.estado)
+                        
+                        if transaccion.estado == 'creado':
+                            print('la transaccion tiene estado creado')
+                            # Si ya existe una transacción y el estado es 'creado', sumar la cantidad
+                            transaccion.cantidad += float(cantidad)
+                            #transaccion_existente.save()  # Guardamos la transacción con la nueva cantidad
+                        elif transaccion.estado == 'en proceso':
+                            print('la transaccion tiene estado en proceso')
+                            # Si el estado es 'en proceso', realizar el proceso para restar las cantidades de materias primas
+                            formula = Transformulas.objects.get(cod_inventario= transaccion.cod_inventario)
+                            print('formula encontrada', formula.cod_inventario.cod_inventario)
+                            # Restar la cantidad de materias primas
+                            materias = {}
+
+                # Iterar para obtener las materias y cantidades
+                for i in range(1, 11):  # Dado que tienes materia1 a materia10, y cant_materia1 a cant_materia10
+                    materia_field = f'materia{i}'  # Forma el nombre del campo materia1, materia2, ..., materia10
+                    cant_materia_field = f'cant_materia{i}'  # Forma el nombre del campo cant_materia1, cant_materia2, ..., cant_materia10
+                    
+                    # Usar getattr para obtener los valores de los campos
+                    materia = getattr(formula, materia_field, None)
+                    cant_materia = getattr(formula, cant_materia_field, None)
+                    
+                    # Si la materia y su cantidad existen, los añadimos al diccionario
+                    if materia and cant_materia:
+                        materias[materia] = cant_materia
+
+                # Ahora 'materias' tiene un diccionario con las materias y sus cantidades
+                print(materias)
+                for materia, cant_materia in materias.items():
+                    try:
+                        # Verificar si 'cant_materia' es un valor numérico válido
+                        if cant_materia is not None:
+                            cant_materia = float(cant_materia)  # Convertir cant_materia a float
+                        else:
+                            raise ValueError(f"Cantidad de materia {materia} es inválida (None).")
+
+                        # Verificar si 'cantidad' es un valor numérico válido
+                        if cantidad is not None:
+                            cantidad = float(cantidad)  # Convertir cantidad a float
+                        else:
+                            raise ValueError(f"Cantidad recibida es inválida (None).")
+
+                        # Buscar la materia en el modelo Inventarios por el código
+                        inventario = Inventario.objects.get(cod_inventario=materia)
+                        
+                        # Calcular la cantidad total
+                        cantidad_total = cant_materia * cantidad
+                        cantidades_actuales = float(inventario.cantidad)
+                        print('cantidades actuales',cantidades_actuales)
+                        cantidad_a_guardar = cantidad_total-cantidades_actuales
+
+                        # Asegurarnos de que el inventario tiene la cantidad que necesitamos
+                        inventario.cantidad = cantidad_a_guardar  # Sumamos la cantidad al inventario existente
+                        #inventario.save()  # Guardamos los cambios
+
+                        print(f'Inventario actualizado para {materia}: nueva cantidad es {inventario.cantidad}')
+                    except ValueError as ve:
+                        print(f"Error de valor: {ve}")
+                    except Inventario.DoesNotExist:
+                        print(f'No se encontró la materia con el código {materia} en el inventario')
+                    except Exception as e:
+                        print(f'Ocurrió un error al actualizar el inventario para {materia}: {e}')
+                        
                 else:
                     # Si no existe, crear una nueva transacción
                     nueva_transaccion_orden = TransaccionOrden.objects.create(
