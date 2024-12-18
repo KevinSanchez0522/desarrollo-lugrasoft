@@ -625,7 +625,7 @@ def remontar_transaccion_orden(request):
                             #transaccion.cantidad = nueva_cantidad
                             print(f'Inventario actualizado para {transaccion}: nueva cantidad es {transaccion.cantidad}')
                             
-                            #transaccion.save()  # Guardamos la transacción con la nueva cantidad
+                            transaccion.save()  # Guardamos la transacción con la nueva cantidad
                         elif transaccion.estado == 'en proceso':
                             print('la transaccion tiene estado en proceso')
                             # Si el estado es 'en proceso', realizar el proceso para restar las cantidades de materias primas
