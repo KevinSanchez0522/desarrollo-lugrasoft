@@ -682,7 +682,7 @@ def remontar_transaccion_orden(request):
                                     nueva_cantidad = cantidad_existente + cantidad_a_sumar  # Calcular la nueva cantidad
                                     # Si todo es correcto, actualizamos la cantidad
                                     transaccion.cantidad = nueva_cantidad
-                                    #transaccion.save()
+                                    transaccion.save()
 
                                     print(f'Inventario actualizado para {materia}: nueva cantidad es {inventario.cantidad}')
                                 except ValueError as ve:
