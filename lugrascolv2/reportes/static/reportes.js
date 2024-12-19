@@ -541,7 +541,7 @@ function openModal(remision) {
                     response.productos.forEach(function(producto) {
                         var fila = '<tr>' +
                                     '<td>' + producto.cantidad + ' '+'---'+' ' + producto.cod_inventario + ' ' + producto.nombre + '</td>' +
-                                    '<td>'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
+                                    '<td class="precio-unitario">'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
                                     '</tr>';
                         tbody.append(fila);
                         var cantidad = parseFloat(producto.cantidad)
@@ -605,7 +605,13 @@ function printModal() {
     closeButton.style.display = 'none';
     var printWindow = window.open('', '', 'height=600,width=800');
     var modalContent = document.querySelector('#modalDetalleOrden .modal-content').innerHTML;
+    var secondModalContent = modalContent// Oculta la tabla en la segunda copia o elimina elementos dentro de la tabla si es necesario
+    // Agregar la clase "second-modal" al contenido clonado
+    //secondModalContent.classList.add('second-modal');
     var secondModalContent = `<div class="modal-content second-modal">${modalContent}</div>`;
+
+
+
 
     modalContent = modalContent.replace(
         /<th class="precio">PRECIO UNITARIO<\/th>/g,  // Esto elimina el encabezado de la columna
@@ -637,26 +643,27 @@ function printModal() {
         /<td class="valorSUBTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
         ''
     );
-    
     // Ruta al archivo CSS
     var cssLink = imprimir
+    
+
 
     var styles = `<style>
                     @media print {
                         body {
                             margin: 0;
-                            font-family: Arial, sans-serif;
-                            font-size: 12pt;
+                            font-family: Arial, sans-serif; /* Fuente común para evitar variaciones */
+                            font-size: 12pt; /* Tamaño de fuente fijo */
                             margin-top:4cm;
                         }
 
                         .modal-content {
+                            
                             margin-top: 4cm; /* Margen superior de 4 cm */
                             padding: 20px; /* Padding para separar contenido */
                             background-color: #fff; /* Fondo blanco */
-                            border: 1px solid #000; /* Borde alrededor del contenido */
                             
-                        } 
+                        }
                         .second-modal {
                             page-break-before: always;
                             margin-top: 4cm;
@@ -664,7 +671,7 @@ function printModal() {
                             background-color: #fff;
                             border: 1px solid #000;
                         }
-                            
+
 
                         /* Ocultar pie de página y otros elementos si no se desean imprimir */
                         .invoice-footer, #closeButton {
@@ -677,22 +684,26 @@ function printModal() {
                             overflow-wrap: break-word;
                             max-width: 100%; /* Asegura que el contenido no se desborde */
                         }
+
+
                     }
                 </style>
-                `;
+            `;
 
     printWindow.document.write('<html><head><title>facturación lugrascol SAS </title>');
     printWindow.document.write('<link rel="stylesheet" href="' + cssLink + '">');
-    printWindow.document.write(styles);;
+    printWindow.document.write(styles);
+
+    printWindow.document.write('</head><body >');
     printWindow.document.write(modalContent);
-    printModal.document.write('<hr>')
-    printWindow.document.write(secondModalContent);
+    printWindow.document.write('<hr>');  // Opcional, para separar las dos copias
+    printWindow.document.write(secondModalContent); // Segunda copia modificada
     printWindow.document.write('</body></html>');
+
     printWindow.document.close();
     printWindow.focus();
     printWindow.print();
 }
-
 
 
 
