@@ -318,41 +318,47 @@ function printModal() {
     var printWindow = window.open('', '', 'height=600,width=800');
     var modalContent = document.querySelector('#modalDetalleOrden .modal-content').innerHTML;
     var secondModalContent = modalContent// Oculta la tabla en la segunda copia o elimina elementos dentro de la tabla si es necesario
-    
+    // Agregar la clase "second-modal" al contenido clonado
+    //secondModalContent.classList.add('second-modal');
+    var secondModalContent = `<div class="modal-content second-modal">${modalContent}</div>`;
 
 
-    secondModalContent = secondModalContent.replace(
+
+
+    modalContent = modalContent.replace(
         /<th class="precio">PRECIO UNITARIO<\/th>/g,  // Esto elimina el encabezado de la columna
         '' 
     );
-    secondModalContent = secondModalContent.replace(
+    modalContent = modalContent.replace(
         /<td class="precio-unitario">[\s\S]*?<\/td>/g,  // Esto elimina todas las celdas con la clase 'precio'
         ''
     );
     
     // Ocultar o eliminar los elementos de valor IVA, valor total y ICA en la segunda copia
-    secondModalContent = secondModalContent.replace(
+    modalContent = modalContent.replace(
         /<td class="valorIVA">[\s\S]*?<\/td>/g,  // Esto elimina el valor IVA
         '' 
     );
-    secondModalContent = secondModalContent.replace(
+    modalContent = modalContent.replace(
         /<td class="valorTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el valor total
         '' 
     );
-    secondModalContent = secondModalContent.replace(
+    modalContent = modalContent.replace(
         /<td class="ICA">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
         ''
     );
-    secondModalContent = secondModalContent.replace(
+    modalContent = modalContent.replace(
         /<td class="tasa">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
         ''
     );
-    secondModalContent = secondModalContent.replace(
+    modalContent = modalContent.replace(
         /<td class="valorSUBTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
         ''
     );
     // Ruta al archivo CSS
     var cssLink = imprimir
+    
+
 
     var styles = `<style>
                     @media print {
@@ -360,14 +366,24 @@ function printModal() {
                             margin: 0;
                             font-family: Arial, sans-serif; /* Fuente común para evitar variaciones */
                             font-size: 12pt; /* Tamaño de fuente fijo */
+                            margin-top:4cm;
                         }
 
                         .modal-content {
+                            
                             margin-top: 4cm; /* Margen superior de 4 cm */
                             padding: 20px; /* Padding para separar contenido */
                             background-color: #fff; /* Fondo blanco */
-                            border: 1px solid #000; /* Borde alrededor del contenido */
+                            
                         }
+                        .second-modal {
+                            page-break-before: always;
+                            margin-top: 4cm;
+                            padding: 20px;
+                            background-color: #fff;
+                            border: 1px solid #000;
+                        }
+
 
                         /* Ocultar pie de página y otros elementos si no se desean imprimir */
                         .invoice-footer, #closeButton {
@@ -380,6 +396,8 @@ function printModal() {
                             overflow-wrap: break-word;
                             max-width: 100%; /* Asegura que el contenido no se desborde */
                         }
+
+
                     }
                 </style>
             `;
@@ -387,15 +405,10 @@ function printModal() {
     printWindow.document.write('<html><head><title>facturación lugrascol SAS </title>');
     printWindow.document.write('<link rel="stylesheet" href="' + cssLink + '">');
     printWindow.document.write(styles);
-    printWindow.document.write('<style>');
-    printWindow.document.write('body { margin-top: 4cm; }'); // Aplica margen superior de 4 cm
-    printWindow.document.write('</style>');
+
     printWindow.document.write('</head><body >');
     printWindow.document.write(modalContent);
     printWindow.document.write('<hr>');  // Opcional, para separar las dos copias
-    printWindow.document.write('<style>');
-    printWindow.document.write('body { margin-top: 4cm; }'); // Aplica margen superior de 4 cm
-    printWindow.document.write('</style>');
     printWindow.document.write(secondModalContent); // Segunda copia modificada
     printWindow.document.write('</body></html>');
 
