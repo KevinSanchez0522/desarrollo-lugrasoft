@@ -149,46 +149,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-// Referencias a los contenedores flotantes
-var floatingContainer = document.getElementById('floating-container');
-var floatingContainer1 = document.getElementById('floating-container1');
-var floatingContainer2 = document.getElementById('floating-container2');
-var floatingContainer3 = document.getElementById('floating-container3');
+    // Referencias a los contenedores flotantes
+    var floatingContainer = document.getElementById('floating-container');
+    var floatingContainer1 = document.getElementById('floating-container1');
+    var floatingContainer2 = document.getElementById('floating-container2');
+    var floatingContainer3 = document.getElementById('floating-container3');
 
-// Referencias a los botones de minimizar
-var minimizeButton = document.getElementById('minimize-btn');
-var minimizeButton1 = document.getElementById('minimize-btn1');
-var minimizeButton2 = document.getElementById('minimize-btn2');
-var minimizeButton3 = document.getElementById('minimize-btn3');
+    // Referencias a los botones de minimizar
+    var minimizeButton = document.getElementById('minimize-btn');
+    var minimizeButton1 = document.getElementById('minimize-btn1');
+    var minimizeButton2 = document.getElementById('minimize-btn2');
+    var minimizeButton3 = document.getElementById('minimize-btn3');
 
-// Función para cambiar el icono y minimizar o expandir el contenedor
-function toggleMinimize(container, button) {
-    container.classList.toggle('minimized');  // Cambia la clase 'minimized'
+    // Función para cambiar el icono y minimizar o expandir el contenedor
+    function toggleMinimize(container, button) {
+        container.classList.toggle('minimized');  // Cambia la clase 'minimized'
 
-    // Cambiar el icono del botón
-    if (container.classList.contains('minimized')) {
-        button.innerHTML = '➕';  // Cambiar a "+" cuando se minimiza
-    } else {
-        button.innerHTML = '➖';  // Cambiar a "-" cuando se expande
+        // Cambiar el icono del botón
+        if (container.classList.contains('minimized')) {
+            button.innerHTML = '➕';  // Cambiar a "+" cuando se minimiza
+        } else {
+            button.innerHTML = '➖';  // Cambiar a "-" cuando se expande
+        }
     }
-}
 
-// Agregar eventos de clic a los botones de minimizar
-minimizeButton.addEventListener('click', function() {
-    toggleMinimize(floatingContainer, minimizeButton);
-});
+    // Agregar eventos de clic a los botones de minimizar
+    minimizeButton.addEventListener('click', function() {
+        toggleMinimize(floatingContainer, minimizeButton);
+    });
 
-minimizeButton1.addEventListener('click', function() {
-    toggleMinimize(floatingContainer1, minimizeButton1);
-});
+    minimizeButton1.addEventListener('click', function() {
+        toggleMinimize(floatingContainer1, minimizeButton1);
+    });
 
-minimizeButton2.addEventListener('click', function() {
-    toggleMinimize(floatingContainer2, minimizeButton2);
-});
+    minimizeButton2.addEventListener('click', function() {
+        toggleMinimize(floatingContainer2, minimizeButton2);
+    });
 
-minimizeButton3.addEventListener('click', function() {
-    toggleMinimize(floatingContainer3, minimizeButton3);
-});
+    minimizeButton3.addEventListener('click', function() {
+        toggleMinimize(floatingContainer3, minimizeButton3);
+    });
 
 
 
@@ -657,8 +657,6 @@ function printModal() {
     var secondModalContent = `<div class="modal-content second-modal">${modalContent}</div>`;
 
 
-
-
     modalContent = modalContent.replace(
         /<th class="precio">PRECIO UNITARIO<\/th>/g,  // Esto elimina el encabezado de la columna
         '' 
@@ -675,22 +673,23 @@ function printModal() {
     );
     modalContent = modalContent.replace(
         /<td class="valorTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el valor total
-        '' 
+        '<td class="valorTOTAL">[Eliminado]</td>' 
     );
     modalContent = modalContent.replace(
-        /<td class="ICA">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
+        /<td class="ICA">[\s\S]*?<\/td>/g,  // Esto elimina el ICA  
         ''
     );
     modalContent = modalContent.replace(
-        /<td class="tasa">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
+        /<td class="taza">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
         ''
     );
     modalContent = modalContent.replace(
         /<td class="valorSUBTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
-        ''
+        '<td class="valorSUBTOTAL">[Eliminado]</td>'
     );
     // Ruta al archivo CSS
     var cssLink = imprimir
+    
     
 
 
