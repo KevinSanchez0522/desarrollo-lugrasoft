@@ -583,10 +583,15 @@ def remontar_transaccion_orden(request):
                 id_orden=numero_factura,
                 nit=cliente
             )
-            orden = TransaccionOrden.objects.filter(id_orden=numero_factura).first()
-            estado_orden = orden.estado
-            print('estado orden', estado_orden)
-            
+            # Primero intentamos obtener la orden con estado "en proceso" o "creado"
+            orden = TransaccionOrden.objects.filter(
+                id_orden=numero_factura, 
+                estado__in=['en proceso', 'creado']  # Filtramos por estos estados
+            ).first()
+
+            # Si no encontramos una orden en esos estados, buscamos una en estado "facturado"
+            if not orden:
+                orden = TransaccionOrden.objects.filter(id_orden=numero_factura).first()
             # Iterar sobre los detalles de productos
             for detalle in detallesProductos:
                 producto_id = detalle.get('producto_id')
