@@ -649,14 +649,14 @@ function printModal() {
     var closeButton = document.getElementById('closeButton');
     botonImprimir.style.display = 'none';
     closeButton.style.display = 'none';
+
     var printWindow = window.open('', '', 'height=600,width=800');
     var modalContent = document.querySelector('#modalDetalleOrden .modal-content').innerHTML;
-    var secondModalContent = modalContent// Oculta la tabla en la segunda copia o elimina elementos dentro de la tabla si es necesario
-    // Agregar la clase "second-modal" al contenido clonado
-    //secondModalContent.classList.add('second-modal');
+    
+    // Creamos una copia de modalContent para la segunda copia (sin modificaciones)
     var secondModalContent = `<div class="modal-content second-modal">${modalContent}</div>`;
 
-
+    // Eliminar columna "PRECIO UNITARIO" y otros valores solo en la primera copia
     modalContent = modalContent.replace(
         /<th class="precio">PRECIO UNITARIO<\/th>/g,  // Esto elimina el encabezado de la columna
         '' 
@@ -666,14 +666,10 @@ function printModal() {
         ''
     );
     
-    // Ocultar o eliminar los elementos de valor IVA, valor total y ICA en la segunda copia
+    // Eliminar valores "IVA", "TOTAL", "SUBTOTAL" y otros en la primera copia
     modalContent = modalContent.replace(
         /<td class="valorIVA">[\s\S]*?<\/td>/g,  // Esto elimina el valor IVA
         '' 
-    );
-    modalContent = modalContent.replace(
-        /<td class="valorTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el valor total
-        '<td class="valorTOTAL">[Eliminado]</td>' 
     );
     modalContent = modalContent.replace(
         /<td class="ICA">[\s\S]*?<\/td>/g,  // Esto elimina el ICA  
@@ -683,32 +679,36 @@ function printModal() {
         /<td class="taza">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
         ''
     );
+    
+    // Eliminar filas completas con "valorTOTAL" y "valorSUBTOTAL" en la primera copia
     modalContent = modalContent.replace(
-        /<td class="valorSUBTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
-        '<td class="valorSUBTOTAL">[Eliminado]</td>'
+        /<tr[^>]*>[\s\S]*?<td class="valorTOTAL">[\s\S]*?<\/td>[\s\S]*?<\/tr>/g,  
+        ''
     );
-    // Ruta al archivo CSS
-    var cssLink = imprimir
-    
-    
+    modalContent = modalContent.replace(
+        /<tr[^>]*>[\s\S]*?<td class="valorSUBTOTAL">[\s\S]*?<\/td>[\s\S]*?<\/tr>/g, 
+        ''
+    );
 
+    // Ruta al archivo CSS (asegúrate de que esta ruta sea válida)
+    var cssLink = imprimir;
 
+    // Estilos para la impresión
     var styles = `<style>
                     @media print {
                         body {
                             margin: 0;
-                            font-family: Arial, sans-serif; /* Fuente común para evitar variaciones */
+                            font-family: Arial, sans-serif; /* Fuente común */
                             font-size: 12pt; /* Tamaño de fuente fijo */
-                            margin-top:4cm;
+                            margin-top: 4cm;
                         }
 
                         .modal-content {
-                            
-                            margin-top: 4cm; /* Margen superior de 4 cm */
-                            padding: 20px; /* Padding para separar contenido */
-                            background-color: #fff; /* Fondo blanco */
-                            
+                            margin-top: 4cm; /* Margen superior */
+                            padding: 20px;
+                            background-color: #fff;
                         }
+
                         .second-modal {
                             page-break-before: always;
                             margin-top: 4cm;
@@ -717,39 +717,32 @@ function printModal() {
                             border: 1px solid #000;
                         }
 
-
-                        /* Ocultar pie de página y otros elementos si no se desean imprimir */
                         .invoice-footer, #closeButton {
                             display: none;
                         }
 
-                        /* Ajuste de desbordamiento y salto de línea */
                         .modal-content {
                             word-wrap: break-word;
                             overflow-wrap: break-word;
-                            max-width: 100%; /* Asegura que el contenido no se desborde */
+                            max-width: 100%;
                         }
-
-
                     }
-                </style>
-            `;
+                </style>`;
 
-    printWindow.document.write('<html><head><title>facturación lugrascol SAS </title>');
+    // Escribir el contenido en la ventana de impresión
+    printWindow.document.write('<html><head><title>facturación lugrascol SAS</title>');
     printWindow.document.write('<link rel="stylesheet" href="' + cssLink + '">');
     printWindow.document.write(styles);
-
-    printWindow.document.write('</head><body >');
-    printWindow.document.write(modalContent);
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(modalContent);  // Imprime la primera copia modificada
     printWindow.document.write('<hr>');  // Opcional, para separar las dos copias
-    printWindow.document.write(secondModalContent); // Segunda copia modificada
+    printWindow.document.write(secondModalContent);  // Imprime la segunda copia sin modificaciones
     printWindow.document.write('</body></html>');
 
     printWindow.document.close();
     printWindow.focus();
     printWindow.print();
 }
-
 
 
 function inicializarEventos() {
