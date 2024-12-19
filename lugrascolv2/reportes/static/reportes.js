@@ -605,8 +605,7 @@ function printModal() {
     closeButton.style.display = 'none';
     var printWindow = window.open('', '', 'height=600,width=800');
     var modalContent = document.querySelector('#modalDetalleOrden .modal-content').innerHTML;
-    var secondModalContent = modalContent// Oculta la tabla en la segunda copia o elimina elementos dentro de la tabla si es necesario
-
+    var secondModalContent = `<div class="modal-content second-modal">${modalContent}</div>`;
 
     modalContent = modalContent.replace(
         /<th class="precio">PRECIO UNITARIO<\/th>/g,  // Esto elimina el encabezado de la columna
@@ -648,6 +647,7 @@ function printModal() {
                             margin: 0;
                             font-family: Arial, sans-serif;
                             font-size: 12pt;
+                            margin-top:4cm;
                         }
 
                         .modal-content {
@@ -655,8 +655,15 @@ function printModal() {
                             padding: 20px; /* Padding para separar contenido */
                             background-color: #fff; /* Fondo blanco */
                             border: 1px solid #000; /* Borde alrededor del contenido */
-                            margin-button: 4cm
+                            
                         } 
+                        .second-modal {
+                            page-break-before: always;
+                            margin-top: 4cm;
+                            padding: 20px;
+                            background-color: #fff;
+                            border: 1px solid #000;
+                        }
                             
 
                         /* Ocultar pie de página y otros elementos si no se desean imprimir */
