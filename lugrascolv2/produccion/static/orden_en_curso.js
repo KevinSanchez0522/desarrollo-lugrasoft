@@ -160,7 +160,15 @@ document.addEventListener('DOMContentLoaded', function(){
     
                         cellProducto.innerHTML = detalle.cod_inventario;
                         cellNombre.innerHTML = detalle.nombre;
-                        cellCantidad.innerHTML = detalle.cantidad;
+                            // Formatear la cantidad: si es un número entero, mostrar sin decimales
+                        var cantidad = parseFloat(detalle.cantidad); // Convierte la cantidad a un número
+                        if (cantidad % 1 === 0) {
+                            // Si no tiene decimales, lo mostramos como un entero
+                            cellCantidad.innerHTML = cantidad.toFixed(0); // Sin decimales
+                        } else {
+                            // Si tiene decimales, lo mostramos con decimales
+                            cellCantidad.innerHTML = cantidad.toFixed(2); // Con dos decimales
+                        }
 
                         // Crear sliders para etiquetado y terminado
                         var etiquetadoSlider = document.createElement("input");
@@ -554,6 +562,7 @@ document.addEventListener('DOMContentLoaded', function(){
         ventanaImpresion.document.write('.btn-facturacion { display: none; }');
         // Ocultar el contenedor de tabs (tab-container)
         ventanaImpresion.document.write('.tab-button { display: none; }');
+        ventanaImpresion.document.write('.totales-container {display: none}');
         ventanaImpresion.document.write('#imprimir { display: none; }');
         ventanaImpresion.document.write('.close { display: none; }');
         ventanaImpresion.document.write('.etiqueta { display: none; }');
