@@ -133,6 +133,9 @@
     border-radius: 5px;
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    cursor: move; /* Cambiar cursor a mano para indicar que se puede mover */
+    transition: all 0.3s ease; /* Transición suave para mostrar/ocultar */
     /*display: none; /* Ocultar inicialmente */
 }
 
@@ -143,6 +146,33 @@
 
 .floating-container span {
     font-weight: bold;
+}
+
+
+.minimize-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.floating-container.minimized {
+    width: 30px; /* Ancho cuando está minimizado */
+    height: 30px; /* Alto cuando está minimizado */
+    overflow: hidden; /* Ocultar el contenido al minimizar */
+    padding: 5px;
+}
+
+.floating-container.minimized p {
+    display: none; /* Ocultar los párrafos cuando está minimizado */
+}
+
+.floating-container.minimized #minimize-btn {
+    font-size: 20px;
+    transform: rotate(180deg); /* Girar el icono para indicar que se puede expandir */
 }
 
 /*estilos para el filtro de  fecha */

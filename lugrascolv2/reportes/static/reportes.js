@@ -5,23 +5,22 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarDatosVentasDinamicas();
     cargarDatosCombinados();
     costeoInventario();
-    
 
 
     // Cerrar el modal cuando se hace clic en el botón de cierre
-document.getElementById('closeButton').onclick = function() {
-    var modal = document.getElementById('modalDetalleOrden');
-    modal.style.display = "none";
-}
-
-// Cerrar el modal si se hace clic fuera del contenido del modal
-window.onclick = function(event) {
-    var modal = document.getElementById('modalDetalleOrden');
-    if (event.target === modal) {
+    document.getElementById('closeButton').onclick = function() {
+        var modal = document.getElementById('modalDetalleOrden');
         modal.style.display = "none";
     }
 
-};
+// Cerrar el modal si se hace clic fuera del contenido del modal
+    window.onclick = function(event) {
+        var modal = document.getElementById('modalDetalleOrden');
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+
+    };
 
 
     const tabButtons = document.querySelectorAll('.tab-button');
@@ -147,6 +146,53 @@ window.onclick = function(event) {
             tbody.append(fila);
         });
     }
+
+
+
+// Referencias a los contenedores flotantes
+var floatingContainer = document.getElementById('floating-container');
+var floatingContainer1 = document.getElementById('floating-container1');
+var floatingContainer2 = document.getElementById('floating-container2');
+var floatingContainer3 = document.getElementById('floating-container3');
+
+// Referencias a los botones de minimizar
+var minimizeButton = document.getElementById('minimize-btn');
+var minimizeButton1 = document.getElementById('minimize-btn1');
+var minimizeButton2 = document.getElementById('minimize-btn2');
+var minimizeButton3 = document.getElementById('minimize-btn3');
+
+// Función para cambiar el icono y minimizar o expandir el contenedor
+function toggleMinimize(container, button) {
+    container.classList.toggle('minimized');  // Cambia la clase 'minimized'
+
+    // Cambiar el icono del botón
+    if (container.classList.contains('minimized')) {
+        button.innerHTML = '➕';  // Cambiar a "+" cuando se minimiza
+    } else {
+        button.innerHTML = '➖';  // Cambiar a "-" cuando se expande
+    }
+}
+
+// Agregar eventos de clic a los botones de minimizar
+minimizeButton.addEventListener('click', function() {
+    toggleMinimize(floatingContainer, minimizeButton);
+});
+
+minimizeButton1.addEventListener('click', function() {
+    toggleMinimize(floatingContainer1, minimizeButton1);
+});
+
+minimizeButton2.addEventListener('click', function() {
+    toggleMinimize(floatingContainer2, minimizeButton2);
+});
+
+minimizeButton3.addEventListener('click', function() {
+    toggleMinimize(floatingContainer3, minimizeButton3);
+});
+
+
+
+
 });
 
 // calculos para los contenedores flotantes
