@@ -393,6 +393,9 @@ function printModal() {
     printWindow.document.write('</head><body >');
     printWindow.document.write(modalContent);
     printWindow.document.write('<hr>');  // Opcional, para separar las dos copias
+    printWindow.document.write('<style>');
+    printWindow.document.write('body { margin-top: 4cm; }'); // Aplica margen superior de 4 cm
+    printWindow.document.write('</style>');
     printWindow.document.write(secondModalContent); // Segunda copia modificada
     printWindow.document.write('</body></html>');
 
