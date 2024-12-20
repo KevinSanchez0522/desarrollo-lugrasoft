@@ -611,6 +611,8 @@ def remontar_transaccion_orden(request):
                     
                 )
                 print('existente', transaccion_existente)
+                
+                estado_orden = orden.estado
                 if transaccion_existente.exists():
                     # Verificar el estado de la transacción
                     print('la transaccion existe')
