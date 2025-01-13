@@ -637,6 +637,83 @@ function openModal(remision) {
     })
 
 }
+    // Añadir evento click a cada enlace de vista
+    viewLinks.forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            event.preventDefault(); // Evitar el comportamiento por defecto del enlace
+
+            // Obtener el número de factura desde el elemento de la fila
+            var facturaId = this.closest('tr').querySelector('td').textContent.trim();
+            
+
+            // Abrir el modal con el ID de la factura
+            openModal(facturaId);
+        });
+    });
+
+    // Añadir evento click al botón de cerrar
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Añadir evento click al área fuera del modal para cerrarlo
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+// fin 
+
+
+function inicializarEventos() {
+    $('#tabla-formulario2').off('click', '.view');
+    $('#tabla-formulario2').off('click', '.cancel');
+
+    $('#tabla-formulario2').on('click', '.view', function(e) {
+        e.preventDefault();
+        var remisionId = $(this).data('id');
+        console.log('factura: ', remisionId);
+        // Aquí abre el modal y carga la información de la remisión
+        openModal(remisionId);
+    });
+
+    $('#tabla-formulario2').on('click', '.cancel', function(e) {
+        e.preventDefault(); // Prevenir el comportamiento por defecto del enlace
+        
+        var url = $(this).attr('href'); // Obtener la URL del enlace
+
+        if (!url.endsWith('/')) {
+            url += '/';
+        }
+        
+        // Mostrar un cuadro de confirmación
+        var confirmar = confirm('¿Está seguro de que desea anular esta factura?');
+        
+        if (confirmar) {
+            // Si el usuario confirma, realizar una solicitud AJAX para procesar la anulación
+            $.ajax({
+                url: url,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken') // Asegúrate de que el token CSRF está incluido
+                },
+                success: function(response) {
+                    // Mostrar un mensaje de éxito o redirigir a otra página
+                    alert('Factura anulada exitosamente');
+                    
+                    // Opcionalmente, recargar la página para ver los cambios reflejados
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    // Manejo de errores
+                    console.error('Error al anular la factura:', error);
+                }
+            });
+        } else {
+            console.log('Anulación cancelada');
+        }
+    });
+}
 
 function abrirModal(facturaId) {
     // Implementa la lógica para abrir y cargar el modal aquí
@@ -654,6 +731,7 @@ function printModal() {
     var modalContent = document.querySelector('#modalDetalleOrden .modal-content').innerHTML;
     
     // Creamos una copia de modalContent para la segunda copia (sin modificaciones)
+    var secondModalContent = modalContent
     var secondModalContent = `<div class="modal-content second-modal">${modalContent}</div>`;
 
     // Eliminar columna "PRECIO UNITARIO" y otros valores solo en la primera copia
@@ -679,16 +757,15 @@ function printModal() {
         /<td class="taza">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
         ''
     );
+    modalContent = modalContent.replace(
+        /<td class="valorSUBTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
+        ''
+    );
+    modalContent = modalContent.replace(
+        /<td class="valorTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el valor total
+        '' 
+    );
     
-    // Eliminar filas completas con "valorTOTAL" y "valorSUBTOTAL" en la primera copia
-    modalContent = modalContent.replace(
-        /<tr[^>]*>[\s\S]*?<td class="valorTOTAL">[\s\S]*?<\/td>[\s\S]*?<\/tr>/g,  
-        ''
-    );
-    modalContent = modalContent.replace(
-        /<tr[^>]*>[\s\S]*?<td class="valorSUBTOTAL">[\s\S]*?<\/td>[\s\S]*?<\/tr>/g, 
-        ''
-    );
 
     // Ruta al archivo CSS (asegúrate de que esta ruta sea válida)
     var cssLink = imprimir;
@@ -745,55 +822,6 @@ function printModal() {
 }
 
 
-function inicializarEventos() {
-    $('#tabla-formulario2').off('click', '.view');
-    $('#tabla-formulario2').off('click', '.cancel');
-
-    $('#tabla-formulario2').on('click', '.view', function(e) {
-        e.preventDefault();
-        var remisionId = $(this).data('id');
-        console.log('factura: ', remisionId);
-        // Aquí abre el modal y carga la información de la remisión
-        openModal(remisionId);
-    });
-
-    $('#tabla-formulario2').on('click', '.cancel', function(e) {
-        e.preventDefault(); // Prevenir el comportamiento por defecto del enlace
-        
-        var url = $(this).attr('href'); // Obtener la URL del enlace
-
-        if (!url.endsWith('/')) {
-            url += '/';
-        }
-        
-        // Mostrar un cuadro de confirmación
-        var confirmar = confirm('¿Está seguro de que desea anular esta factura?');
-        
-        if (confirmar) {
-            // Si el usuario confirma, realizar una solicitud AJAX para procesar la anulación
-            $.ajax({
-                url: url,
-                type: 'POST',
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken') // Asegúrate de que el token CSRF está incluido
-                },
-                success: function(response) {
-                    // Mostrar un mensaje de éxito o redirigir a otra página
-                    alert('Factura anulada exitosamente');
-                    
-                    // Opcionalmente, recargar la página para ver los cambios reflejados
-                    location.reload();
-                },
-                error: function(xhr, status, error) {
-                    // Manejo de errores
-                    console.error('Error al anular la factura:', error);
-                }
-            });
-        } else {
-            console.log('Anulación cancelada');
-        }
-    });
-}
 
 
 

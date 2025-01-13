@@ -352,7 +352,7 @@ def irAfacturar (request):
                                     fecha_entrega= transaccion.fecha_entrega,
                                     prioridad= transaccion.prioridad
                                 )
-                                #nueva_transaccion.save()
+                                nueva_transaccion.save()
                                 print(f'Nueva transacción creada: cod_inventario={producto["cod_inventario"]}, cantidad={cantidad_recibida}')
                                 total = cantidad - cantidad_recibida
                                 print(f'Cantidad restante para producción: {total}')
@@ -589,9 +589,7 @@ def remontar_transaccion_orden(request):
                 estado__in=['en proceso', 'creado']  # Filtramos por estos estados
             ).first()
 
-            # Si no encontramos una orden en esos estados, buscamos una en estado "facturado"
-            if not orden:
-                orden = TransaccionOrden.objects.filter(id_orden=numero_factura).first()
+
             # Iterar sobre los detalles de productos
             for detalle in detallesProductos:
                 producto_id = detalle.get('producto_id')
@@ -629,7 +627,7 @@ def remontar_transaccion_orden(request):
                             cantidad_existente = float(transaccion.cantidad)
                             nueva_cantidad = cantidad_existente + cantidad_a_sumar  # Calcular la nueva cantidad
                             # Si todo es correcto, actualizamos la cantidad
-                            #transaccion.cantidad = nueva_cantidad
+                            transaccion.cantidad = nueva_cantidad
                             print(f'Inventario actualizado para {transaccion}: nueva cantidad es {transaccion.cantidad}')
                             
                             transaccion.save()  # Guardamos la transacción con la nueva cantidad
@@ -689,7 +687,7 @@ def remontar_transaccion_orden(request):
 
                                     # Asegurarnos de que el inventario tiene la cantidad que necesitamos
                                     inventario.cantidad = cantidad_a_guardar  # Sumamos la cantidad al inventario existente
-                                    #inventario.save()  # Guardamos los cambios
+                                    inventario.save()  # Guardamos los cambios
                                     
 
 
@@ -723,7 +721,7 @@ def remontar_transaccion_orden(request):
                         
                         nueva_transaccion_orden = TransaccionOrden.objects.create(
                             fecha_entrega=fecha_estimada_entrega,
-                            estado='creado',  # El estado inicial será 'creado'
+                            estado='en proceso',  # El estado inicial será 'creado'
                             cod_inventario=inventario,
                             cantidad=float(cantidad),
                             id_orden=orden_produccion,
