@@ -1,3 +1,4 @@
+from decimal import Decimal
 import json
 from urllib import request
 from django.http import JsonResponse
@@ -326,7 +327,7 @@ def irAfacturar (request):
                     print('producto', producto['cod_inventario'])
                     if int(producto['cod_inventario']) == int(cod_inventario):
                         print('los codigos existen y estan')
-                        cantidad_recibida = float(producto['cantidad'])
+                        cantidad_recibida = Decimal(producto['cantidad'])
                         print(f'Comparando cantidad recibida: {cantidad_recibida} con cantidad de la transacción: {cantidad}')
                         if cantidad_recibida == cantidad:
                             transaccion.estado = estado
@@ -454,68 +455,69 @@ def EliminarItemOrden(request):
         
         transacciones= TransaccionOrden.objects.filter(id_orden=id_orden, estado__in=['en proceso'])
         if transacciones.exists():
-            transaccion = transacciones.get(cod_inventario__cod_inventario=cod_inventario)
-            if transaccion.estado == 'creado':
-                print('el item va a ser eliminado', transaccion.cod_inventario)
-                transaccion.delete()
-            elif transaccion.estado == 'en proceso':
-                print('el item  va a devolver las materias primas')
-                materias_primas = Transformulas.objects.get(cod_inventario=cod_inventario)
-                print('codigo de formula', materias_primas.cod_inventario.cod_inventario)
-                materias = {}
+            transaccion = transacciones.filter(cod_inventario__cod_inventario=cod_inventario)
+            for transaction in transaccion:
+                if transaction.estado == 'creado':
+                    print('el item va a ser eliminado', transaction.cod_inventario)
+                    transaction.delete()
+                elif transaction.estado == 'en proceso':
+                    print('el item  va a devolver las materias primas')
+                    materias_primas = Transformulas.objects.get(cod_inventario=cod_inventario)
+                    print('codigo de formula', materias_primas.cod_inventario.cod_inventario)
+                    materias = {}
 
-                # Iterar para obtener las materias y cantidades
-                for i in range(1, 11):  # Dado que tienes materia1 a materia10, y cant_materia1 a cant_materia10
-                    materia_field = f'materia{i}'  # Forma el nombre del campo materia1, materia2, ..., materia10
-                    cant_materia_field = f'cant_materia{i}'  # Forma el nombre del campo cant_materia1, cant_materia2, ..., cant_materia10
-                    
-                    # Usar getattr para obtener los valores de los campos
-                    materia = getattr(materias_primas, materia_field, None)
-                    cant_materia = getattr(materias_primas, cant_materia_field, None)
-                    
-                    # Si la materia y su cantidad existen, los añadimos al diccionario
-                    if materia and cant_materia:
-                        materias[materia] = cant_materia
-
-                # Ahora 'materias' tiene un diccionario con las materias y sus cantidades
-                print(materias)
-                for materia, cant_materia in materias.items():
-                    try:
-                        # Verificar si 'cant_materia' es un valor numérico válido
-                        if cant_materia is not None:
-                            cant_materia = float(cant_materia)  # Convertir cant_materia a float
-                        else:
-                            raise ValueError(f"Cantidad de materia {materia} es inválida (None).")
-
-                        # Verificar si 'cantidad' es un valor numérico válido
-                        if cantidad is not None:
-                            cantidad = float(cantidad)  # Convertir cantidad a float
-                        else:
-                            raise ValueError(f"Cantidad recibida es inválida (None).")
-
-                        # Buscar la materia en el modelo Inventarios por el código
-                        inventario = Inventario.objects.get(cod_inventario=materia)
+                    # Iterar para obtener las materias y cantidades
+                    for i in range(1, 11):  # Dado que tienes materia1 a materia10, y cant_materia1 a cant_materia10
+                        materia_field = f'materia{i}'  # Forma el nombre del campo materia1, materia2, ..., materia10
+                        cant_materia_field = f'cant_materia{i}'  # Forma el nombre del campo cant_materia1, cant_materia2, ..., cant_materia10
                         
-                        # Calcular la cantidad total
-                        cantidad_total = cant_materia * cantidad
-                        cantidades_actuales = float(inventario.cantidad)
-                        print(cantidades_actuales)
-                        cantidad_a_guardar = cantidad_total+cantidades_actuales
+                        # Usar getattr para obtener los valores de los campos
+                        materia = getattr(materias_primas, materia_field, None)
+                        cant_materia = getattr(materias_primas, cant_materia_field, None)
+                        
+                        # Si la materia y su cantidad existen, los añadimos al diccionario
+                        if materia and cant_materia:
+                            materias[materia] = cant_materia
 
-                        # Asegurarnos de que el inventario tiene la cantidad que necesitamos
-                        inventario.cantidad = cantidad_a_guardar  # Sumamos la cantidad al inventario existente
-                        inventario.save()  # Guardamos los cambios
+                    # Ahora 'materias' tiene un diccionario con las materias y sus cantidades
+                    print(materias)
+                    for materia, cant_materia in materias.items():
+                        try:
+                            # Verificar si 'cant_materia' es un valor numérico válido
+                            if cant_materia is not None:
+                                cant_materia = float(cant_materia)  # Convertir cant_materia a float
+                            else:
+                                raise ValueError(f"Cantidad de materia {materia} es inválida (None).")
 
-                        print(f'Inventario actualizado para {materia}: nueva cantidad es {inventario.cantidad}')
+                            # Verificar si 'cantidad' es un valor numérico válido
+                            if cantidad is not None:
+                                cantidad = float(cantidad)  # Convertir cantidad a float
+                            else:
+                                raise ValueError(f"Cantidad recibida es inválida (None).")
 
-                    except ValueError as ve:
-                        print(f"Error de valor: {ve}")
-                    except Inventario.DoesNotExist:
-                        print(f'No se encontró la materia con el código {materia} en el inventario')
-                    except Exception as e:
-                        print(f'Ocurrió un error al actualizar el inventario para {materia}: {e}')
-            print(f'Eliminando transacción con código de inventario {cod_inventario}')
-            transaccion.delete()
+                            # Buscar la materia en el modelo Inventarios por el código
+                            inventario = Inventario.objects.get(cod_inventario=materia)
+                            
+                            # Calcular la cantidad total
+                            cantidad_total = cant_materia * cantidad
+                            cantidades_actuales = float(inventario.cantidad)
+                            print(cantidades_actuales)
+                            cantidad_a_guardar = cantidad_total+cantidades_actuales
+
+                            # Asegurarnos de que el inventario tiene la cantidad que necesitamos
+                            inventario.cantidad = cantidad_a_guardar  # Sumamos la cantidad al inventario existente
+                            inventario.save()  # Guardamos los cambios
+
+                            print(f'Inventario actualizado para {materia}: nueva cantidad es {inventario.cantidad}')
+
+                        except ValueError as ve:
+                            print(f"Error de valor: {ve}")
+                        except Inventario.DoesNotExist:
+                            print(f'No se encontró la materia con el código {materia} en el inventario')
+                        except Exception as e:
+                            print(f'Ocurrió un error al actualizar el inventario para {materia}: {e}')
+                print(f'Eliminando transacción con código de inventario {cod_inventario}')
+                transaccion.delete()
             
             
             return JsonResponse({'success': True, 'message': 'Item eliminado correctamente'})

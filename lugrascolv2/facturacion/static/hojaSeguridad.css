@@ -1,0 +1,62 @@
+.cabecera{
+    display: flex;
+    justify-content:space-between;
+}
+.encabezado{
+    display: flex;
+    justify-content:space-between;
+    width: 1000px;
+
+}
+.logo{
+    width: 80px;
+    height: 80px;
+}
+.encabezado textarea{
+    width: 100%;
+    text-align: center;
+    border: none;
+}
+img{
+    width: 80px;
+    height: 80px;
+}
+.descripcion{
+    text-align: center;
+}
+.seccion1{
+    width: 100%;
+}
+.tituloSeccion1{
+    text-align: left;
+    width: 50%;
+    font-weight: bold;
+}
+.fechas{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    font-weight: bold;
+}
+.preparado{
+    margin-bottom: 1px ;
+}
+.direccion{
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-weight: bold;
+}
+.seccion2 h4{
+    text-align: center;
+}
+.encabezado-tabla{
+    display: flex;
+    justify-content: space-between;
+}
+.encabezado-tabla h5, .encabezado-tabla span{
+    width: 30%;
+    text-align: center;
+}
+.lista-ingredientes{
+    width: 50%;
+}
