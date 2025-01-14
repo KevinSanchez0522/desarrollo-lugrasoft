@@ -553,6 +553,11 @@ function cargarDatosVentasDinamicas() {
             var tbody = $('#tabla-formulario2 tbody');
             tbody.empty(); // Limpiar el tbody antes de agregar nuevas filas
 
+            // Ordenar las remisiones por nremision en orden ascendente
+            response.remisiones.sort(function(a, b) {
+                return a.nremision - b.nremision;  // Orden ascendente
+            });
+
             // Agregar filas a la tabla
             response.remisiones.forEach(function(remision) {
                 var fila = '<tr>' +
