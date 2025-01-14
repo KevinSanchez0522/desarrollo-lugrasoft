@@ -178,7 +178,90 @@ def filtrarXfecha(request):
 
     return JsonResponse({'facturas': facturas_formateadas})
 
+def filtrarXfechaRemision(request):
+    
+    fecha_inicio_str = request.GET.get('fecha_inicio')
+    fecha_fin_str = request.GET.get('fecha_fin')
 
+    # Convertir las fechas de cadena a objetos de fecha
+    fecha_inicio = parse_date(fecha_inicio_str) if fecha_inicio_str else None
+    fecha_fin = parse_date(fecha_fin_str) if fecha_fin_str else None
+
+    # Filtrar facturas por rango de fechas
+    facturas_query = Remisiones.objects.all()
+    if fecha_inicio and fecha_fin:
+        facturas_query = facturas_query.filter(fecha_remision__range=(fecha_inicio, fecha_fin))
+
+    # Convertir y formatear las facturas filtradas
+    remisiones_formateadas = []
+    for remision in facturas_query:
+        id_orden = remision.id_orden
+        nombre_cliente = get_object_or_404(Clientes, nit=remision.cliente)
+        cliente = nombre_cliente.nombre
+        facturaAnulada = remision.total_remision == 0
+
+        factura_formateada = {
+            'nfactura': remision.nremision,
+            'fecha_facturacion': remision.fecha_remision,
+            'total_factura_formateado': f"{remision.total_remision:,}",
+            'nombreCliente': cliente,
+            'facturaAnulada': facturaAnulada
+        }
+        
+        remisiones_formateadas.append(factura_formateada)
+
+    return JsonResponse({'remisiones': remisiones_formateadas})
+
+def filtrarXfechaCombinadas(request):
+    
+    fecha_inicio_str = request.GET.get('fecha_inicio')
+    fecha_fin_str = request.GET.get('fecha_fin')
+
+    # Convertir las fechas de cadena a objetos de fecha
+    fecha_inicio = parse_date(fecha_inicio_str) if fecha_inicio_str else None
+    fecha_fin = parse_date(fecha_fin_str) if fecha_fin_str else None
+
+    # Filtrar facturas por rango de fechas
+    facturas_query = Facturas.objects.all()
+    remisiones_query = Remisiones.objects.all()
+    if fecha_inicio and fecha_fin:
+        facturas_query = facturas_query.filter(fecha_facturacion__range=(fecha_inicio, fecha_fin))
+        remisiones_query = remisiones_query.filter(fecha_remision__range=(fecha_inicio, fecha_fin))
+
+    # Convertir y formatear las facturas filtradas
+    facturas_formateadas = []
+    for factura in facturas_query:
+        id_orden = factura.id_orden_field
+        nombre_cliente = get_object_or_404(Clientes, nit=factura.cliente)
+        cliente = nombre_cliente.nombre
+        facturaAnulada = factura.total_factura == 0
+
+        factura_formateada = {
+            'nfactura': factura.nfactura,
+            'fecha_facturacion': factura.fecha_facturacion,
+            'total_factura_formateado': f"{factura.total_factura:,}",
+            'nombreCliente': cliente,
+            'facturaAnulada': facturaAnulada
+        }
+        
+        facturas_formateadas.append(factura_formateada)
+        
+    for remision in remisiones_query:
+        id_orden = remision.id_orden
+        nombre_cliente = get_object_or_404(Clientes, nit=remision.cliente)
+        cliente = nombre_cliente.nombre
+        facturaAnulada = remision.total_remision == 0
+        
+        remision_formateada = {
+            'nfactura': remision.nremision,
+            'fecha_facturacion': remision.fecha_remision,
+            'total_factura_formateado': f"{remision.total_remision:,}",
+            'nombreCliente': cliente,
+            'facturaAnulada': facturaAnulada
+        }
+        facturas_formateadas.append(remision_formateada)
+
+    return JsonResponse({'combinadas': facturas_formateadas})
 
 def editarRemision(request, nremision):
     transacciones = TransaccionRemision.objects.filter(nremision=nremision)

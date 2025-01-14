@@ -84,15 +84,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         $.ajax({
-            url: BuscarXFecha,
+            url: buscarXfechaRemi,
             method: 'GET',
             data: {
                 fecha_inicio: fechaInicio,
                 fecha_fin: fechaFin
             },
             success: function(response) {
-                console.log('Facturas filtradas:', response.facturas);
-                actualizarTabla(response.facturas);
+                console.log('Facturas filtradas:', response.remisiones);
+                actualizarTabla2(response.remisiones);
                 calcularTotalfiltradoDinamicas(fechaInicio, fechaFin);
             },
             error: function(xhr, status, error){
@@ -102,15 +102,15 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 
     $('.BuscarFechaVentasCombinadas').on('click',function(){
-        var fechaInicio = $('#fecha_inicioVentasDinamicas').val();
-        var fechaFin = $('#fecha_finVentasDinamicas').val();
+        var fechaInicio = $('#fecha_inicioVentasCombinadas').val();
+        var fechaFin = $('#fecha_finVentasCombinadas').val();
     
         if (!fechaInicio || !fechaFin) {
             alert('Por favor, ingrese ambas fechas.');
             return;
         }
         $.ajax({
-            url: BuscarXFecha,
+            url: BuscarXFechaCombinadas,
             method: 'GET',
             data: {
                 fecha_inicio: fechaInicio,
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             success: function(response) {
                 console.log('Facturas filtradas:', response.facturas);
-                actualizarTabla(response.facturas);
+                actualizarTabla3(response.combinadas);
                 calcularTotalfiltradoDinamicas(fechaInicio, fechaFin);
             },
             error: function(xhr, status, error){
@@ -147,6 +147,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function actualizarTabla2(remisiones) {
+        var tbody = $('#tabla-formulario2 tbody');
+        tbody.empty(); // Limpiar el tbody antes de agregar nuevas filas
+    
+
+    
+        // Agregar filas a la tabla
+        $.each(remisiones, function(index, remision) {
+            var fila = '<tr>' +
+                '<td>' + remision.nfactura + '</td>' +
+                '<td>' + remision.nombreCliente + '</td>' +
+                '<td>$ ' + remision.total_factura_formateado + '</td>' +
+                '<td>' + remision.fecha_facturacion + '</td>' +
+                '</tr>';
+            tbody.append(fila);
+        });
+    }
+
+    function actualizarTabla3(combinadas) {
+        var tbody = $('#tabla-formulario3 tbody');
+        tbody.empty(); // Limpiar el tbody antes de agregar nuevas filas
+    
+
+    
+        // Agregar filas a la tabla
+        $.each(combinadas, function(index, combinada) {
+            var fila = '<tr>' +
+                '<td>' + combinada.nfactura + '</td>' +
+                '<td>' + combinada.nombreCliente + '</td>' +
+                '<td>$ ' + combinada.total_factura_formateado + '</td>' +
+                '<td>' + combinada.fecha_facturacion + '</td>' +
+                '</tr>';
+            tbody.append(fila);
+        });
+    }
 
 
     // Referencias a los contenedores flotantes

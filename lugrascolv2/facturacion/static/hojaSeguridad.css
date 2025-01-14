@@ -58,5 +58,69 @@ img{
     text-align: center;
 }
 .lista-ingredientes{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.primerCuadrante, .segundoCuadrante{
+    width: 40%;
+}
+.seccion3 h5{
+    text-align: center;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+.seccion3 h4{
+    margin-bottom: 2px;
+}
+.seccion3 .tituloEfectos{
+    margin-top: 2px;
+}
+.img-text{
+    display: flex;
+    justify-content: space-between;
+}
+.text{
     width: 50%;
+}
+.ref{
+    align-content: start;
+}
+.img-1{
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    
+}
+/* Estilos para los contenedores internos */
+.one, .two {
+    width: 100%;
+    height: 50%;            /* Ocupan la mitad del contenedor */
+
+}
+.img-grande{
+    width: 25%;
+}
+.img-1 img{
+    width: 220px;
+    height: 60px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+.img-grande img{
+    width: 230px;
+    height: 165px;
+    margin-left: 10px;
+}
+.finSeccion3 h5, .finSeccion3 h4{
+    text-align: left;
+    font-weight: bold;
+}
+.finSeccion3 h6{
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+.finHoja{
+    text-align: center;
+    font-weight: bold;
 }

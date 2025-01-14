@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import reportes, reporteVentas, reporteVentasDinamicas, costeoInventario, filtrarXfecha, editarRemision, edicionRemision, anularRemision, detallesremi
+from .views import reportes, reporteVentas, reporteVentasDinamicas, costeoInventario, filtrarXfecha, editarRemision, edicionRemision, anularRemision, detallesremi,filtrarXfechaRemision,filtrarXfechaCombinadas
 
 
 
@@ -13,4 +13,6 @@ urlpatterns = [
     path('edicion/', edicionRemision, name= 'edicionRemision'),
     path('anular-remision/<int:nremision>/', anularRemision, name= 'anularRemision'),
     path('detalles-remision/', detallesremi, name= 'datosRemision'),  
+    path('filtrarRemisionFecha/', filtrarXfechaRemision, name= 'buscarXfechaRemision'),
+    path('buscarFechaCombinadas/', filtrarXfechaCombinadas, name='buscarXfechaCombinada')
 ]
