@@ -2,7 +2,7 @@
     display: flex;
     justify-content:space-between;
 }
-.encabezado{
+.encabezado-hoja{
     display: flex;
     justify-content:space-between;
     width: 1000px;
@@ -12,7 +12,7 @@
     width: 80px;
     height: 80px;
 }
-.encabezado textarea{
+.encabezado-hoja textarea{
     width: 100%;
     text-align: center;
     border: none;
@@ -21,7 +21,7 @@ img{
     width: 80px;
     height: 80px;
 }
-.descripcion{
+.descripcion-hoja{
     text-align: center;
 }
 .seccion1{
@@ -41,7 +41,7 @@ img{
 .preparado{
     margin-bottom: 1px ;
 }
-.direccion{
+.direccion-hoja{
     margin-top: 2px;
     margin-bottom: 2px;
     font-weight: bold;

@@ -282,9 +282,9 @@ label{
 .modal-content {
     position: relative;
     background-color: #ffff;
-    margin: 15% auto; /* Centrado */
-    padding: 20px;
-    border: 1px solid #888;
+    margin: 1% auto; /* Centrado */
+    padding: 5px;
+    border: none;
     width: 80%; /* Ancho del modal */
     background: 
     linear-gradient(
@@ -306,7 +306,13 @@ label{
     background: rgba(255, 255, 255, 0.4); /* Capa blanca semitransparente */
     z-index: -1000; /* Coloca esta capa detrás del contenido del modal */
 }
-
+.hojaSeguridad {
+    page-break-before: always;  /* Asegura que la hoja de seguridad comience en una nueva página */
+    page-break-inside: avoid;   /* Evita el corte dentro del contenedor */ 
+    padding: 5px;              /* Espaciado del contenido */
+    background-color: #fff;     /* Fondo blanco */
+    border: 1px solid #000;     /* Borde alrededor de la hoja de seguridad */
+}
 /* Estilo para el botón de cerrar */
 .close {
     color: #aaa;
@@ -479,4 +485,173 @@ label{
 .precio{
     width: 20%;
     text-align: center;
+}
+
+/* estilos para la hoja de seguridad*/
+
+
+.hoja{
+    display: none;
+}
+
+.cabecera{
+    display: flex;
+    justify-content:space-between;
+}
+.encabezado-hoja{
+    display: flex;
+    justify-content:space-between;
+    width: 1000px;
+
+}
+.logo{
+    width: 80px;
+    height: 80px;
+}
+.encabezado-hoja textarea{
+    width: 100%;
+    text-align: center;
+    border: none;
+}
+img{
+    width: 80px;
+    height: 80px;
+}
+.descripcion-hoja{
+    text-align: center;
+}
+.seccion1{
+    width: 100%;
+}
+.seccion1 h5, .seccion1 p{
+    font-size: 10px;
+}
+.tituloSeccion1{
+    text-align: left;
+    width: 50%;
+    font-weight: bold;
+    font-size: 10px;
+}
+.fechas{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    font-weight: bold;
+}
+.fechas span{
+    font-size: 10px;
+}
+.preparado{
+    margin-bottom: 1px ;
+}
+.direccion-hoja{
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-weight: bold;
+}
+.seccion2 h4{
+    text-align: center;
+    font-size: 10px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+.encabezado-tabla{
+    display: flex;
+    justify-content: space-between;
+}
+.encabezado-tabla h5, .encabezado-tabla span{
+    width: 30%;
+    text-align: center;
+    font-size: 10px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+.lista-ingredientes{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.primerCuadrante li , .primerCuadrante span{
+    font-size: 10px;
+}
+.segundoCuadrante span{
+    font-size: 10px;
+}
+.primerCuadrante, .segundoCuadrante{
+    width: 40%;
+}
+.seccion3 h5{
+    text-align: center;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-size: 10px;
+}
+.seccion3 h4{
+    margin-bottom: 2px;
+    font-size: 10px;
+}
+.seccion3 .tituloEfectos{
+    margin-top: 2px;
+    font-size: 10px;
+}
+.img-text{
+    display: flex;
+    justify-content: space-between;
+}
+.text{
+    width: 50%;
+}
+.text span, .text li{
+    font-size: 10px;
+}
+.ref{
+    align-content: start;
+    font-size: 10px;
+}
+.img-1{
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    
+}
+/* Estilos para los contenedores internos */
+.one, .two {
+    width: 100%;
+    height: 50%;            /* Ocupan la mitad del contenedor */
+
+}
+.img-grande{
+    width: 25%;
+}
+.img-1 img{
+    width: 80px;
+    height: 30px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+.img-grande img{
+    width: 120px;
+    height: 120px;
+    margin-left: 10px;
+}
+.finSeccion3 h5, .finSeccion3 h4{
+    text-align: left;
+    font-weight: bold;
+    font-size: 9px;
+}
+.finSeccion3 h6{
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-size: 9px;
+}
+.finSeccion3 span{
+    font-size: 8px;
+}
+.finHoja{
+    text-align: center;
+    font-weight: bold;
+    font-size: 10px;
+}
+.lista-productos li{
+    font-size: 10px;
 }

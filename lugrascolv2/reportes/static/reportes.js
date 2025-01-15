@@ -1,4 +1,6 @@
 // script.js
+var nombresProductos = [];
+
 document.addEventListener('DOMContentLoaded', function() {
 
     cargarDatos();
@@ -558,6 +560,7 @@ function cargarDatosVentasDinamicas() {
                 return a.nremision - b.nremision;  // Orden ascendente
             });
 
+            
             // Agregar filas a la tabla
             response.remisiones.forEach(function(remision) {
                 var fila = '<tr>' +
@@ -622,9 +625,11 @@ function openModal(remision) {
                 let totalPeso = 0;
                 let pesofila=0;
             
+                nombresProductos = [];
                 // Verificar si hay productos en la respuesta
                 if (response.productos && response.productos.length > 0) {
                     response.productos.forEach(function(producto) {
+                        nombresProductos.push(producto.nombre);
                         var fila = '<tr>' +
                                     '<td>' + producto.cantidad + ' '+'---'+' ' + producto.cod_inventario + ' ' + producto.nombre + '</td>' +
                                     '<td class="precio-unitario">'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
@@ -773,6 +778,33 @@ function printModal() {
     // Creamos una copia de modalContent para la segunda copia (sin modificaciones)
     var secondModalContent = modalContent
     var secondModalContent = `<div class="modal-content second-modal">${modalContent}</div>`;
+    var hojaSeguridad = document.querySelector('.hoja').innerHTML;
+    var hojaSeguridad = `<div class="hojaSeguridad tercera-hoja">${hojaSeguridad}</div>`;
+
+    var hojaS = nombresProductos
+    
+    //Crear la lista de productos para la hoja de seguridad
+    var productosHTML = '';
+    hojaS.forEach(function(productoNombre) {
+        productosHTML += `<li>${productoNombre}</li>`;
+    });
+
+    console.log('html',productosHTML)
+
+    // Aquí buscamos el contenedor 'lista-productos' dentro de 'hojaSeguridad' y agregamos los productos
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = hojaSeguridad;  // Convertir el HTML de hojaSeguridad en un nodo DOM
+    
+    // Ahora encontramos el contenedor 'lista-productos' dentro de ese HTML temporal
+    var listaProductosContainer = tempDiv.querySelector('.lista-productos');
+    
+    // Si el contenedor de productos existe, agregamos los productos a la lista
+    if (listaProductosContainer) {
+        listaProductosContainer.innerHTML = productosHTML;  // Insertar la lista generada
+    }
+    
+    // Recuperar el HTML modificado de hojaSeguridad
+    hojaSeguridad = tempDiv.innerHTML;
 
     // Eliminar columna "PRECIO UNITARIO" y otros valores solo en la primera copia
     modalContent = modalContent.replace(
@@ -815,36 +847,50 @@ function printModal() {
                     @media print {
                         body {
                             margin: 0;
-                            font-family: Arial, sans-serif; /* Fuente común */
+                            font-family: Arial, sans-serif; /* Fuente común para evitar variaciones */
                             font-size: 12pt; /* Tamaño de fuente fijo */
-                            margin-top: 4cm;
+                            margin-top:4cm;
                         }
 
                         .modal-content {
-                            margin-top: 4cm; /* Margen superior */
-                            padding: 20px;
-                            background-color: #fff;
+                            
+                            margin-top: 4cm; /* Margen superior de 4 cm */
+                            padding: 20px; /* Padding para separar contenido */
+                            background-color: #fff; /* Fondo blanco */
+                            font-size: 11px;
+                            
                         }
 
+                        .modal-content #tabla-formulario-modal{
+                            font-size: 11px;
+                        }
                         .second-modal {
                             page-break-before: always;
-                            margin-top: 4cm;
-                            padding: 20px;
+                            padding: 5px;
                             background-color: #fff;
-                            border: 1px solid #000;
+                            
                         }
 
+
+
+
+                        /* Ocultar pie de página y otros elementos si no se desean imprimir */
                         .invoice-footer, #closeButton {
                             display: none;
                         }
 
+                        /* Ajuste de desbordamiento y salto de línea */
                         .modal-content {
                             word-wrap: break-word;
                             overflow-wrap: break-word;
-                            max-width: 100%;
+                            max-width: 100%; /* Asegura que el contenido no se desborde */
                         }
+
+
+
                     }
-                </style>`;
+                </style>
+            `;
 
     // Escribir el contenido en la ventana de impresión
     printWindow.document.write('<html><head><title>facturación lugrascol SAS</title>');
@@ -854,6 +900,8 @@ function printModal() {
     printWindow.document.write(modalContent);  // Imprime la primera copia modificada
     printWindow.document.write('<hr>');  // Opcional, para separar las dos copias
     printWindow.document.write(secondModalContent);  // Imprime la segunda copia sin modificaciones
+    printWindow.document.write('<hr>');
+    printWindow.document.write(hojaSeguridad);
     printWindow.document.write('</body></html>');
 
     printWindow.document.close();

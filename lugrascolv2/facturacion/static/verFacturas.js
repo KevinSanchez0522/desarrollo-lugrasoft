@@ -1,4 +1,6 @@
+var nombresProductos = [];
 document.addEventListener('DOMContentLoaded', function() {
+    
     $(document).ready(function() {
         $('#filtro').select2();
         
@@ -109,8 +111,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 let totalPeso = 0;
                 let pesofila=0;
                 // Verificar si hay productos en la respuesta
+                nombresProductos = []; 
                 if (response.productos && response.productos.length > 0) {
                     response.productos.forEach(function(producto) {
+                        nombresProductos.push(producto.nombre);
                         var fila = '<tr>' +
                                     '<td>' + producto.cantidad + ' '+'---'+' ' + producto.cod_inventario + ' ' + producto.nombre + '</td>' +
                                     '<td class="precio-unitario">'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
@@ -321,7 +325,35 @@ function printModal() {
     // Agregar la clase "second-modal" al contenido clonado
     //secondModalContent.classList.add('second-modal');
     var secondModalContent = `<div class="modal-content second-modal">${modalContent}</div>`;
+    var hojaSeguridad = document.querySelector('.hoja').innerHTML;
+    var hojaSeguridad = `<div class="hojaSeguridad tercera-hoja">${hojaSeguridad}</div>`;
 
+    var hojaS = nombresProductos
+    
+    //Crear la lista de productos para la hoja de seguridad
+    var productosHTML = '';
+    hojaS.forEach(function(productoNombre) {
+        productosHTML += `<li>${productoNombre}</li>`;
+    });
+
+    console.log('html',productosHTML)
+
+    // Aquí buscamos el contenedor 'lista-productos' dentro de 'hojaSeguridad' y agregamos los productos
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = hojaSeguridad;  // Convertir el HTML de hojaSeguridad en un nodo DOM
+    
+    // Ahora encontramos el contenedor 'lista-productos' dentro de ese HTML temporal
+    var listaProductosContainer = tempDiv.querySelector('.lista-productos');
+    
+    // Si el contenedor de productos existe, agregamos los productos a la lista
+    if (listaProductosContainer) {
+        listaProductosContainer.innerHTML = productosHTML;  // Insertar la lista generada
+    }
+    
+    // Recuperar el HTML modificado de hojaSeguridad
+    hojaSeguridad = tempDiv.innerHTML;
+
+    
 
 
 
@@ -374,15 +406,21 @@ function printModal() {
                             margin-top: 4cm; /* Margen superior de 4 cm */
                             padding: 20px; /* Padding para separar contenido */
                             background-color: #fff; /* Fondo blanco */
+                            font-size: 11px;
                             
+                        }
+
+                        .modal-content #tabla-formulario-modal{
+                            font-size: 11px;
                         }
                         .second-modal {
                             page-break-before: always;
-                            margin-top: 4cm;
-                            padding: 20px;
+                            padding: 5px;
                             background-color: #fff;
-                            border: 1px solid #000;
+                            
                         }
+
+
 
 
                         /* Ocultar pie de página y otros elementos si no se desean imprimir */
@@ -398,23 +436,28 @@ function printModal() {
                         }
 
 
+
                     }
                 </style>
             `;
 
-    printWindow.document.write('<html><head><title>facturación lugrascol SAS </title>');
-    printWindow.document.write('<link rel="stylesheet" href="' + cssLink + '">');
-    printWindow.document.write(styles);
 
-    printWindow.document.write('</head><body >');
-    printWindow.document.write(modalContent);
-    printWindow.document.write('<hr>');  // Opcional, para separar las dos copias
-    printWindow.document.write(secondModalContent); // Segunda copia modificada
-    printWindow.document.write('</body></html>');
-
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+            setTimeout(function() {
+                printWindow.document.write('<html><head><title>facturación lugrascol SAS </title>');
+                printWindow.document.write('<link rel="stylesheet" href="' + cssLink + '">');
+                printWindow.document.write(styles);
+                printWindow.document.write('</head><body>');
+                printWindow.document.write(modalContent); // Asegúrate de que modalContent no esté vacío
+                printWindow.document.write('<hr>');
+                printWindow.document.write(secondModalContent);
+                printWindow.document.write('<hr>');
+                printWindow.document.write(hojaSeguridad);
+                printWindow.document.write('</body></html>');
+            
+                printWindow.document.close();
+                printWindow.focus();
+                printWindow.print();
+            }, 100);
 }
 function getCookie(name) {
     var cookieValue = null;

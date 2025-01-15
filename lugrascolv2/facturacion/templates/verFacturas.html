@@ -92,7 +92,7 @@
             
             {%endfor%}
         </tbody>
-    </table>	
+</table>	
 
 
     <div id="modalDetalleOrden" class="modal">
@@ -186,5 +186,133 @@
             </div>
         </div>
     </div>
+
+
+
+
+    <div class="hoja">
+        <div class="cabecera">
+            <div class="logo">
+                <img src="{% static 'logo.png'%}" alt="">
+
+            </div>
+            <div class="encabezado-hoja">
+                <textarea name="text-encabezado" id="text-encabezado">
+                    LUGRASCOL S.A.S
+                    NIT:901.452.546-7
+                    Hoja de seguridad 2 RESPONSABLE DE IVA
+                    ESTA HOJA DE SEGURIDAD POR SU SIMILITUD DE INGREDIENTES CUBRE LOS SIGUIENTES PRODUCTOS: LUGRASCOL</textarea>
+            </div>
+        </div>
+        <div class="productos-hoja">
+            <h4 class="descripcion-hoja">Descripcion</h4>
+            <div class="lista-productos">
+
+            </div>
+        </div>
+        <div class="seccion1">
+            <P class="tituloSeccion1">
+                SECCION I. PRODUCTO QUIMICO E IDENTIFICACION DE LA COMPAÑIA NUMERO DE RESPUESTA ANTE LA EMERGENCIA(24 HORAS): <span>Tel: 6468160</span>
+            </P>
+            <h5 class="preparado">PREPARADO POR:</h5>
+            <p class="direccion-hoja">DIRECCION DE INNOVACION Y DESARROLLO FABRICA DE LUBRICANTES LUGRASCOL S.A.S</p>
+            <div class="fechas">
+                <span class="fechai">FECHA DE ELABORACION: Enero 2017.</span> <span class="fechaf">FECHA DE REVISION: Enero 2024</span>
+            </div>
+            <hr>
+            <div class="seccion2">
+                <h4>SECCION II. COMPOSICIÓN / INFORMACIÓN SOBRE INGREDIENTES</h4>
+                <div class="encabezado-tabla">
+                    <h5>INGREDIENTES</h5>
+                    <h5>WT/WT%</h5>
+                </div>
+                <div class="lista-ingredientes">
+                    <div class="primerCuadrante">
+                        <ol>
+                            <li> Aceite Mineral Refinado de Petroleo
+                                <span> Aditivos, compuestos organometalicos: antidesgaste inhibidores de oxidación, corrosión, Herrumbes, Antiespumantes, modificadores de fricción, extrema presion, mejoradores de Indices de Viscosidad, y depresores de punto de fluidez, entre otros.
+                                </span>
+                            </li>
+                            <li>La composicion quimica es confidencial pero disponible en momento de requerirlo para efectos medicos.</li>
+                        </ol>
+                    </div>
+                    <div class="segundoCuadrante">
+                        <ol>
+                            <li>
+                                <span>No aplicable en mezclas</span>
+                            </li>
+                            <li>
+                                <span>No aplicable en mezclas</span>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <hr>
+                <div class="seccion3">
+                    <h4>SECCIÓN III. IDENTIFICACIÓN DE PELIGROS.</h4>
+                    <h5>Aspectos Generales en Caso de Emergencia.</h5>
+                    <h4 class="tituloEfectos">EFECTOS POTENCIALES EN LA SALUD</h4>
+
+                    <div class="img-text">
+                        <div class="text">
+                            <span>Peligros Significativos:</span>
+                            <ul>
+                                <li>Salud: Azul , 1 : Ligeramente peligroso</li>
+                                <li>Incendio. 1. combustible si se calienta.</li>
+                                <li>Reactividad: Amarillo 0 : Estable</li>
+                                <li>Riesgo Especifico: Blanco. No aplica debido a que los componentes no se identifican con los riesgos establecidos</li>
+                            </ul>
+                            <h4 class="ref">Referencia 3082 <span>Naciones Unidas</span></h4>
+
+                        </div>
+                        <div class="img-1">
+                            <div class="one">
+                                <img src="{% static 'Picture1.jpg'%}" alt="" class="img-one">
+                            </div>
+                            <div class="two">
+                                <img src="{% static 'Picture2.jpg'%}" alt="">
+                            </div>
+
+                        </div>
+                        <div class="img-grande">
+                            <img src="{% static 'Picture3.jpg'%}" alt="">
+
+                        </div>
+                    </div>
+                    <div class="finSeccion3">
+                        <h5>CONTACTO CON LOS OJOS:</h5>
+                        <span>de moderada a fuerte basados en los datos de los componentes o materiales similares.</span>
+                        <h5>INHALACIÓN:</h5>
+                        <span>No es toxico por inhalación, basados en los datos de los componentes o materiales similares en exposición breve y a temperatura ambiente</span>
+                        <h5>INGESTIÓN:</h5>
+                        <span>Toxicidad Ligeramente Peligrosa.</span>
+                        <h5>EFECTOS CRONICOS</h5>
+                        <span>La ingestión repetida de cualquiera de los componentes de este producto puede causar destrucción de la pared estomacal.</span>
+                        <h5>CONTACTO CON LA PIEL</h5>
+                        <span>
+                            No causa irritación con la piel de manera inmediata. El contacto prolongado o repetido tanto con la piel como con la ropa
+                            lubricante puede causar dermatitis. Los sintomas pueden causar edemas y resequedad.
+                            Con la grasa usada o deteriorada por el uso estos efectos pueden desarrollarse mas rapidamente 
+                        </span>
+                        <h5>CARCINOGENIDAD</h5>
+                        <span>
+                            Este producto es formulado con acidos grasos y aceites minerales (del petroleo) los cuales son considerados altamente refinados 
+                            puede ser contemplado como cancerigeno bajo la IARC.
+                        </span>
+                        <h4>SECCIÓN MEDIDAS PRIMEROS AUXILIOS:</h4>
+                        <span><ul>
+                            <li><h6>OJOS</h6><span>Lavar con agua inmediatamente durante minimo 15 minutos y dar atención medica.</span></li>
+                            <li><h6>PIEL:</h6><span></span> Lavar con agua inmediatamente durante minimo 15 minutos y dar atención medica.</li>
+                        </ul></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <p class="finHoja">LUGRASCOL S.A.S. NIT. 901.452.546-7 VEREDA LAGUNETA FINCA LOS DOMINGUEZ - GIRÓN (SANTANDER)</p>
+
+    </div>
+
+
 
 {%endblock %}
