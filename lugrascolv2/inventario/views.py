@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json,io
 import random
 from django.forms import DecimalField
@@ -17,6 +17,9 @@ from .forms import ExcelUploadForm
 import pandas as pd
 from django.db import IntegrityError, OperationalError
 from django.utils.dateparse import parse_date
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 
 import logging
 
@@ -620,3 +623,88 @@ def buscarAverias(request):
         averias_formateadas.append(averia_formateada)
 
     return JsonResponse({'averias': averias_formateadas})
+
+
+
+def imprimirInventario(request):
+        # Crear un nuevo libro de trabajo de Excel
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'inventario'
+
+    # Definir los encabezados de las columnas
+    columnas = ['ID', 'Nombre', 'bodega','fisico','total']
+    ws.append(columnas)
+
+    header_font = Font(bold=True, color='FFFFFF')  # Negrita y color blanco para texto
+    header_fill = PatternFill(start_color='4F81BD', end_color='4F81BD', fill_type="solid")  # Fondo azul
+    header_alignment = Alignment(horizontal="center", vertical="center")  # Alineación centrada
+
+    for col in range(1, len(columnas) + 1):
+        col_letter = get_column_letter(col)
+        header_cell = ws[f'{col_letter}1']
+        header_cell.font = header_font
+        header_cell.fill = header_fill
+        header_cell.alignment = header_alignment
+
+    # Estilo para las celdas
+    row_font = Font(name='Arial', size=10)  # Fuente Arial tamaño 10
+    row_alignment = Alignment(horizontal="left", vertical="center")  # Alineación izquierda
+
+    # Estilos para los bordes
+    thin_border = Border(
+        left=Side(border_style="thin"),
+        right=Side(border_style="thin"),
+        top=Side(border_style="thin"),
+        bottom=Side(border_style="thin")
+    )
+
+    # Recuperar los datos de la base de datos
+    productos = Inventario.objects.all().order_by('cod_inventario')
+    
+    # Crear rellenos para el formato condicional
+    red_fill = PatternFill(start_color="FFCCCC", end_color="FFCCCC", fill_type="solid")  # Relleno rojo claro
+    green_fill = PatternFill(start_color="CCFFCC", end_color="CCFFCC", fill_type="solid")  # Relleno verde claro
+    yellow_fill = PatternFill(start_color="FFFF99", end_color="FFFF99", fill_type="solid")  # Relleno amarillo claro
+
+    for index, producto in enumerate(productos, start=2):  # Comienza desde la fila 2 (porque la fila 1 tiene los encabezados)
+        # Escribir los datos en las columnas correspondientes
+        ws[f'A{index}'] = producto.cod_inventario
+        ws[f'B{index}'] = producto.nombre
+        ws[f'C{index}'] = producto.cantidad  # Asumiendo que tienes un campo 'bodega'
+        
+        # Colocar la fórmula en la columna 'Total' (F)
+        
+        ws[f'E{index}'] = f'=D{index}-C{index}'  # Ejemplo de fórmula (fisico * bodega)
+        
+        total_cell = ws[f'E{index}']
+        total_value = f'=D{index}-C{index}'  # Fórmula de la celda
+        
+                # Verificar el valor de la celda "Total" y aplicar el formato adecuado
+        ws[f'E{index}'].value = total_value
+
+        
+
+            # Aplicar estilos a las celdas de cada fila
+        for col in range(1, 6):  # Para las columnas A a E
+            cell = ws.cell(row=index, column=col)
+            cell.font = row_font
+            cell.alignment = row_alignment
+            cell.border = thin_border
+    # Ajustar el ancho de las columnas
+    for col in range(1, len(columnas) + 1):
+        column_letter = get_column_letter(col)
+        ws.column_dimensions[column_letter].width = 20
+        
+        
+    # Obtener la fecha y hora actuales para el nombre del archivo
+    current_datetime = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')  # Formato: '2025-01-15_12-30-45'
+    filename = f'Inventario_{current_datetime}.xlsx'  # Crear el nombre de archivo    
+
+    # Crear una respuesta HTTP para descargar el archivo
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+
+    # Guardar el libro de trabajo en el objeto HttpResponse
+    wb.save(response)
+    return response
