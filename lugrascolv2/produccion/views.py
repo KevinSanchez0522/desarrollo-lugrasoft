@@ -208,7 +208,8 @@ def detalles_orden(request, id_orden):
                 'estado': detalle.estado,
                 'etiquetado':  detalle.etiquetado,
                 'responsables': detalle.responsables,
-                'terminado': detalle.terminado
+                'terminado': detalle.terminado,
+                'prioridadItem': detalle.prioridadItem
 
             }
             detalle_list.append(detalle_data)
@@ -801,3 +802,38 @@ def remontar_transaccion_orden(request):
             return JsonResponse({'error': str(e)}, status=400)
     
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+def MarcarPrioridad(request):
+    if request.method == 'POST':
+        try:
+            # Obtener los datos enviados desde el frontend
+            data = json.loads(request.body)
+            id_orden = data.get('idOrden')  # Obtener el id de la orden
+            cod_inventario = data.get('id')  # Obtener el código de inventario
+
+            # Verificar que se recibieron los datos necesarios
+            if not id_orden or not cod_inventario:
+                return JsonResponse({'error': 'Datos incompletos'}, status=400)
+
+            # Buscar transacciones relacionadas con la orden y el inventario
+            transacciones = TransaccionOrden.objects.filter(id_orden=id_orden)
+            if transacciones.exists():
+                transaccion = transacciones.filter(cod_inventario__cod_inventario=cod_inventario)
+                if transaccion.exists():
+                    # Marcar como prioridad y guardar cambios
+                    for transaction in transaccion:
+                        transaction.prioridadItem = True
+                        transaction.save()  # Guardar cambios en la base de datos
+
+                    return JsonResponse({'message': 'Prioridad marcada con éxito'}, status=200)
+                else:
+                    return JsonResponse({'error': 'Código de inventario no encontrado'}, status=404)
+            else:
+                return JsonResponse({'error': 'ID de orden no encontrado'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'JSON inválido'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Método no permitido'}, status=405)

@@ -135,6 +135,7 @@ class TransaccionOrden(models.Model):
     etiquetado = models.BooleanField(default=False)
     terminado = models.BooleanField(default=False)
     responsables = models.TextField(null=True)
+    prioridadItem = models.BooleanField(default=False)
 
     class Meta:
         managed = True

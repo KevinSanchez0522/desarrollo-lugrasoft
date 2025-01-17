@@ -327,3 +327,6 @@ span{
     font-size: 12px;
     transition: background-color 0.3s ease;
 }
+tr[data-prioridad="true"] {
+    background-color: #ffcccb; /* Color rosado claro */
+}

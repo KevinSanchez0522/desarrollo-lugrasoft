@@ -148,6 +148,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         $('#responsableEtiquetado').text(detalle.responsable);
                         $('#estado').text(detalle.estado)
                         var row = tbody.insertRow();
+                        
                         var cellProducto = row.insertCell(0);
                         var cellNombre = row.insertCell(1);
                         var cellCantidad = row.insertCell(2);
@@ -156,6 +157,8 @@ document.addEventListener('DOMContentLoaded', function(){
                         var cellTerminado = row.insertCell(5);
                         var cellEliminar = row.insertCell(6);
                         var cellContador = row.insertCell(7);
+
+                        
 
     
                         cellProducto.innerHTML = detalle.cod_inventario;
@@ -188,18 +191,25 @@ document.addEventListener('DOMContentLoaded', function(){
                         terminadoSlider.classList.add("slider");
                         terminadoSlider.setAttribute("data-status", "terminado");  // Asignamos una clase para identificarlo
 
+                        var contenedorAcciones = document.createElement("div")
                         var responsableInput = document.createElement("input")
                         responsableInput.type = "text";  // Asumimos que es un campo de texto
                         responsableInput.value = detalle.responsables;
 
                         var EliminarItem = document.createElement("i")
                         EliminarItem.className= "bi bi-trash";
+                        contenedorAcciones.appendChild(EliminarItem)
+
+                        var ImportantItem = document.createElement("i")
+                        ImportantItem.className = "bi bi-exclamation-diamond";
+                        ImportantItem.title = "Priorizar"
+                        contenedorAcciones.appendChild(ImportantItem)
 
                         // Insertar sliders en las celdas correspondientes
                         cellResponsables.appendChild(responsableInput);
                         cellEtiquetado.appendChild(etiquetadoSlider);
                         cellTerminado.appendChild(terminadoSlider);
-                        cellEliminar.appendChild(EliminarItem);
+                        cellEliminar.appendChild(contenedorAcciones);
 
                         // Crear un contenedor para el contador con botones de "+" y "-"
                         var contadorDiv = document.createElement("div");  // Crear el contenedor div
@@ -244,9 +254,17 @@ document.addEventListener('DOMContentLoaded', function(){
                         });
 
 
+
                         estado = detalle.estado;
-                        console.log('estado: ', estado)
-                        console.log('detalles de orden:', detalles)
+                        
+
+                        console.log('respuesta prioridadItem', detalle.prioridadItem)
+
+                        if (detalle.prioridadItem === true) { // O true si el valor es booleano
+                            console.log('INGRESAMOS A LA COMPARACION')
+                            row.style.backgroundColor = '#ffcccb'; // Color rosado claro
+                        }
+
     
                         // Llamar a la función para cargar las materias primas de este producto
                         cargarMateriasPrimasPorProducto(detalle.cod_inventario, detalle.cantidad);
@@ -254,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function(){
     
                     // Actualizar la tabla de materias primas una vez cargados todos los detalles
                     actualizarTablaMateriasPrimas();
-                    console.log("Materias primas totales:", materiasTotales);
+                    //console.log("Materias primas totales:", materiasTotales);
 
                      // Verificar y deshabilitar el botón 'Producir' si el estado es 'En producción'
                     if (response.estado === 'En producción') {
@@ -528,6 +546,46 @@ document.addEventListener('DOMContentLoaded', function(){
                     success: function(response) {
                         console.log('Item eliminado con éxito:', response);
                         fila.remove();  // Eliminar la fila de la tabla
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al eliminar el item:', xhr.responseText);
+                    }
+                });
+            } else {
+                console.log("Eliminación cancelada por el usuario.");
+            }
+        });
+
+
+        $(document).on('click', '.bi-exclamation-diamond', function(event) {
+            event.preventDefault();
+            
+            // Obtener la fila correspondiente al icono de eliminar
+            var fila = $(this).closest('tr');
+            var id = fila.find('td').eq(0).text();  // Suponiendo que el ID está en la primera celda
+            
+            console.log('id', id, 'orden', idOrden);
+            
+            // Mostrar un cuadro de confirmación antes de continuar con la eliminación
+            var confirmacion = confirm("¿Estás seguro de que deseas priorizar el ítem?", id);
+            
+            // Si el usuario confirma la eliminación
+            if (confirmacion) {
+                $.ajax({
+                    url: PrioridadItem,  // Cambiar por la URL de tu servidor
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json',
+                    },
+                    data: JSON.stringify({
+                        id: id,
+                        idOrden: idOrden,
+                    }),
+                    success: function(response) {
+                        console.log('Item priorisado con exito:', response);
+                        alert("el Item se actualizo con la prioridad correctamente")
+                        location.reload()
                     },
                     error: function(xhr, status, error) {
                         console.error('Error al eliminar el item:', xhr.responseText);
