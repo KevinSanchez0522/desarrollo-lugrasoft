@@ -708,3 +708,17 @@ def imprimirInventario(request):
     # Guardar el libro de trabajo en el objeto HttpResponse
     wb.save(response)
     return response
+
+
+
+def CargarDatos(request):
+    return render(request, 'cargarInventario.html')
+
+
+def ProcesarInventario(request):
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        excel_file = request.FILES.get('file')
+        if not excel_file:
+            return JsonResponse({'error': 'No se ha subido ningún archivo'}, status=400)
+        

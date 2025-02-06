@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from facturacion.models import TransaccionOrden, TransaccionFactura, TransaccionRemision, Facturas, Remisiones
+from facturacion.models import TransaccionOrden, TransaccionFactura, TransaccionRemision, Facturas, Remisiones, Inventario
 from django.utils.dateparse import parse_date
 from django.db.models import Avg, Sum, Count
 
@@ -134,3 +134,8 @@ def ventasPorDia(request):
             return JsonResponse({'error': 'Error en el formato JSON'}, status=400)
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+def PorAgotarse(request):
+    productos = Inventario.objects.all().filter(tipo='m')
+    
+    return render(request, 'ProductosXagotarse.html', {'productos': productos})

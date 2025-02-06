@@ -1,0 +1,56 @@
+{% extends 'dashboard.html'%}
+{% load static%}
+
+{% block title %}
+	<title>Cargar Inventario</title>
+{% endblock title %}
+{% block titulohoja%}
+	<h2 class="titulo">Cargar Inventario</h2>
+{% endblock titulohoja %}
+
+
+{% block areatrabajo %}
+<link rel="stylesheet" href="{% static 'CargarInventario.css' %}">
+<script> 
+    var CargarInventario= "{% url 'cargarArchivoInventario'%}"
+</script>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{%static 'CargarInventario.js'%}"></script>
+
+
+<div class="contenedor-archivo">
+    <input type="file" name="inventario" id="fileInventario" title="Cargar Archivo de Inventario">
+    <button type="button" id="btnCargarArchivo" class="btn btn-primary">Procesar Archivo</button>
+</div>
+
+<div class= "tabla">
+    <table class="table">
+        <thead class="table">
+            <tr class="encabezado">
+                <td>ID</td>
+                <td>ID Producto</td>
+                <td>Nombre</td>
+                <td>Sistema</td>
+                <td>Bodega</td>
+                <td>Total</td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                
+            </tr>
+        </tbody>
+    </table>	
+    
+</div>
+
+
+
+
+
+{% endblock areatrabajo %}

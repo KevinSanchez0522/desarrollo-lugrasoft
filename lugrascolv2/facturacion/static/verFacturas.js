@@ -404,14 +404,14 @@ function printModal() {
                         .modal-content {
                             
                             margin-top: 4cm; /* Margen superior de 4 cm */
-                            padding: 20px; /* Padding para separar contenido */
+                            padding: 5px; /* Padding para separar contenido */
                             background-color: #fff; /* Fondo blanco */
-                            font-size: 11px;
+                            font-size: 16px !important;
                             
                         }
 
                         .modal-content #tabla-formulario-modal{
-                            font-size: 11px;
+                            font-size: 16px !important;
                         }
                         .second-modal {
                             page-break-before: always;
