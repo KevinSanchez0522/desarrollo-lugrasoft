@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Respuesta del servidor:', response);
                 if (response.status === 'success') {
 
-                    $('.alert-icon').css('display', 'flex')
+                    $('.alert-icon').show();
                     // Limpiar la tabla antes de agregar nuevos datos
                     $('#tabla-PPA tbody').empty();
     

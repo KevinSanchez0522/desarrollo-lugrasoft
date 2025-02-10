@@ -252,3 +252,33 @@ def crear_alertas_para_etiquetas():
 #crear_alertas_para_etiquetas()        
 
 """  
+
+
+def Lista_Productos_Alertas(request):
+    productos = ProductosAlerta.objects.all()
+    return render(request, 'ListaProductos.html', {'productos':productos})
+
+
+
+
+        
+
+
+def EliminarItem(request, cod_inventario):
+    try:
+        # Buscar el item en la base de datos
+        item = ProductosAlerta.objects.get(cod_inventario=cod_inventario)
+        print('Item a eliminar:', item)
+
+        # Eliminar el item (descomenta si deseas realmente eliminarlo)
+        #item.delete()
+
+        # Retornar un JSON indicando que la eliminación fue exitosa
+        return JsonResponse({'status': 'success', 'message': 'Producto eliminado exitosamente'})
+    except ProductosAlerta.DoesNotExist:
+        # Si el item no se encuentra en la base de datos, retornar error
+        return JsonResponse({'status': 'error', 'message': 'Producto no encontrado'}, status=404)
+    except Exception as e:
+        # En caso de cualquier otro error, retornar error
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+        
