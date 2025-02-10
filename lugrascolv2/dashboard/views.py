@@ -8,6 +8,7 @@ from django.contrib.auth import logout
 from facturacion.models import TransaccionOrden, TransaccionFactura, TransaccionRemision, Facturas, Remisiones, Inventario, ProductosAlerta
 from django.utils.dateparse import parse_date
 from django.db.models import Avg, Sum, Count
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def InicioSesion(request):
@@ -179,4 +180,75 @@ def AlertarProductos(request):
         
         
         
+
+def ListaProductosAlertas(request):
+    if request.method == 'POST':
+        try:
+            productos_alertas = ProductosAlerta.objects.all()
+            productos = []
+            
+            for producto in productos_alertas:
+                try:
+                    producto_inventario = Inventario.objects.get(cod_inventario=producto.cod_inventario.cod_inventario)
+
+                    
+                    if producto_inventario.cantidad < producto.cantidad_min:
+                        alertas = {
+                            'id': producto.cod_inventario.cod_inventario,
+                            'nombre': producto_inventario.nombre,
+                            'cantidad_min': producto.cantidad_min,
+                            'cantidad': producto_inventario.cantidad
+                        }
+                        productos.append(alertas)
+                
+                except ObjectDoesNotExist:
+                    # Si no se encuentra el producto en Inventario, podemos ignorar o manejar el error
+                    print(f"Producto con cod_inventario {producto.cod_inventario} no encontrado")
+                    continue  # Continuar con el siguiente producto
+            
+            # Retornar los productos en formato JSON
+            return JsonResponse({'status': 'success', 'productos': productos})     
     
+        except Exception as e:
+            # Si hay algún error, devolver un mensaje de error
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    else:
+        # Si el método no es POST, retornar un error
+        return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+    
+    
+    
+    
+    
+"""
+
+def crear_alertas_para_etiquetas():
+    try:
+        # Obtener todos los productos que empiezan con 'ETIQUETA' en Inventario
+        productos_etiqueta = Inventario.objects.filter(nombre__startswith='ETIQUETA')
+        
+        # Crear una lista para almacenar los objetos de ProductosAlerta
+        alertas = []
+
+        for producto in productos_etiqueta:
+            # Crear una nueva instancia de ProductosAlerta para cada producto
+            alerta = ProductosAlerta(
+                cod_inventario=producto,  # Asignamos el objeto Inventario directamente
+                cantidad_min=200  # Establecemos la cantidad mínima a 200
+            )
+            alertas.append(alerta)
+        
+        # Usamos `bulk_create` para hacer la inserción masiva de alertas en la base de datos
+        ProductosAlerta.objects.bulk_create(alertas)
+
+        print(f"{len(alertas)} alertas creadas con éxito.")
+    
+    except Exception as e:
+        print(f"Error al crear alertas: {e}")
+        
+        
+        
+        
+#crear_alertas_para_etiquetas()        
+
+"""  
