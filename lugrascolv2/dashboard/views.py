@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from facturacion.models import TransaccionOrden, TransaccionFactura, TransaccionRemision, Facturas, Remisiones, Inventario
+from facturacion.models import TransaccionOrden, TransaccionFactura, TransaccionRemision, Facturas, Remisiones, Inventario, ProductosAlerta
 from django.utils.dateparse import parse_date
 from django.db.models import Avg, Sum, Count
 
@@ -139,3 +139,44 @@ def PorAgotarse(request):
     productos = Inventario.objects.all().filter(tipo='m')
     
     return render(request, 'ProductosXagotarse.html', {'productos': productos})
+
+
+
+def AlertarProductos(request):
+    if request.method == 'POST':
+        try:
+            # Decodificar el JSON recibido
+            data = json.loads(request.body)
+            
+            # Acceder al array 'productos'
+            productos = data.get('productos', [])
+            
+            # Iterar sobre cada producto
+            for producto in productos:
+                id_producto = producto.get('id')
+                stock_min = producto.get('stock')
+                
+                # Ejemplo: Guardar en la base de datos
+                print(f"ID: {id_producto}, Stock mínimo: {stock_min}")
+                
+                producto_inventario = Inventario.objects.get(cod_inventario = id_producto)
+                
+                producto_alerta, created = ProductosAlerta.objects.get_or_create(
+                    cod_inventario = producto_inventario,
+                    defaults={'cantidad_min':stock_min}
+                )
+                
+                
+                
+            
+            # Respuesta al frontend
+            return JsonResponse({'status': 'success', 'message': 'Datos recibidos'})
+        
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'JSON inválido'}, status=400)
+    
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+        
+        
+        
+    

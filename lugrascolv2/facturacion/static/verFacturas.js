@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Aquí se hace la solicitud AJAX para obtener los detalles de la factura
         $.ajax({
-            url: obtenerDetallesFacturacion,  // Reemplaza con la URL correcta de tu backend
+            url: obtenerDetallesFacturacion,  
             type: 'GET',
             data: {
                 factura_id: facturaId

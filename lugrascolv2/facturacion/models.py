@@ -366,3 +366,13 @@ class Transformulas(models.Model):
     class Meta:
         managed = True
         db_table = 'transformulas'
+
+
+class ProductosAlerta(models.Model):
+    cod_inventario = models.ForeignKey(Inventario, models.DO_NOTHING, db_column='cod_inventario')
+    cantidad_min = models.FloatField(default=0)
+    
+    class Meta:
+        managed = True
+        db_table = 'alerta_productos'
+    
