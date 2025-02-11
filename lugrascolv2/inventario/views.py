@@ -722,3 +722,23 @@ def ProcesarInventario(request):
         if not excel_file:
             return JsonResponse({'error': 'No se ha subido ningún archivo'}, status=400)
         
+        
+        
+def EditarNombreInven(request):
+    if request.method == 'POST':
+        try:
+            cod_inventario = request.POST.get('id')
+            nombre = request.POST.get('new_name')
+            
+            Producto= Inventario.objects.get(cod_inventario = cod_inventario)
+            
+            Producto.nombre = nombre
+            Producto.save()
+            return JsonResponse({'message': 'Nombre actualizado correctamente'}, status=200)
+        except Inventario.DoesNotExist:
+            return JsonResponse({'error': 'No existe el inventario'}, status=404)
+        except Exception as e:
+            return JsonResponse({'sucess':False, 'error': str(e)}, status=500)
+        
+                            
+                            

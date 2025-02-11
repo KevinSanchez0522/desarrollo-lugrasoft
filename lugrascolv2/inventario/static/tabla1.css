@@ -159,3 +159,22 @@
 .exportar{
     display: none;
 }
+
+
+/*estilos para las acciones*/
+
+.bi-arrow-clockwise{
+    color :#4CAF50;
+    font-weight: bolder;
+    display: none;
+}
+.bi-arrow-clockwise:hover{
+    border-color:#6e8624;
+}
+
+.edicion-input{
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}

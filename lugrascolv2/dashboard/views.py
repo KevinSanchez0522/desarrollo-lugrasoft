@@ -265,20 +265,18 @@ def Lista_Productos_Alertas(request):
 
 
 def EliminarItem(request, cod_inventario):
-    try:
-        # Buscar el item en la base de datos
-        item = ProductosAlerta.objects.get(cod_inventario=cod_inventario)
-        print('Item a eliminar:', item)
+    if request.method == 'DELETE':
+        try:
+            # Buscar el item en la base de datos
+            item = ProductosAlerta.objects.get(cod_inventario=cod_inventario)
+            print('Item a eliminar:', item)
 
-        # Eliminar el item (descomenta si deseas realmente eliminarlo)
-        #item.delete()
+            # Eliminar el item (descomenta si deseas realmente eliminarlo)
+            item.delete()
 
-        # Retornar un JSON indicando que la eliminación fue exitosa
-        return JsonResponse({'status': 'success', 'message': 'Producto eliminado exitosamente'})
-    except ProductosAlerta.DoesNotExist:
-        # Si el item no se encuentra en la base de datos, retornar error
-        return JsonResponse({'status': 'error', 'message': 'Producto no encontrado'}, status=404)
-    except Exception as e:
-        # En caso de cualquier otro error, retornar error
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-        
+            # Retornar un JSON indicando que la eliminación fue exitosa
+            return JsonResponse({'success': True})
+        except item.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Producto no encontrado'})
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})
+            

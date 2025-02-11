@@ -10,6 +10,12 @@
 
 
 {% block areatrabajo %}
+
+<script>
+	var EditarNombreInventario = "{% url 'EditarNombre'%}"
+</script>
+
+
 <script src="{% static 'filtrar.js' %}"></script>
 
 <link rel="stylesheet" href="{% static 'tabla1.css' %}">
@@ -64,14 +70,19 @@
 				<td>ID Producto</td>
 				<td>Nombre</td>
 				<td> Cantidad</td>
+				<td>Acciones</td>
 			</tr>
 		</thead>
 		<tbody>
 			{% for inv in inventario %}
 			<tr  data-tipo="{{ inv.tipo }}">
 				<td>{{inv.cod_inventario}}</td>
-				<td>{{inv.nombre}}</td>
+				<td class="editable" data-id="{{ inv.cod_inventario }}" >{{inv.nombre}}</td>
 				<td>{{inv.cantidad}}</td>
+				<td>
+					<i class="bi bi-pencil-square" title="Editar Nombre" data-id="{{inv.cod_inventario}}"></i>
+					<i class="bi bi-arrow-clockwise"></i>
+				</td>
 			</tr>
 			{% endfor %}
 		</tbody>
