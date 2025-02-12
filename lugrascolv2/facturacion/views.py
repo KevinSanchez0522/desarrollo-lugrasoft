@@ -855,10 +855,24 @@ def anularFactura(request, nfactura):
         factura.save()
         
         
-        updateEstado = TransaccionOrden.objects.filter(id_orden=factura.id_orden_field)
+        codigos_transaccion_factura = TransaccionFactura.objects.filter(nfactura = nfactura)
+        productos_facturados = TransaccionOrden.objects.filter(id_orden= factura.id_orden_field, estado='facturado')
+        for codigos in codigos_transaccion_factura:
+            producto_transaccion_orden = productos_facturados.filter(cod_inventario=codigos.cod_inventario).first()
+            if producto_transaccion_orden:
+                producto_transaccion_orden.estado = 'por facturar'
+                producto_transaccion_orden.save()
+            else:
+                print(f"No se encontró la transacción de orden para el producto con cod_inventario {codigos.cod_inventario}")
+        
+        
+        '''
+        updateEstado = TransaccionOrden.objects.filter(id_orden=factura.id_orden_field, estado='facturado')
         updateEstado.update(estado=estado)
         if not transacciones.exists():
             return JsonResponse({'error': 'No se encontraron transacciones para esta factura'}, status=404)
+        '''
+
         
         # Listar los cod_inventario y cantidades
         inventarios_actualizados = []
