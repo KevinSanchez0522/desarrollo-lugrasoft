@@ -14,12 +14,12 @@ from reportlab.lib.styles import getSampleStyleSheet # type: ignore
 from reportlab.lib import colors # type: ignore
 from decimal import Decimal
 from .forms import ExcelUploadForm
-import pandas as pd
+import pandas as pd # type: ignore
 from django.db import IntegrityError, OperationalError
 from django.utils.dateparse import parse_date
-from openpyxl import Workbook
-from openpyxl.utils import get_column_letter
-from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl import Workbook # type: ignore
+from openpyxl.utils import get_column_letter # type: ignore
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side # type: ignore
 
 import logging
 
@@ -717,10 +717,48 @@ def CargarDatos(request):
 
 def ProcesarInventario(request):
     if request.method == 'POST':
+        print('entramos a back')
         # Obtener los datos del formulario
         excel_file = request.FILES.get('file')
         if not excel_file:
             return JsonResponse({'error': 'No se ha subido ningún archivo'}, status=400)
+        try:
+            # Leer el archivo Excel con pandas
+            df = pd.read_excel(excel_file, engine='openpyxl')
+            
+            # Reemplazar NaN en la columna 'bodega' con 0
+            df['fisico'] = df['fisico'].fillna(0)
+            df['total']= df['fisico'] - df['bodega']
+            
+            print('df: ', df)
+            
+            
+            
+            # Verificar que el archivo tiene la columna E (usaremos el índice 4 para la columna E)
+            if 'total' not in df.columns:
+                return JsonResponse({'error': 'La columna total no está presente en el archivo'}, status=400)
+            
+            # Filtrar filas donde los valores en la columna E sean mayores que 0 o menores que 0
+            df_filtrado = df[(df['total'] > 0) | (df['total'] < 0)]
+            
+            # Verificar que las columnas requeridas existen en el archivo
+            required_columns = ['ID', 'Nombre', 'bodega', 'fisico', 'total']
+            for col in required_columns:
+                if col not in df.columns:
+                    return JsonResponse({'error': f'Falta la columna {col} en el archivo'}, status=400)
+
+            # Crear una lista de diccionarios con los datos filtrados
+            datos = df_filtrado[required_columns].to_dict(orient='records')
+            
+            # Enumerar los registros agregando un campo 'id' dinámico
+            for index, item in enumerate(datos, start=1):
+                item['id'] = index  # Agregar el campo 'id' con la numeración
+            
+            # Retornar los datos filtrados al frontend (puedes estructurarlo como una tabla o lista)
+            return JsonResponse({'data': datos}, status=200)
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
         
         
         
@@ -742,3 +780,58 @@ def EditarNombreInven(request):
         
                             
                             
+                            
+                            
+                            
+def GenerarAjusteInv(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            descripcion = 'Ajuste de Inventario Fisico'
+            fecha = datetime.now().date()
+            print('fecha: ', fecha , 'datos:', data)
+            ultimo_ajuste = None
+            ultimo_ajuste = Ajustes.objects.aggregate(Max('id_ajuste'))['id_ajuste__max']
+            print(ultimo_ajuste)
+            if ultimo_ajuste is not None:
+                nuevo_ajuste = ultimo_ajuste + 1
+                print('ajuste', nuevo_ajuste)
+            else:
+                nuevo_ajuste = 10001
+                print(nuevo_ajuste)
+            
+            
+            ajusteN, _ = Ajustes.objects.get_or_create(id_ajuste = nuevo_ajuste)
+            for producto in data:
+                
+                cod_inventario = producto['cod_inventario']
+                nombre = producto['nombre']
+                cantidad = round(float(producto['total']),2)
+                print('codigo: ', cod_inventario, 'cantidad: ', cantidad)
+                
+                
+                
+                inventario, _ = Inventario.objects.get_or_create(cod_inventario= cod_inventario)
+                nueva_cantidad = F('cantidad') + cantidad
+                
+                nuevo_ajuste = TransaccionAjuste.objects.create(
+                fecha_ajuste = fecha,
+                cant_ajuste = cantidad,
+                descripcion = descripcion,
+                id_ajuste = ajusteN,
+                cod_inventario = inventario
+                )
+                nuevo_ajuste.save();
+                # Aquí puedes procesar y guardar los datos adicionales si es necesario
+                Inventario.objects.filter(cod_inventario=cod_inventario).update(cantidad=nueva_cantidad)
+
+            # Retornar una respuesta de éxito
+            return JsonResponse({'mensaje': 'Ajuste generado correctamente'}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Error al procesar los datos del JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+            
+            
+        

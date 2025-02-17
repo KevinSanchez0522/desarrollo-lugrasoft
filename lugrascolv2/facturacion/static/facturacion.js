@@ -145,6 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     '<td>' + dato.nombre + '</td>' +
                                     '<td>' + dato.cantidad + '</td>' +
                                     '<td><input type="text" value="' + subtotal_venta_formateado + '"/></td>' +
+                                    '<td><i class="bi bi-arrow-return-left" title = "devolver a produccion"></i></td>'+
                                     '</tr>';
         
                                 // Agregar la fila a la tabla
@@ -199,6 +200,35 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        $('#tabla-formulario').on('click','.bi-arrow-return-left', function(e){
+            e.preventDefault();
+            var fila = $(this).closest('tr');
+            var cod_inventario = fila.find('td').eq(0).text();
+            var orden = $('#orden option:selected').text()
+            console.log('codigo', cod_inventario, 'orden', orden)
+            if (confirm('¿Desea devolver el producto '+cod_inventario+' a produccion')){
+                $.ajax({
+                    type: 'POST',
+                    url: devolverItemProduccion,
+                    headers: {'X-CSRFToken': getCookie('csrftoken')},
+                    data: {
+                        cod_inventario: cod_inventario,
+                        orden: orden
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            if (response.status == 'success'){
+                                fila.remove();
+                                recalcularTotales();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error en la solicitud AJAX:', error);
+                        }
+                })
+            }
+
+        })
 
 
 
@@ -648,6 +678,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
     });
      // Guardar el total original
+
+
 
 
     

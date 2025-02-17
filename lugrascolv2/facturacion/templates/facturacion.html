@@ -17,6 +17,7 @@
     var Facturacion = "{% url 'facturacion1'%}"
     var obtenerfactura = "{%url 'obtenerFactura'%}"
     var precioPorProducto = "{% url 'precioxproducto'%}"
+    var devolverItemProduccion = "{% url 'devolverItem' %}"
     </script>
 <link rel="stylesheet" href="{%static 'facturacion.css'%}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -93,6 +94,7 @@
                     <td>Nombre</td>
                     <td> Cantidad</td>
                     <td>Precio de venta</td>
+                    <td></td>
                 </tr>
             </thead>
             <tbody>

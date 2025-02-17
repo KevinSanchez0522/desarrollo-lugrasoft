@@ -98,3 +98,24 @@
         text-align: left;
     }
 }
+
+
+.boton{
+    display: flex;
+    justify-content: center;
+
+}
+
+.boton button{
+    width: 40%;
+    height: 30px;
+    background-color: #4CAF50;
+    border-radius: 10px;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    
+}
+.boton button:hover{
+    background-color: #3e8e41;
+}

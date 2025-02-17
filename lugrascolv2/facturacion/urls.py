@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import facturar, obtenerOrdenCliente, productos_facturar,PFacturar, obtener_numero_factura, precio_producto, VerFacturas, detallesFactura,descargar_pdf, editarFacturas,buscarXfecha, editarFactura,anularFactura
+from .views import facturar, obtenerOrdenCliente, productos_facturar,PFacturar, obtener_numero_factura, precio_producto, VerFacturas, detallesFactura,descargar_pdf, editarFacturas,buscarXfecha, editarFactura,anularFactura, retornoItemProduccion
 
 
 urlpatterns = [
@@ -15,5 +15,6 @@ urlpatterns = [
     path('editarFactura/<int:nfactura>/', editarFacturas, name= 'editar'),
     path('edicion/', editarFactura , name= 'Edicion'),
     path('anular/<int:nfactura>/', anularFactura, name= 'anular'),
-    path('buscarFacturaFecha/', buscarXfecha , name='buscarFechas')
+    path('buscarFacturaFecha/', buscarXfecha , name='buscarFechas'),
+    path('devolver-produccion/', retornoItemProduccion, name='devolverItem')
 ]

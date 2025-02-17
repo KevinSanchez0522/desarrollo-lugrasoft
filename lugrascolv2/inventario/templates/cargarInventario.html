@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="{% static 'CargarInventario.css' %}">
 <script> 
     var CargarInventario= "{% url 'cargarArchivoInventario'%}"
+    var generarAjuste = "{% url 'GenerarAjusteInventario'%}"
 </script>
 
 
@@ -28,14 +29,14 @@
 </div>
 
 <div class= "tabla">
-    <table class="table">
+    <table class="table" id="Tabla-Productos">
         <thead class="table">
             <tr class="encabezado">
                 <td>ID</td>
                 <td>ID Producto</td>
                 <td>Nombre</td>
                 <td>Sistema</td>
-                <td>Bodega</td>
+                <td>Fisico</td>
                 <td>Total</td>
                 <td></td>
             </tr>
@@ -46,7 +47,9 @@
             </tr>
         </tbody>
     </table>	
-    
+</div>
+<div class="boton">
+    <button type="button" class="btn btn-primary" id="GenerarAjuste">Generar ajuste</button>
 </div>
 
 

@@ -944,3 +944,48 @@ def buscarXfecha(request):
         facturas_formateadas.append(factura_formateada)
 
     return JsonResponse({'facturas': facturas_formateadas})
+
+
+
+def retornoItemProduccion(request):
+    if request.method == 'POST':
+        # Obtener datos del formulario
+        id_orden = request.POST.get('orden')
+        id_item = request.POST.get('cod_inventario')
+        
+        ordenes= TransaccionOrden.objects.filter(id_orden = id_orden, cod_inventario = id_item)
+        item_por_facturar = ordenes.filter(estado = 'por facturar').first()
+        item_en_proceso = ordenes.filter(estado = 'en proceso').first()
+
+        
+        if item_en_proceso and item_por_facturar:
+            
+            
+            print('cantidad a devolver existe un producto en proceso  ')
+            item_en_proceso.cantidad += item_por_facturar.cantidad
+            item_en_proceso.save()
+            item_por_facturar.delete()
+            
+            
+        elif item_por_facturar and not item_en_proceso:
+            
+            print('estado a cambiar unico producto')
+            item_por_facturar.estado = 'en proceso'
+            item_por_facturar.save()
+            
+                
+        
+        
+        
+        
+        
+        response_data = {
+            'status': 'success',
+            'message': 'Item devuelto correctamente',
+            'orden': id_orden,
+            'cod_inventario': id_item
+        }
+        return JsonResponse(response_data)
+
+    # Si el método no es POST, podemos retornar un error.
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import inventory_view, ajuste, obtener_numero_ajuste,agregar_transaccion_ajuste, agregar_transaccion_averias,obtener_numero_averia,averias, generar_informe_averia, buscarKardex, kardex_view, cargaSaldos, upload_excel,guardarDatos,verAverias,buscarAverias,imprimirInventario,CargarDatos,ProcesarInventario,EditarNombreInven
+from .views import inventory_view, ajuste, obtener_numero_ajuste,agregar_transaccion_ajuste, agregar_transaccion_averias,obtener_numero_averia,averias, generar_informe_averia, buscarKardex, kardex_view, cargaSaldos, upload_excel,guardarDatos,verAverias,buscarAverias,imprimirInventario,CargarDatos,ProcesarInventario,EditarNombreInven, GenerarAjusteInv
 urlpatterns = [
     path('', inventory_view, name= 'inv'),
     path('ajuste/', ajuste , name= 'ajuste'),
@@ -19,5 +19,6 @@ urlpatterns = [
     path('exportar-inventario/', imprimirInventario, name='exportar'),
     path('cargarInventario/', CargarDatos, name='cargarInventario'),
     path('CargarArchivo/', ProcesarInventario, name='cargarArchivoInventario'),
-    path('EditarNombre/', EditarNombreInven , name='EditarNombre')
+    path('EditarNombre/', EditarNombreInven , name='EditarNombre'),
+    path('GenerarAjuste/', GenerarAjusteInv, name='GenerarAjusteInventario')
 ]

@@ -611,7 +611,7 @@ def remontar_transaccion_orden(request):
                     
                     
                 )
-                print('existente', transaccion_existente)
+                print('existente', len(transaccion_existente))
                 
                 estado_orden = orden.estado
                 if transaccion_existente.exists():
@@ -704,6 +704,7 @@ def remontar_transaccion_orden(request):
                                             
                 else:
                     # Si no existe, crear una nueva transacción
+                    print('la transaccion no existe')
                     
                     if estado_orden == 'creado':
                         nueva_transaccion_orden = TransaccionOrden.objects.create(
