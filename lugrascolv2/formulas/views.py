@@ -5,6 +5,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist 
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 # Create your views here.
 

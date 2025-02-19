@@ -1,0 +1,65 @@
+{% extends "dashboard.html" %}
+{% load static%}
+
+{% block title %}
+	<title>Caso Soporte</title>
+{% endblock title %}
+{% block titulohoja%}
+	<h2 class="titulo">Reportar Problema</h2>
+{% endblock titulohoja %}
+
+
+
+{% block areatrabajo%}
+
+
+<link rel="stylesheet" href="{% static 'reportarCaso.css'%}">
+
+<div class="fomulario_soporte">
+    <form action="{% url 'reporteCaso' %}" method="post" class="formulario">
+        {% csrf_token %}
+        <div class="modulo">
+            <label for="selector">Modulo del Problema</label>
+            <select name="selector" id="select-form">
+                <option value="Dashboard">Dashboard</option>
+                <option value="Facturacion">Facturacion</option>
+                <option value="Formulas">Formulas</option>
+                <option value="Inventario">Inventario</option>
+                <option value="Orden de Compra">Orden de Compra</option>
+                <option value="Produccion">Produccion</option>
+                <option value="Proveedores">Proveedores</option>
+                <option value="Reportes">Reportes</option>
+                <option value="Clientes">Clientes</option>
+            </select>
+
+        </div>
+        
+        <div class="fecha">
+            <label for="fecha">Seleccione la Fecha del problema</label>
+            <input type="date" name="fecha-caso" id="fecha-soporte">
+
+        </div>
+        
+        <div class="descripcion">
+            <label for="descripcion-label">Descripción del problema</label>
+            <textarea name="descripcion-texto" id="descripcion-caso" placeholder="Describa detalladamente el problema"></textarea>
+        </div>
+        <div class="clasificacion">
+            <label for="clasificacion">Marque una Prioridad para la solucion</label>
+            <select name="clasificacion" id="clasificacion-caso">
+                <option value="Muy urgente">Muy urgente</option>
+                <option value="Urgente">Urgente</option>
+                <option value="Normal">Normal</option>
+                <option value="No urgente">No urgente</option>
+            </select>
+
+        </div>
+
+        <button type="submit">Reportar Caso</button>
+
+    </form>
+
+</div>
+
+
+{%endblock areatrabajo%}

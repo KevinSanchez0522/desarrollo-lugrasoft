@@ -1,11 +1,10 @@
 import json
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-
-# Create your views here.
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from facturacion.models import TransaccionOrden, TransaccionFactura, TransaccionRemision, Facturas, Remisiones, Inventario, ProductosAlerta
+from facturacion.models import TransaccionOrden, TransaccionFactura, TransaccionRemision, Facturas, Remisiones, Inventario, ProductosAlerta, CasosSoporte
 from django.utils.dateparse import parse_date
 from django.db.models import Avg, Sum, Count
 from django.core.exceptions import ObjectDoesNotExist
@@ -280,3 +279,58 @@ def EliminarItem(request, cod_inventario):
             return JsonResponse({'success': False, 'error': 'Producto no encontrado'})
     return JsonResponse({'success': False, 'error': 'Método no permitido'})
             
+            
+            
+def ReportarCasoSoporte(request):
+    return render(request, 'reportarCaso.html')
+
+
+def GuardarCaso(request):
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        modulo = request.POST.get('selector')
+        fecha = request.POST.get('fecha-caso')
+        descripcion = request.POST.get('descripcion-texto')
+        tipo_caso = request.POST.get('clasificacion')
+        # Crear un nuevo caso de soporte
+        caso = CasosSoporte.objects.create(
+            modulo=modulo,
+            fechaCaso=fecha,
+            descripcionCaso=descripcion,
+            tipoCaso=tipo_caso
+        )
+        # Guardar el caso en la base de datos
+        caso.save()
+        messages.success(request, 'Caso reportado Correctamente')
+        return redirect('reportarCaso')
+    return render(request, 'reportarCaso.html')
+        
+        
+        
+        
+def CasosReportados(request):
+    Casos= CasosSoporte.objects.all()
+    casos_enumerados = []
+    contador = 0
+    
+    for caso in Casos:
+        contador += 1
+        caso.identificador = contador
+        casos_enumerados.append(caso)
+        
+    return render(request, 'ListadoCasos.html',{'casos': casos_enumerados,  'usuario_actual': request.user.username,}) 
+
+
+def CambiarEstado(request):
+    if request.method == 'POST':
+        id_caso = request.POST.get('id')
+        
+        try:
+        
+            caso = CasosSoporte.objects.get(id=id_caso)
+            caso.resuelto = True
+            caso.save()
+            return JsonResponse({'status':'success', 'message': 'estado cambiado correctamente'})
+        except CasosSoporte.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Caso no encontrado'})
+        

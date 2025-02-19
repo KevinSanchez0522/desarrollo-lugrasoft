@@ -67,6 +67,15 @@
                 </li>
                 <li><a href="{% url 'ver-proveedor' %}"><i class="bi bi-person-rolodex"></i>  Proveedores</a></li>
                 <li> <a href="{% url 'admin:index'%}"><i class="bi bi-people"></i> Administrador</a></li>
+                <li>
+                    <a href="#"><i class="bi bi-wrench"> </i> Soporte </a>
+                    <ul class="submenu">
+                        <li><a href="{% url 'reportarCaso'%}"><i class="bi bi-cloud-plus"> </i> Reportar Caso</a></li>
+                        <li><a href="{% url 'ListaCasos' %}"><i class="bi bi-list"></i> Casos</a></li>
+                    </ul>
+                </li>
+                
+
                 <li class="salir"><a href="{% url 'exit'%}"><i class="bi bi-escape"></i>Salir</a></li>
             </ul>
         </nav>

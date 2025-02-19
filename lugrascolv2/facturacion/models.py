@@ -376,3 +376,15 @@ class ProductosAlerta(models.Model):
         managed = True
         db_table = 'alerta_productos'
     
+    
+    
+class CasosSoporte(models.Model):
+    modulo = models.CharField(max_length=20) 
+    fechaCaso = models.DateField()
+    descripcionCaso = models.TextField()   
+    tipoCaso = models.CharField(max_length=20)
+    resuelto = models.BooleanField(default=False)
+    
+    class Meta:
+        managed = True
+        db_table = 'casos_soporte'

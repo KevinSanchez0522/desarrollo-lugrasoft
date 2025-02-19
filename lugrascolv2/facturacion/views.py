@@ -217,6 +217,9 @@ def PFacturar(request):
             cantidad_decimal = 0
 
             try:
+                
+                
+                
                 # Validación de cliente "lugrascol"
                 if cliente == lugrascol:
                     
@@ -241,8 +244,10 @@ def PFacturar(request):
                                         # Crear instancia de Facturas
                     if incluir_iva:
                         modelo_transaccion = TransaccionFactura
+                        facturabd = obtener_numero_factura_almacenar()
+                        facturaN = factura_numero if factura_numero == facturabd else obtener_numero_factura_almacenar()
                         factura_instance, created_factura = Facturas.objects.get_or_create(
-                            nfactura=factura_numero,
+                            nfactura=facturaN,
                             defaults={
                                 'fecha_facturacion': fecha,
                                 'total_factura': 0,  # Asegurar formato correcto
@@ -325,8 +330,10 @@ def PFacturar(request):
                     # Crear instancia de Facturas
                     if incluir_iva:
                         modelo_transaccion = TransaccionFactura
+                        facturabd = obtener_numero_factura_almacenar()
+                        facturaN = factura_numero if factura_numero == facturabd else obtener_numero_factura_almacenar()
                         factura_instance, created_factura = Facturas.objects.get_or_create(
-                            nfactura=factura_numero,
+                            nfactura=facturaN,
                             defaults={
                                 'fecha_facturacion': fecha,
                                 'total_factura': total_guardar,  # Asegurar formato correcto
@@ -404,9 +411,9 @@ def PFacturar(request):
                         instancia_transaccion.save()
 
                     # Generar y devolver el PDF de la factura
-                    pdf_buffer = generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos, total, fecha, estado)
+                    pdf_buffer = generar_pdf(facturaN, cliente, direccion, telefono, correo, productos, total, fecha, estado)
                     response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
-                    response['Content-Disposition'] = f'attachment; filename=factura_{factura_numero}.pdf'
+                    response['Content-Disposition'] = f'attachment; filename=factura_{facturaN}.pdf'
                     return response
 
             except OrdenProduccion.DoesNotExist:
@@ -423,7 +430,7 @@ def PFacturar(request):
     # Manejar otras solicitudes o devolver un error si es necesario
     return JsonResponse({'error': 'Método de solicitud no permitido'}, status=405)
 
-def generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos, total, fecha, estado):
+def generar_pdf(facturaN, cliente, direccion, telefono, correo, productos, total, fecha, estado):
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     content = []
@@ -436,7 +443,7 @@ def generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos,
     styleN = styles['Normal']
     
     # Datos de cabecera
-    content.append(Paragraph(f'Orden de Salida: {factura_numero}', title_style))
+    content.append(Paragraph(f'Orden de Salida: {facturaN}', title_style))
     content.append(Paragraph(f'Cliente: {cliente}', normal_style))
     content.append(Paragraph(f'Dirección: {direccion}', normal_style))
     content.append(Paragraph(f'Teléfono: {telefono}', normal_style))
@@ -486,12 +493,12 @@ def generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos,
     return buffer
 
 
-def descargar_pdf(request, factura_numero):
-    pdf_file_path = f'/tmp/factura_{factura_numero}.pdf'
+def descargar_pdf(request, facturaN):
+    pdf_file_path = f'/tmp/factura_{facturaN}.pdf'
     if os.path.exists(pdf_file_path):
         with open(pdf_file_path, 'rb') as f:
             response = HttpResponse(f.read(), content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename=factura_{factura_numero}.pdf'
+            response['Content-Disposition'] = f'attachment; filename=factura_{facturaN}.pdf'
             return response
     else:
         return JsonResponse({'error': 'Archivo no encontrado'}, status=404)
@@ -533,6 +540,28 @@ def obtener_numero_remision():
 
     # Devolver el número de la nueva remisión
     return nueva_remision
+
+def obtener_numero_factura_almacenar():
+    try:
+        # Obtener el número máximo de la última remisión
+        ultima_Factura = Facturas.objects.aggregate(Max('nfactura'))['nfactura__max']
+        
+        if ultima_Factura is not None:
+            # Si hay una última remisión, calcular el siguiente número
+            nueva_factura = ultima_Factura + 1
+        else:
+            # Si no hay remisiones previas, comenzar desde un número específico
+            nueva_factura = 100000001
+
+    except Exception as e:
+        print(f"Error al obtener o generar el número de remisión: {e}")
+        nueva_factura = None
+
+    # Devolver el número de la nueva remisión
+    return nueva_factura
+
+
+
 
 def precio_producto(request):
     if request.method == 'GET':

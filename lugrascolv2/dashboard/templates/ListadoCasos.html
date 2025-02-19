@@ -1,0 +1,58 @@
+{% extends "dashboard.html" %}
+{% load static%}
+
+{% block title %}
+	<title>Caso Soporte</title>
+{% endblock title %}
+{% block titulohoja%}
+	<h2 class="titulo">Problemas Reportados</h2>
+{% endblock titulohoja %}
+
+
+
+{% block areatrabajo%}
+<script>
+    var CambiarEstado = "{% url 'CambiarEstadoCaso' %}"
+</script>
+<link rel="stylesheet" href="{% static 'Listado.css'%}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'ListadoCasos.js' %}"></script>
+
+
+
+<div class="tabla">
+    <table class="table" id="tabla-casos">
+        <thead class="table">
+            <tr class="encabezado">
+                <td>id</td>
+                <td>Modulo</td>
+                <td>Descripción</td>
+                <td>Prioridad</td>
+                <td>fecha de reporte</td>
+                <td>Estado</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for caso in casos%}
+            <tr>
+                <td>{{caso.identificador}}</td>
+                <td>{{caso.modulo}}</td>
+                <td>{{caso.descripcionCaso}}</td>
+                <td>{{caso.tipoCaso}}</td>
+                <td>{{caso.fechaCaso}}</td>
+                {% if caso.resuelto%}
+                    <td><input type="checkbox" name="resuelto" id="check" checked readonly></td>
+                {%else%}
+                    <td><input type="checkbox" name="resuelto" data-user="{{usuario_actual}}" data-id="{{caso.id}}" id="input-resuelto"></td>
+                {%endif%}
+            </tr>
+            {%endfor%}
+        </tbody>
+
+    </table>
+
+</div>
+
+{%endblock areatrabajo%}
