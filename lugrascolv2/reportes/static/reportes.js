@@ -857,7 +857,7 @@ function printModal() {
                             margin-top: 4cm; /* Margen superior de 4 cm */
                             padding: 20px; /* Padding para separar contenido */
                             background-color: #fff; /* Fondo blanco */
-                            font-size: 11px;
+                            font-size: 16px !important;
                             
                         }
 
