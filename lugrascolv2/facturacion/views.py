@@ -411,9 +411,9 @@ def PFacturar(request):
                         instancia_transaccion.save()
 
                     # Generar y devolver el PDF de la factura
-                    pdf_buffer = generar_pdf(facturaN, cliente, direccion, telefono, correo, productos, total, fecha, estado)
+                    pdf_buffer = generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos, total, fecha, estado)
                     response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
-                    response['Content-Disposition'] = f'attachment; filename=factura_{facturaN}.pdf'
+                    response['Content-Disposition'] = f'attachment; filename=factura_{factura_numero}.pdf'
                     return response
 
             except OrdenProduccion.DoesNotExist:
@@ -430,7 +430,7 @@ def PFacturar(request):
     # Manejar otras solicitudes o devolver un error si es necesario
     return JsonResponse({'error': 'Método de solicitud no permitido'}, status=405)
 
-def generar_pdf(facturaN, cliente, direccion, telefono, correo, productos, total, fecha, estado):
+def generar_pdf(factura_numero, cliente, direccion, telefono, correo, productos, total, fecha, estado):
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     content = []
@@ -443,7 +443,7 @@ def generar_pdf(facturaN, cliente, direccion, telefono, correo, productos, total
     styleN = styles['Normal']
     
     # Datos de cabecera
-    content.append(Paragraph(f'Orden de Salida: {facturaN}', title_style))
+    content.append(Paragraph(f'Orden de Salida: {factura_numero}', title_style))
     content.append(Paragraph(f'Cliente: {cliente}', normal_style))
     content.append(Paragraph(f'Dirección: {direccion}', normal_style))
     content.append(Paragraph(f'Teléfono: {telefono}', normal_style))
@@ -493,12 +493,12 @@ def generar_pdf(facturaN, cliente, direccion, telefono, correo, productos, total
     return buffer
 
 
-def descargar_pdf(request, facturaN):
-    pdf_file_path = f'/tmp/factura_{facturaN}.pdf'
+def descargar_pdf(request, factura_numero):
+    pdf_file_path = f'/tmp/factura_{factura_numero}.pdf'
     if os.path.exists(pdf_file_path):
         with open(pdf_file_path, 'rb') as f:
             response = HttpResponse(f.read(), content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename=factura_{facturaN}.pdf'
+            response['Content-Disposition'] = f'attachment; filename=factura_{factura_numero}.pdf'
             return response
     else:
         return JsonResponse({'error': 'Archivo no encontrado'}, status=404)
