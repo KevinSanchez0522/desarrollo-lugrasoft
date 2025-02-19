@@ -862,7 +862,7 @@ function printModal() {
                         }
 
                         .modal-content #tabla-formulario-modal{
-                            font-size: 11px;
+                            font-size: 16px !important;
                         }
                         .second-modal {
                             page-break-before: always;
