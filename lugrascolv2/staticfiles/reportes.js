@@ -1,27 +1,28 @@
 // script.js
+var nombresProductos = [];
+
 document.addEventListener('DOMContentLoaded', function() {
 
     cargarDatos();
     cargarDatosVentasDinamicas();
     cargarDatosCombinados();
     costeoInventario();
-    
 
 
     // Cerrar el modal cuando se hace clic en el botón de cierre
-document.getElementById('closeButton').onclick = function() {
-    var modal = document.getElementById('modalDetalleOrden');
-    modal.style.display = "none";
-}
-
-// Cerrar el modal si se hace clic fuera del contenido del modal
-window.onclick = function(event) {
-    var modal = document.getElementById('modalDetalleOrden');
-    if (event.target === modal) {
+    document.getElementById('closeButton').onclick = function() {
+        var modal = document.getElementById('modalDetalleOrden');
         modal.style.display = "none";
     }
 
-};
+// Cerrar el modal si se hace clic fuera del contenido del modal
+    window.onclick = function(event) {
+        var modal = document.getElementById('modalDetalleOrden');
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+
+    };
 
 
     const tabButtons = document.querySelectorAll('.tab-button');
@@ -85,15 +86,15 @@ window.onclick = function(event) {
             return;
         }
         $.ajax({
-            url: BuscarXFecha,
+            url: buscarXfechaRemi,
             method: 'GET',
             data: {
                 fecha_inicio: fechaInicio,
                 fecha_fin: fechaFin
             },
             success: function(response) {
-                console.log('Facturas filtradas:', response.facturas);
-                actualizarTabla(response.facturas);
+                console.log('Facturas filtradas:', response.remisiones);
+                actualizarTabla2(response.remisiones);
                 calcularTotalfiltradoDinamicas(fechaInicio, fechaFin);
             },
             error: function(xhr, status, error){
@@ -103,15 +104,15 @@ window.onclick = function(event) {
     })
 
     $('.BuscarFechaVentasCombinadas').on('click',function(){
-        var fechaInicio = $('#fecha_inicioVentasDinamicas').val();
-        var fechaFin = $('#fecha_finVentasDinamicas').val();
+        var fechaInicio = $('#fecha_inicioVentasCombinadas').val();
+        var fechaFin = $('#fecha_finVentasCombinadas').val();
     
         if (!fechaInicio || !fechaFin) {
             alert('Por favor, ingrese ambas fechas.');
             return;
         }
         $.ajax({
-            url: BuscarXFecha,
+            url: BuscarXFechaCombinadas,
             method: 'GET',
             data: {
                 fecha_inicio: fechaInicio,
@@ -119,7 +120,7 @@ window.onclick = function(event) {
             },
             success: function(response) {
                 console.log('Facturas filtradas:', response.facturas);
-                actualizarTabla(response.facturas);
+                actualizarTabla3(response.combinadas);
                 calcularTotalfiltradoDinamicas(fechaInicio, fechaFin);
             },
             error: function(xhr, status, error){
@@ -147,6 +148,88 @@ window.onclick = function(event) {
             tbody.append(fila);
         });
     }
+
+    function actualizarTabla2(remisiones) {
+        var tbody = $('#tabla-formulario2 tbody');
+        tbody.empty(); // Limpiar el tbody antes de agregar nuevas filas
+    
+
+    
+        // Agregar filas a la tabla
+        $.each(remisiones, function(index, remision) {
+            var fila = '<tr>' +
+                '<td>' + remision.nfactura + '</td>' +
+                '<td>' + remision.nombreCliente + '</td>' +
+                '<td>$ ' + remision.total_factura_formateado + '</td>' +
+                '<td>' + remision.fecha_facturacion + '</td>' +
+                '</tr>';
+            tbody.append(fila);
+        });
+    }
+
+    function actualizarTabla3(combinadas) {
+        var tbody = $('#tabla-formulario3 tbody');
+        tbody.empty(); // Limpiar el tbody antes de agregar nuevas filas
+    
+
+    
+        // Agregar filas a la tabla
+        $.each(combinadas, function(index, combinada) {
+            var fila = '<tr>' +
+                '<td>' + combinada.nfactura + '</td>' +
+                '<td>' + combinada.nombreCliente + '</td>' +
+                '<td>$ ' + combinada.total_factura_formateado + '</td>' +
+                '<td>' + combinada.fecha_facturacion + '</td>' +
+                '</tr>';
+            tbody.append(fila);
+        });
+    }
+
+
+    // Referencias a los contenedores flotantes
+    var floatingContainer = document.getElementById('floating-container');
+    var floatingContainer1 = document.getElementById('floating-container1');
+    var floatingContainer2 = document.getElementById('floating-container2');
+    var floatingContainer3 = document.getElementById('floating-container3');
+
+    // Referencias a los botones de minimizar
+    var minimizeButton = document.getElementById('minimize-btn');
+    var minimizeButton1 = document.getElementById('minimize-btn1');
+    var minimizeButton2 = document.getElementById('minimize-btn2');
+    var minimizeButton3 = document.getElementById('minimize-btn3');
+
+    // Función para cambiar el icono y minimizar o expandir el contenedor
+    function toggleMinimize(container, button) {
+        container.classList.toggle('minimized');  // Cambia la clase 'minimized'
+
+        // Cambiar el icono del botón
+        if (container.classList.contains('minimized')) {
+            button.innerHTML = '➕';  // Cambiar a "+" cuando se minimiza
+        } else {
+            button.innerHTML = '➖';  // Cambiar a "-" cuando se expande
+        }
+    }
+
+    // Agregar eventos de clic a los botones de minimizar
+    minimizeButton.addEventListener('click', function() {
+        toggleMinimize(floatingContainer, minimizeButton);
+    });
+
+    minimizeButton1.addEventListener('click', function() {
+        toggleMinimize(floatingContainer1, minimizeButton1);
+    });
+
+    minimizeButton2.addEventListener('click', function() {
+        toggleMinimize(floatingContainer2, minimizeButton2);
+    });
+
+    minimizeButton3.addEventListener('click', function() {
+        toggleMinimize(floatingContainer3, minimizeButton3);
+    });
+
+
+
+
 });
 
 // calculos para los contenedores flotantes
@@ -472,6 +555,12 @@ function cargarDatosVentasDinamicas() {
             var tbody = $('#tabla-formulario2 tbody');
             tbody.empty(); // Limpiar el tbody antes de agregar nuevas filas
 
+            // Ordenar las remisiones por nremision en orden ascendente
+            response.remisiones.sort(function(a, b) {
+                return a.nremision - b.nremision;  // Orden ascendente
+            });
+
+            
             // Agregar filas a la tabla
             response.remisiones.forEach(function(remision) {
                 var fila = '<tr>' +
@@ -531,15 +620,29 @@ function openModal(remision) {
         success: function(response){
             var tbody = $('#tabla-formulario-modal tbody');
                 tbody.empty(); // Limpiar el contenido previo
+
+                let totalCantidad = 0;
+                let totalPeso = 0;
+                let pesofila=0;
             
+                nombresProductos = [];
                 // Verificar si hay productos en la respuesta
                 if (response.productos && response.productos.length > 0) {
                     response.productos.forEach(function(producto) {
+                        nombresProductos.push(producto.nombre);
                         var fila = '<tr>' +
                                     '<td>' + producto.cantidad + ' '+'---'+' ' + producto.cod_inventario + ' ' + producto.nombre + '</td>' +
-                                    '<td>'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
+                                    '<td class="precio-unitario">'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
                                     '</tr>';
                         tbody.append(fila);
+                        var cantidad = parseFloat(producto.cantidad)
+                        totalCantidad += cantidad;
+                        console.log('peso', producto.peso)
+                        pesofila= producto.peso * producto.cantidad
+                        totalPeso += pesofila
+
+
+
                         $('.valorNit').text('N° de Cliente:  '+ producto.nit_cliente);
                         $('.nombreCliente').text(producto.nombre_cliente);
                         $('.direcCliente').text(producto.direccion_cliente);
@@ -555,6 +658,16 @@ function openModal(remision) {
                         $('.valorSUBTOTAL').text('$' + '' + producto.subtotal);
                         
                     });
+                    var totalFila = '<tr>' +
+                    '<td><strong>Total de Unidades:</strong></td>' +
+                    '<td><strong>' + (totalCantidad % 1 === 0 ? parseInt(totalCantidad) : totalCantidad.toFixed(2)) + '</strong></td>' +
+                    '</tr>';
+                    tbody.append(totalFila);
+                    var totalPesoproducto = '<tr>' +
+                    '<td><strong>Total de Peso en KG:</strong></td>' +
+                    '<td><strong>' + totalPeso.toFixed() + '</strong></td>' +
+                    '</tr>';
+                    tbody.append(totalPesoproducto);
                 } else {
                     // Si no hay productos, agregar una fila con un mensaje
                     var fila = '<tr><td colspan="5">No se encontraron productos para esta factura.</td></tr>';
@@ -569,36 +682,32 @@ function openModal(remision) {
     })
 
 }
+    // Añadir evento click a cada enlace de vista
+    viewLinks.forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            event.preventDefault(); // Evitar el comportamiento por defecto del enlace
 
-function abrirModal(facturaId) {
-    // Implementa la lógica para abrir y cargar el modal aquí
-    console.log('Abriendo modal para factura ID:', facturaId);
-    // Ejemplo: Cargar datos y mostrar el modal
-}
+            // Obtener el número de factura desde el elemento de la fila
+            var facturaId = this.closest('tr').querySelector('td').textContent.trim();
+            
 
-function printModal() {
-    var botonImprimir  = document.querySelector('.invoice-footer button');
-    var closeButton = document.getElementById('closeButton');
-    botonImprimir.style.display = 'none';
-    closeButton.style.display = 'none';
-    var printWindow = window.open('', '', 'height=600,width=800');
-    var modalContent = document.querySelector('#modalDetalleOrden .modal-content').innerHTML;
-    
-    // Ruta al archivo CSS
-    var cssLink = imprimir
+            // Abrir el modal con el ID de la factura
+            openModal(facturaId);
+        });
+    });
 
-    printWindow.document.write('<html><head><title>facturación lugrascol SAS </title>');
-    printWindow.document.write('<link rel="stylesheet" href="' + cssLink + '">');
-    printWindow.document.write('</head><body >');
-    printWindow.document.write(modalContent);
-    printWindow.document.write('</body></html>');
+    // Añadir evento click al botón de cerrar
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
 
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-}
-
-
+    // Añadir evento click al área fuera del modal para cerrarlo
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+// fin 
 
 
 function inicializarEventos() {
@@ -650,6 +759,157 @@ function inicializarEventos() {
         }
     });
 }
+
+function abrirModal(facturaId) {
+    // Implementa la lógica para abrir y cargar el modal aquí
+    console.log('Abriendo modal para factura ID:', facturaId);
+    // Ejemplo: Cargar datos y mostrar el modal
+}
+
+function printModal() {
+    var botonImprimir  = document.querySelector('.invoice-footer button');
+    var closeButton = document.getElementById('closeButton');
+    botonImprimir.style.display = 'none';
+    closeButton.style.display = 'none';
+
+    var printWindow = window.open('', '', 'height=600,width=800');
+    var modalContent = document.querySelector('#modalDetalleOrden .modal-content').innerHTML;
+    
+    // Creamos una copia de modalContent para la segunda copia (sin modificaciones)
+    var secondModalContent = modalContent
+    var secondModalContent = `<div class="modal-content second-modal">${modalContent}</div>`;
+    var hojaSeguridad = document.querySelector('.hoja').innerHTML;
+    var hojaSeguridad = `<div class="hojaSeguridad tercera-hoja">${hojaSeguridad}</div>`;
+
+    var hojaS = nombresProductos
+    
+    //Crear la lista de productos para la hoja de seguridad
+    var productosHTML = '';
+    hojaS.forEach(function(productoNombre) {
+        productosHTML += `<li>${productoNombre}</li>`;
+    });
+
+    console.log('html',productosHTML)
+
+    // Aquí buscamos el contenedor 'lista-productos' dentro de 'hojaSeguridad' y agregamos los productos
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = hojaSeguridad;  // Convertir el HTML de hojaSeguridad en un nodo DOM
+    
+    // Ahora encontramos el contenedor 'lista-productos' dentro de ese HTML temporal
+    var listaProductosContainer = tempDiv.querySelector('.lista-productos');
+    
+    // Si el contenedor de productos existe, agregamos los productos a la lista
+    if (listaProductosContainer) {
+        listaProductosContainer.innerHTML = productosHTML;  // Insertar la lista generada
+    }
+    
+    // Recuperar el HTML modificado de hojaSeguridad
+    hojaSeguridad = tempDiv.innerHTML;
+
+    // Eliminar columna "PRECIO UNITARIO" y otros valores solo en la primera copia
+    modalContent = modalContent.replace(
+        /<th class="precio">PRECIO UNITARIO<\/th>/g,  // Esto elimina el encabezado de la columna
+        '' 
+    );
+    modalContent = modalContent.replace(
+        /<td class="precio-unitario">[\s\S]*?<\/td>/g,  // Esto elimina todas las celdas con la clase 'precio'
+        ''
+    );
+    
+    // Eliminar valores "IVA", "TOTAL", "SUBTOTAL" y otros en la primera copia
+    modalContent = modalContent.replace(
+        /<td class="valorIVA">[\s\S]*?<\/td>/g,  // Esto elimina el valor IVA
+        '' 
+    );
+    modalContent = modalContent.replace(
+        /<td class="ICA">[\s\S]*?<\/td>/g,  // Esto elimina el ICA  
+        ''
+    );
+    modalContent = modalContent.replace(
+        /<td class="taza">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
+        ''
+    );
+    modalContent = modalContent.replace(
+        /<td class="valorSUBTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
+        ''
+    );
+    modalContent = modalContent.replace(
+        /<td class="valorTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el valor total
+        '' 
+    );
+    
+
+    // Ruta al archivo CSS (asegúrate de que esta ruta sea válida)
+    var cssLink = imprimir;
+
+    // Estilos para la impresión
+    var styles = `<style>
+                    @media print {
+                        body {
+                            margin: 0;
+                            font-family: Arial, sans-serif; /* Fuente común para evitar variaciones */
+                            font-size: 12pt; /* Tamaño de fuente fijo */
+                            margin-top:4cm;
+                        }
+
+                        .modal-content {
+                            
+                            margin-top: 4cm; /* Margen superior de 4 cm */
+                            padding: 20px; /* Padding para separar contenido */
+                            background-color: #fff; /* Fondo blanco */
+                            font-size: 16px !important;
+                            
+                        }
+
+                        .modal-content #tabla-formulario-modal{
+                            font-size: 16px !important;
+                        }
+                        .second-modal {
+                            page-break-before: always;
+                            padding: 5px;
+                            background-color: #fff;
+                            
+                        }
+
+
+
+
+                        /* Ocultar pie de página y otros elementos si no se desean imprimir */
+                        .invoice-footer, #closeButton {
+                            display: none;
+                        }
+
+                        /* Ajuste de desbordamiento y salto de línea */
+                        .modal-content {
+                            word-wrap: break-word;
+                            overflow-wrap: break-word;
+                            max-width: 100%; /* Asegura que el contenido no se desborde */
+                        }
+
+
+
+                    }
+                </style>
+            `;
+
+    // Escribir el contenido en la ventana de impresión
+    printWindow.document.write('<html><head><title>facturación lugrascol SAS</title>');
+    printWindow.document.write('<link rel="stylesheet" href="' + cssLink + '">');
+    printWindow.document.write(styles);
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(modalContent);  // Imprime la primera copia modificada
+    printWindow.document.write('<hr>');  // Opcional, para separar las dos copias
+    printWindow.document.write(secondModalContent);  // Imprime la segunda copia sin modificaciones
+    printWindow.document.write('<hr>');
+    printWindow.document.write(hojaSeguridad);
+    printWindow.document.write('</body></html>');
+
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+}
+
+
 
 
 

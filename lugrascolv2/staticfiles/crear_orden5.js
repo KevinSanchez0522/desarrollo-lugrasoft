@@ -51,8 +51,8 @@ $('#proveedor').on('change', function() {
                 
                 // Agregar opciones de productos obtenidos
                 data.forEach(function(producto) {
-                    var optionText = producto.nombre;
-                    var option = new Option(optionText, producto.id, false, false);
+                    var optionText = producto.id + '-' + producto.nombre;
+                    var option = new Option( optionText,producto.id, false, false);
                     $(option).data('id', producto.id);
                     $('#producto').append(option);
                 });
@@ -84,7 +84,7 @@ $('#producto').on('change', function() {
     // Validar si se ha seleccionado un producto válido
     if (productoSeleccionado) {
         var id_producto = productoSeleccionado.id;
-        var nombre_producto = $(this).find('option:selected').text();
+        var nombre_producto = $(this).find('option:selected').text().split('-')[1].trim();;
         var id_proveedor = $(this).attr('data-proveedor-id');
         var fechaCreacion = document.getElementById("fechaCreacion").value; 
         var numeroFactura = document.getElementById("numeroFactura").value; // Obtener número de factura

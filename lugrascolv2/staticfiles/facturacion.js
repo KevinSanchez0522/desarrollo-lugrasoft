@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#cliente').select2();
         $('#Bproducto').select2();
         $('#orden').select2({
+            placeholder: "Selecciona # Orden",
             allowClear:true
         });
 
@@ -121,10 +122,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
                         // Verificar el estado del checkbox de IVA
                         var incluirIVA = $('#checkIva').prop('checked');
+                        var incluirICA = $('#checkIca').prop('checked');
         
                         // Variable para los totales
-                        var precioTotal = 0;
-                        var ivaSobreSubtotalTotal = 0;
+                        
         
                         // Iterar sobre las órdenes recibidas
                         $.each(response.ordenes, function(index, orden) {
@@ -143,7 +144,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     '<td>' + dato.id_producto + '</td>' +
                                     '<td>' + dato.nombre + '</td>' +
                                     '<td>' + dato.cantidad + '</td>' +
-                                    '<td><input type="text" value="' + subtotal_venta_formateado + '" readonly /></td>' +
+                                    '<td><input type="text" value="' + subtotal_venta_formateado + '"/></td>' +
+                                    '<td><i class="bi bi-arrow-return-left" title = "devolver a produccion"></i></td>'+
                                     '</tr>';
         
                                 // Agregar la fila a la tabla
@@ -151,14 +153,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
                                 // Calcular el subtotal total solo si se incluye IVA
                                 var valorProducto = incluirIVA ? dato.total_venta * dato.cantidad : dato.subtotal_venta * dato.cantidad;
+                                //console.log('dato cantidad', dato.cantidad)
                                 precioTotal += valorProducto;
         
                                 if (incluirIVA) {
-                                    ivaSobreSubtotalTotal += valorProducto * (dato.iva / 100);
+                                    ivaSobreSubtotalTotal += valorProducto*(19/100);
+                                    //console.log('iva orden', ivaSobreSubtotalTotal)
                                 } else {
                                     ivaSobreSubtotalTotal += 0;
                                 }
+                                if (incluirICA){
+                                    var totaltotal= precioTotal*2.5/100
+                                    //console.log('total en ica al cargar los datos',totaltotal)
+                                }
                             });
+
                         });
         
                         // Actualizar los totales
@@ -191,6 +200,35 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        $('#tabla-formulario').on('click','.bi-arrow-return-left', function(e){
+            e.preventDefault();
+            var fila = $(this).closest('tr');
+            var cod_inventario = fila.find('td').eq(0).text();
+            var orden = $('#orden option:selected').text()
+            console.log('codigo', cod_inventario, 'orden', orden)
+            if (confirm('¿Desea devolver el producto '+cod_inventario+' a produccion')){
+                $.ajax({
+                    type: 'POST',
+                    url: devolverItemProduccion,
+                    headers: {'X-CSRFToken': getCookie('csrftoken')},
+                    data: {
+                        cod_inventario: cod_inventario,
+                        orden: orden
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            if (response.status == 'success'){
+                                fila.remove();
+                                recalcularTotales();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error en la solicitud AJAX:', error);
+                        }
+                })
+            }
+
+        })
 
 
 
@@ -202,11 +240,12 @@ document.addEventListener('DOMContentLoaded', function() {
             var incluirIVA = $('#checkIva').prop('checked');
             precioTotal = 0;
             ivaSobreSubtotalTotal = 0;
+            //console.log('iva en recalcular totales', ivaSobreSubtotalTotal)
         
-            $('#tabla-formulario tbody tr').each(function() {
-                var cantidad = parseInt($(this).find('td:nth-child(3)').text().replace(/[^0-9.-]+/g, "")) || 0;
+            $('#tabla-formulario tbody tr').each(function(index) {
+                var cantidad = parseFloat($(this).find('td:nth-child(3)').text().replace(/[^0-9.-]+/g, "")) || 0;
                 var subtotal_venta = $(this).find('input').val()
-                var numero = parseFloat(subtotal_venta.replace(/\./g, '').replace(',', '.'));
+                var numero = parseFloat(String(subtotal_venta).replace(/\./g, '').replace(',', '.'));
 
                 numero = isNaN(numero) ? 0 : numero;
                 if (isNaN(subtotal_venta)) {
@@ -216,8 +255,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 precioTotal += subtotalFila;
                 
                 if (incluirIVA) {
-                    ivaSobreSubtotalTotal  += subtotalFila * (iva / 100);  // IVA del 19%
-                    
+                    ivaSobreSubtotalTotal  += subtotalFila*(19/100);  // IVA del 19%
+                    //console.log('iva', ivaSobreSubtotalTotal)
                     }
                 });
                 actualizarTotales(precioTotal, ivaSobreSubtotalTotal);
@@ -225,9 +264,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function recalcularTotalesProducto(){
             var incluirIVA = $('#checkIva').prop('checked');
+            var ivart= 19;
     
             $('#tabla-formulario tbody tr').each(function() {
-                var cantidad = parseInt($(this).find('.cantidad').val()) || 0;
+                var cantidad = parseFloat($(this).find('.cantidad').val()) || 0;
                 var valor = $(this).find('.valor');
                 var valorelemento = valor.val();
         
@@ -238,11 +278,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
         
                 // Imprimir el valor antes de reemplazar
-                console.log('valor producto antes de reemplazar:', valorelemento);
+                //console.log('valor producto antes de reemplazar:', valorelemento);
         
                 // Reemplazar y convertir el valor a número
                 var valorFormateado = valorelemento.replace(/\./g, '').replace(',', '.');
-                console.log('valor formateado:', valorFormateado);
+                //console.log('valor formateado:', valorFormateado);
         
                 var numero = parseFloat(valorFormateado);
                 if (isNaN(numero)) {
@@ -250,29 +290,49 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
         
-                console.log('valor convertido:', numero);
+                //console.log('valor convertido:', numero);
 
                 // Calcular el valor del producto
                 var valorProducto = numero * cantidad;
-                console.log('valor producto suma', valorProducto)
-                console.log('precio total antes al cambiar', precioTotal)
+                //console.log('valor producto suma', valorProducto)
+                //console.log('precio total antes al cambiar', precioTotal)
                 precioTotal += valorProducto;
-                console.log('precio total despues al cambiar', precioTotal)
+                //console.log('precio total despues al cambiar', precioTotal)
+                
+                
+                
+                //console.log('iva rt', iva)
 
                 // Calcular IVA sobre subtotal
                 if (incluirIVA) {
-                    ivaSobreSubtotalTotal += valorProducto * (iva / 100);
+                    ivaSobreSubtotalTotal += valorProducto * (ivart / 100);
                 }
+                else{
+                    ivaSobreSubtotalTotal = 0;
+                }
+
+                actualizarTotales(precioTotal, ivaSobreSubtotalTotal);
             });
 
             // Actualizar los totales
-            actualizarTotales(precioTotal, ivaSobreSubtotalTotal);
+            
+            
         }
         // Mostrar los valores recalculados
     function actualizarTotales(precioTotal, ivaSobreSubtotalTotal) {
         var incluirIVA = $('#checkIva').prop('checked');
+        var incluirICA = $('#checkIca').prop('checked')
         
-        var subtotalTotal = incluirIVA ? (precioTotal - ivaSobreSubtotalTotal) : precioTotal;
+        //console.log('IVA EN ACTUALIZAR TOTALES', ivaSobreSubtotalTotal,'PRECIO TOTAL', precioTotal)
+        var subtotalTotal = incluirIVA ? (precioTotal/1.19) : precioTotal;
+        ivaSobreSubtotalTotal= precioTotal-subtotalTotal
+        if (incluirICA){
+            valorIca= subtotalTotal*2.5/100
+            precioTotal= precioTotal-valorIca
+        }
+        else{
+            valorIca=0
+        }
         
 
         $('.ValorSubtotal').text('$ ' + subtotalTotal.toLocaleString('es-ES', {
@@ -283,6 +343,10 @@ document.addEventListener('DOMContentLoaded', function() {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         })) : '');
+        $('.ValorIca').text('$ ' + valorIca.toLocaleString('es-ES', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }));
         $('.Ptotal').text('$ ' + precioTotal.toLocaleString('es-ES', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
@@ -305,18 +369,23 @@ document.addEventListener('DOMContentLoaded', function() {
             if ($(this).prop('checked')) {
                 // Calcular el 2.5% del total
                 var ica = 2.5
-                console.log('obtencion del numero Ptotal', originalPtotal)
+                //console.log('obtencion del numero Ptotal', originalPtotal)
 
                 var numeroLimpio = originalPtotal;  // Elimina todo excepto dígitos y coma
 
                 // Reemplazar la coma (,) por punto (.) como separador decimal
                 numeroLimpio = numeroLimpio;
-                console.log(numeroLimpio); 
+                //console.log(numeroLimpio); 
 
                 // Convertir la cadena limpia a un número
                 var total = parseFloat(numeroLimpio);
-                console.log('total', total)
-                var valorIca = (total * ica) /100; // Calcular el 2.5%
+                //console.log('total', total)
+                
+                var subtotal= total/1.19
+                
+                console.log('subtotal en ica',subtotal)
+                var valorIca = (subtotal*2.5)/100 // Calcular el 2.5%
+                //console.log('ica', valorIca)
         
                 // Actualizar el valor de .ValorIca
                 $('.ValorIca').text('$ ' + valorIca.toLocaleString()); // Actualizar el contenido de .ValorIca con el valor calculado
@@ -355,10 +424,11 @@ document.addEventListener('DOMContentLoaded', function() {
             var valorProducto = incluirIVA ? total_venta * cantidadFila : subtotal_venta * cantidadFila;
             precioTotal += valorProducto;
             
-            console.log('Cantidad de la fila recién agregada:', cantidadFila);
+            //console.log('Cantidad de la fila recién agregada:', cantidadFila);
             
             if (incluirIVA) {
                 ivaSobreSubtotalTotal += valorProducto * (ivarespaldo / 100);
+                console.log('iva al agregar el producto', ivaSobreSubtotalTotal)
             }else{
                 ivaSobreSubtotalTotal += 0;                                
             }
@@ -385,7 +455,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Datos recibidos:', response);
                     
                     // Aquí puedes actualizar la interfaz de usuario con los datos recibidos
-                console.log('Datos recibidos:', response);
+                //console.log('Datos recibidos:', response);
                     
                     // Aquí puedes actualizar la interfaz de usuario con los datos recibidos
                 var datos = response.datos;  // Array de objetos con los datos de las fórmula
@@ -419,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         var ultimaFila = $('#tabla-formulario tbody tr').last();
                         var valorCampo2 = parseFloat(ultimaFila.find('td:nth-child(4) input').val().replace(/\./g, '').replace(',', '.')) || 0;
                         var valorCampo1 = parseFloat(ultimaFila.find('td:nth-child(3) input').val().replace(/\./g, '').replace(',', '.')) || 0;
-                        console.log('Valor del segundo campo en la última fila:', valorCampo2);
+                        //console.log('Valor del segundo campo en la última fila:', valorCampo2);
             
                         var totalProducto = 0;
                         totalProducto = valorCampo2 * valorCampo1;
@@ -608,6 +678,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
     });
      // Guardar el total original
+
+
 
 
     

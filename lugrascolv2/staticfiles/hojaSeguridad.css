@@ -1,0 +1,126 @@
+.cabecera{
+    display: flex;
+    justify-content:space-between;
+}
+.encabezado-hoja{
+    display: flex;
+    justify-content:space-between;
+    width: 1000px;
+
+}
+.logo{
+    width: 80px;
+    height: 80px;
+}
+.encabezado-hoja textarea{
+    width: 100%;
+    text-align: center;
+    border: none;
+}
+img{
+    width: 80px;
+    height: 80px;
+}
+.descripcion-hoja{
+    text-align: center;
+}
+.seccion1{
+    width: 100%;
+}
+.tituloSeccion1{
+    text-align: left;
+    width: 50%;
+    font-weight: bold;
+}
+.fechas{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    font-weight: bold;
+}
+.preparado{
+    margin-bottom: 1px ;
+}
+.direccion-hoja{
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-weight: bold;
+}
+.seccion2 h4{
+    text-align: center;
+}
+.encabezado-tabla{
+    display: flex;
+    justify-content: space-between;
+}
+.encabezado-tabla h5, .encabezado-tabla span{
+    width: 30%;
+    text-align: center;
+}
+.lista-ingredientes{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.primerCuadrante, .segundoCuadrante{
+    width: 40%;
+}
+.seccion3 h5{
+    text-align: center;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+.seccion3 h4{
+    margin-bottom: 2px;
+}
+.seccion3 .tituloEfectos{
+    margin-top: 2px;
+}
+.img-text{
+    display: flex;
+    justify-content: space-between;
+}
+.text{
+    width: 50%;
+}
+.ref{
+    align-content: start;
+}
+.img-1{
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    
+}
+/* Estilos para los contenedores internos */
+.one, .two {
+    width: 100%;
+    height: 50%;            /* Ocupan la mitad del contenedor */
+
+}
+.img-grande{
+    width: 25%;
+}
+.img-1 img{
+    width: 220px;
+    height: 60px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+.img-grande img{
+    width: 230px;
+    height: 165px;
+    margin-left: 10px;
+}
+.finSeccion3 h5, .finSeccion3 h4{
+    text-align: left;
+    font-weight: bold;
+}
+.finSeccion3 h6{
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+.finHoja{
+    text-align: center;
+    font-weight: bold;
+}

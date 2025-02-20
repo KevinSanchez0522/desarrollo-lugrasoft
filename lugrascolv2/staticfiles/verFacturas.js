@@ -1,4 +1,6 @@
+var nombresProductos = [];
 document.addEventListener('DOMContentLoaded', function() {
+    
     $(document).ready(function() {
         $('#filtro').select2();
         
@@ -96,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Aquí se hace la solicitud AJAX para obtener los detalles de la factura
         $.ajax({
-            url: obtenerDetallesFacturacion,  // Reemplaza con la URL correcta de tu backend
+            url: obtenerDetallesFacturacion,  
             type: 'GET',
             data: {
                 factura_id: facturaId
@@ -105,14 +107,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 var tbody = $('#tabla-formulario-modal tbody');
                 tbody.empty(); // Limpiar el contenido previo
             
+                let totalCantidad = 0;
+                let totalPeso = 0;
+                let pesofila=0;
                 // Verificar si hay productos en la respuesta
+                nombresProductos = []; 
                 if (response.productos && response.productos.length > 0) {
                     response.productos.forEach(function(producto) {
+                        nombresProductos.push(producto.nombre);
                         var fila = '<tr>' +
                                     '<td>' + producto.cantidad + ' '+'---'+' ' + producto.cod_inventario + ' ' + producto.nombre + '</td>' +
-                                    '<td>'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
+                                    '<td class="precio-unitario">'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
                                     '</tr>';
                         tbody.append(fila);
+                        var cantidad = parseFloat(producto.cantidad)
+                        totalCantidad += cantidad;
+                        console.log('peso', producto.peso)
+                        pesofila= producto.peso * producto.cantidad
+                        totalPeso += pesofila
+
                         $('.valorNit').text('N° de Cliente:  '+ producto.nit_cliente);
                         $('.nombreCliente').text(producto.nombre_cliente);
                         $('.direcCliente').text(producto.direccion_cliente);
@@ -121,11 +134,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         $('.fecha').text('Fecha: ' + producto.fecha_factura);
                         $('.valorTOTAL').text('$'+ '' + producto.total_factura);
                         $('.valorIVA').text('$' + '' + producto.iva);
+                        $('.ICA').text('$' + '' + producto.ica);
 
                         
                         $('.valorSUBTOTAL').text('$' + '' + producto.subtotal);
                         
                     });
+                    var totalFila = '<tr>' +
+                    '<td><strong>Total de Unidades:</strong></td>' +
+                    '<td><strong>' + (totalCantidad % 1 === 0 ? totalCantidad.toFixed(0) : totalCantidad.toFixed(2)) + '</strong></td>' +
+                    '</tr>';
+                    tbody.append(totalFila);
+
+                    var totalPesoproducto = '<tr>' +
+                    '<td><strong>Total de Peso en KG:</strong></td>' +
+                    '<td><strong>' + totalPeso.toFixed() + '</strong></td>' +
+                    '</tr>';
+                    tbody.append(totalPesoproducto);
                 } else {
                     // Si no hay productos, agregar una fila con un mensaje
                     var fila = '<tr><td colspan="5">No se encontraron productos para esta factura.</td></tr>';
@@ -296,19 +321,143 @@ function printModal() {
     closeButton.style.display = 'none';
     var printWindow = window.open('', '', 'height=600,width=800');
     var modalContent = document.querySelector('#modalDetalleOrden .modal-content').innerHTML;
+    var secondModalContent = modalContent// Oculta la tabla en la segunda copia o elimina elementos dentro de la tabla si es necesario
+    // Agregar la clase "second-modal" al contenido clonado
+    //secondModalContent.classList.add('second-modal');
+    var secondModalContent = `<div class="modal-content second-modal">${modalContent}</div>`;
+    var hojaSeguridad = document.querySelector('.hoja').innerHTML;
+    var hojaSeguridad = `<div class="hojaSeguridad tercera-hoja">${hojaSeguridad}</div>`;
+
+    var hojaS = nombresProductos
     
+    //Crear la lista de productos para la hoja de seguridad
+    var productosHTML = '';
+    hojaS.forEach(function(productoNombre) {
+        productosHTML += `<li>${productoNombre}</li>`;
+    });
+
+    console.log('html',productosHTML)
+
+    // Aquí buscamos el contenedor 'lista-productos' dentro de 'hojaSeguridad' y agregamos los productos
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = hojaSeguridad;  // Convertir el HTML de hojaSeguridad en un nodo DOM
+    
+    // Ahora encontramos el contenedor 'lista-productos' dentro de ese HTML temporal
+    var listaProductosContainer = tempDiv.querySelector('.lista-productos');
+    
+    // Si el contenedor de productos existe, agregamos los productos a la lista
+    if (listaProductosContainer) {
+        listaProductosContainer.innerHTML = productosHTML;  // Insertar la lista generada
+    }
+    
+    // Recuperar el HTML modificado de hojaSeguridad
+    hojaSeguridad = tempDiv.innerHTML;
+
+    
+
+
+
+    modalContent = modalContent.replace(
+        /<th class="precio">PRECIO UNITARIO<\/th>/g,  // Esto elimina el encabezado de la columna
+        '' 
+    );
+    modalContent = modalContent.replace(
+        /<td class="precio-unitario">[\s\S]*?<\/td>/g,  // Esto elimina todas las celdas con la clase 'precio'
+        ''
+    );
+    
+    // Ocultar o eliminar los elementos de valor IVA, valor total y ICA en la segunda copia
+    modalContent = modalContent.replace(
+        /<td class="valorIVA">[\s\S]*?<\/td>/g,  // Esto elimina el valor IVA
+        '' 
+    );
+    modalContent = modalContent.replace(
+        /<td class="valorTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el valor total
+        '' 
+    );
+    modalContent = modalContent.replace(
+        /<td class="ICA">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
+        ''
+    );
+    modalContent = modalContent.replace(
+        /<td class="tasa">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
+        ''
+    );
+    modalContent = modalContent.replace(
+        /<td class="valorSUBTOTAL">[\s\S]*?<\/td>/g,  // Esto elimina el ICA
+        ''
+    );
     // Ruta al archivo CSS
     var cssLink = imprimir
+    
 
-    printWindow.document.write('<html><head><title>facturación lugrascol SAS </title>');
-    printWindow.document.write('<link rel="stylesheet" href="' + cssLink + '">');
-    printWindow.document.write('</head><body >');
-    printWindow.document.write(modalContent);
-    printWindow.document.write('</body></html>');
 
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+    var styles = `<style>
+                    @media print {
+                        body {
+                            margin: 0;
+                            font-family: Arial, sans-serif; /* Fuente común para evitar variaciones */
+                            font-size: 12pt; /* Tamaño de fuente fijo */
+                            margin-top:4cm;
+                        }
+
+                        .modal-content {
+                            
+                            margin-top: 4cm; /* Margen superior de 4 cm */
+                            padding: 5px; /* Padding para separar contenido */
+                            background-color: #fff; /* Fondo blanco */
+                            font-size: 16px !important;
+                            
+                        }
+
+                        .modal-content #tabla-formulario-modal{
+                            font-size: 16px !important;
+                        }
+                        .second-modal {
+                            page-break-before: always;
+                            padding: 5px;
+                            background-color: #fff;
+                            
+                        }
+
+
+
+
+                        /* Ocultar pie de página y otros elementos si no se desean imprimir */
+                        .invoice-footer, #closeButton {
+                            display: none;
+                        }
+
+                        /* Ajuste de desbordamiento y salto de línea */
+                        .modal-content {
+                            word-wrap: break-word;
+                            overflow-wrap: break-word;
+                            max-width: 100%; /* Asegura que el contenido no se desborde */
+                        }
+
+
+
+                    }
+                </style>
+            `;
+
+
+            setTimeout(function() {
+                printWindow.document.write('<html><head><title>facturación lugrascol SAS </title>');
+                printWindow.document.write('<link rel="stylesheet" href="' + cssLink + '">');
+                printWindow.document.write(styles);
+                printWindow.document.write('</head><body>');
+                printWindow.document.write(modalContent); // Asegúrate de que modalContent no esté vacío
+                printWindow.document.write('<hr>');
+                printWindow.document.write(secondModalContent);
+                printWindow.document.write('<hr>');
+                printWindow.document.write(hojaSeguridad);
+                printWindow.document.write('</body></html>');
+            
+                printWindow.document.close();
+                printWindow.focus();
+                printWindow.print();
+            }, 100);
 }
 function getCookie(name) {
     var cookieValue = null;

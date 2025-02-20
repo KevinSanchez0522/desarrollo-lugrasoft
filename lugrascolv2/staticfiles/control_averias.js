@@ -22,6 +22,12 @@ $(document).ready(function() {
                         '<td>' + selectedValue + '</td>' +
                         '<td>' + selectedName + '</td>' +
                         '<td contenteditable="true"></td>' +
+                        '<td>' +
+                            '<select>' +
+                                '<option value="Envase Roto">Envase Roto</option>' +
+                                '<option value="Otros">Otros</option>' +
+                            '</select>' +
+                        '</td>' +
                         '<td><button class="eliminar-fila">Eliminar</button></td>' + // Botón de eliminar
                     '</tr>';
         $('.tabla tbody').append(newRow);
@@ -171,6 +177,7 @@ function enviarDatos() {
         var idProducto = $(this).find('td:eq(0)').text(); // ID Producto
         var nombreProducto = $(this).find('td:eq(1)').text(); // Nombre
         var cantidad = $(this).find('td:eq(2)').text(); // Cantidad
+        var motivo = $(this).find('td:eq(3) select').val()
 
         if (idProducto.trim() !== '') {
             if (cantidad.trim() === '' || isNaN(cantidad.trim())) {
@@ -184,7 +191,8 @@ function enviarDatos() {
                 'fecha': fecha,
                 'id_producto': idProducto,
                 'nombre_producto': nombreProducto,
-                'cantidad': cantidad
+                'cantidad': cantidad,
+                'motivo': motivo
             });
             console.log(datos_tabla);
             var clonedRow = $(this).clone();
