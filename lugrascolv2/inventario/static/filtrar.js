@@ -43,10 +43,10 @@ document.addEventListener("DOMContentLoaded", function() {
         filas.each(function() {
             var fila = $(this);
             var nombreProducto = fila.children('td').eq(1).text().toLowerCase(); // Obtener el nombre del producto (de la columna que contiene el nombre)
-
+            var codigo = fila.children('td').eq(0).text()
             // Mostrar u ocultar la fila en función de si el nombre contiene el filtro
             if (filtro) {
-                if (nombreProducto.indexOf(filtro) !== -1) { // Si el nombre contiene el filtro
+                if (nombreProducto.indexOf(filtro) !== -1 || codigo.indexOf(filtro) != -1) { // Si el nombre contiene el filtro
                     fila.show(); // Mostrar la fila
                 } else {
                     fila.hide(); // Ocultar la fila si no contiene el filtro
