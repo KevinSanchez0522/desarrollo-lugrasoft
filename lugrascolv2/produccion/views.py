@@ -156,12 +156,12 @@ def crear_transaccion_orden(request):
 # vistas para manejar la ventana orden de pedidos en curso
 def ver_orden_en_curso(request):
         subquery = TransaccionOrden.objects.values('id_orden').annotate(
-        min_fecha_entrega=Min('fecha_entrega')
+        min_fecha_creacion=Min('fecha_entrega')
         )
     
         transacciones = TransaccionOrden.objects.filter(
             id__in=subquery.values('id'), 
-            fecha_entrega__in=subquery.values('min_fecha_entrega')
+            fecha_creacion__in=subquery.values('min_fecha_creacion')
         ).exclude(
             estado='facturado'
         ).annotate(

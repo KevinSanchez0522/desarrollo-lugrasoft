@@ -170,7 +170,6 @@
 					<div class="responsable">
 						<label for="Responsable" class="responsable-label">Responsable Etiquetado</label>
 						<select name="responsable" id="Responsable" class="responsable-select">
-							<option value="">Responsable</option>
 							{%for usuario in usuarios%}
 								<option value="{{usuario.id}}" data-nombre="{{ usuario.username }}">{{usuario.username}}</option>
 							{%endfor%}
