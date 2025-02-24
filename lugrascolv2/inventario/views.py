@@ -826,7 +826,7 @@ def GenerarAjusteInv(request):
                 Inventario.objects.filter(cod_inventario=cod_inventario).update(cantidad=nueva_cantidad)
 
             # Retornar una respuesta de éxito
-            return JsonResponse({'mensaje': 'Ajuste generado correctamente'}, status=200)
+            return JsonResponse({'status': 'success','mensaje': 'Ajuste generado correctamente'}, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Error al procesar los datos del JSON'}, status=400)
