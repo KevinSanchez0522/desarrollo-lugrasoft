@@ -75,7 +75,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 'X-CSRFToken': getCookie('csrftoken')
             },
             success: function(response){
-                console.log(response);
+                if(response.status == 'success'){
+                    alert('el ajuste se ha almacenado correctamente')
+                    location.reload()
+                }
             },
             error:function(xhr,status,error){
                 console.error('error al enviar los datos', error)

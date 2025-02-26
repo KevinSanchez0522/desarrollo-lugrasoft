@@ -138,14 +138,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 // Determinar qué subtotal mostrar dependiendo de si se incluye IVA o no
                                 var subtotal_venta_mostrar = incluirIVA ? dato.total_venta : dato.subtotal_venta;
                                 var subtotal_venta_formateado = formatearNumero(subtotal_venta_mostrar);
-        
+                                var inputId = 'inputSeleccionado_' + orden.id_orden + '_' + dato.id_producto;
                                 // Crear la fila para el producto
                                 var filaProducto = '<tr>' +
                                     '<td>' + dato.id_producto + '</td>' +
                                     '<td>' + dato.nombre + '</td>' +
                                     '<td>' + dato.cantidad + '</td>' +
-                                    '<td><input type="text" value="' + subtotal_venta_formateado + '"/></td>' +
-                                    '<td><i class="bi bi-arrow-return-left" title = "devolver a produccion"></i></td>'+
+                                    '<td><input id="' + inputId + '" type="text" value="' + subtotal_venta_formateado + '"/></td>' +
+                                    '<td><i class="bi bi-arrow-return-left" title = "devolver a produccion"></i><i class= "bi bi-list" data-id="inputSeleccionado" title = "Lista de Precios" id= "lista_precio"></i></td>'
                                     '</tr>';
         
                                 // Agregar la fila a la tabla
@@ -229,8 +229,168 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
         })
+        const mapeoNombres = {
+            "TAMBOR": "TAMBOR X55",
+            "GARRAFAS": "GARRAFAS 5GL",
+            "BALDE": "BALDEX5",
+            "PLANO24": "PLANO X24",
+            "PLANO12": "PLANO X12",
+            "LITRO24": "LITRO X24",
+            "GALON": "GALON X6",
+            "CANECAX15": "CANECA MT X15",
+            "PLANO24946": "PLANO X24 (946)",
+            "PLANO12946": "PLANO X12 (946)",
+            "TAMBORSE": "TAMBOR X55 SE",
+            "PIMPINASE": "PIMPINA X6 SIN ENVASE",
+            "PLANO4T24": "PLANO 4T X24",  // Si el nombre es "PLANO 4T X24"
+            "PIMPINAX16": "PIMPINA MT X16",  // Si el nombre es "PIMPINA MT X16"
+            "CHUPO": "CHUPO X24",  // Si el nombre es "CHUPO X24"
+            "CILINDRICO": "CILINDRICO X24",  // Si el nombre es "CILINDRICO X24"
+            "SCOTTER20": "SCOTTER X20",  // Para "SCOTTER X20"
+            "SCOTTERPLANO": "SCOTTER PLANO X24",  // Para "SCOTTER PLANO X24"
+            "PINTA": "PINTA X 24",  // Para "PINTA X24"
+            "BALDE7": "BALDE X7",  // Para "BALDE X7"
+            "BALDE16": "BALDE X16",  // Para "BALDE X16"
+            "CAJA8": "CAJA X8",  // Para "CAJA X8"
+            "CAJA24": "CAJA X24",  // Para "CAJA X24"
+            "CAJA48": "CAJA X48" , // Para "CAJA X48"
+            "PLANO4T946X24": "4T PLANO X24 (946)"
+        };
+        
+
+        $('#tabla-formulario').on('click','.bi-list', function(e){
+            const row = $(this).closest('tr');
+            const input = row.find('input'); // Selecciona el input dentro de la fila
+
+            // Obtener el valor del atributo id del input
+            const inputId = input.attr('id');
+            console.log('ID del input:', inputId);
+            
+            // Guardar el inputId en el modal
+            $('#modalTablaPrecios').data('input-id', inputId);
 
 
+            var fila = $(this).closest('tr');
+            $('#modalTablaPrecios').css('display', 'block');
+            $.ajax({
+                type: "GET",
+                url: obtenerLista,  // URL de la vista que obtiene los precios
+                success: function (response) {
+                    console.log("Precios obtenidos:", response);
+                    renderizarPreciosEnTablas(response.precios);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al obtener los precios:", error);
+                }
+            });
+            $('#modalTablaPrecios').on('click', 'table td', function () {
+                // Obtener el valor de la celda clickeada
+                const valor = $(this).text().trim();
+                console.log("Valor seleccionado:", valor);
+    
+                // Obtener el id del input guardado en el modal
+                const inputId = $('#modalTablaPrecios').data('input-id');
+
+    
+                // Colocar el valor en el input
+                $('#' + inputId).val(valor);
+                recalcularTotales(valor)
+    
+                // Cerrar el modal
+                $('#modalTablaPrecios').css('display', 'none');
+            });
+        });
+        // Manejador de clic para cualquier celda de cualquier tabla
+
+        // Cerrar el modal al hacer clic en el botón de cierre
+        $('#closeButton').on('click', function() {
+            $('#modalTablaPrecios').css('display', 'none');
+        });
+
+        // Cerrar el modal al hacer clic fuera de él
+        $(window).on('click', function(e) {
+            if ($(e.target).is('#modalTablaPrecios')) {
+                $('#modalTablaPrecios').css('display', 'none');
+            }
+        });
+
+
+        function renderizarPreciosEnTablas(precios) {
+            //console.log("Datos recibidos (precios):", precios);
+        
+            for (let idtabla = 1; idtabla <= 10; idtabla++) {
+                //console.log(`Procesando idtabla ${idtabla}`);
+        
+                // Verificar si hay datos para esta tabla
+                if (!precios[idtabla] || !Array.isArray(precios[idtabla]) || precios[idtabla].length === 0) {
+                    //console.log(`No hay datos para idtabla ${idtabla}.`);
+                    continue;  // Saltar a la siguiente iteración
+                }
+        
+                //console.log(`Datos para idtabla ${idtabla}:`, precios[idtabla]);
+        
+                // Seleccionar la tabla
+
+                // Seleccionar la tabla
+                const tabla = $('#Tabla' + idtabla + ' tbody');
+                //console.log(`Tabla seleccionada para idtabla ${idtabla}:`, tabla);
+
+                if (tabla.length === 0) {
+                    //console.log(`No se encontró la tabla para idtabla ${idtabla}.`);
+                    continue;  // Saltar a la siguiente iteración
+                }
+
+                const fila = tabla.find('tr');
+                //console.log(`Fila seleccionada para idtabla ${idtabla}:`, fila);
+
+                if (fila.length === 0) {
+                    //console.log(`No se encontró la fila para idtabla ${idtabla}.`);
+                    continue;  // Saltar a la siguiente iteración
+                }
+
+        
+                // Obtener los nombres de las columnas
+                const columnas = $('#Tabla' + idtabla + ' thead tr td').map(function () {
+                    //console.log("Celda encontrada:", $(this).text().trim());
+                    return $(this).text().trim();
+                }).get();
+                //console.log(`Columnas para idtabla ${idtabla}:`, columnas);
+        
+                if (columnas.length === 0) {
+                    //console.log(`No se encontraron columnas para idtabla ${idtabla}.`);
+                    continue;  // Saltar a la siguiente iteración
+                }
+        
+                // Limpiar la fila antes de agregar nuevos datos
+                fila.empty();
+        
+                // Iterar sobre las columnas y agregar los valores correspondientes
+                columnas.forEach(function (columna) {
+                    //console.log(`Procesando columna "${columna}" para idtabla ${idtabla}.`);
+        
+                    // Buscar el nombre equivalente en el mapeo
+                    const nombreEquivalente = Object.keys(mapeoNombres).find(
+                        key => mapeoNombres[key] === columna
+                    );
+                    //console.log(`Nombre equivalente para "${columna}":`, nombreEquivalente);
+        
+                    // Validar si el nombre equivalente existe
+                    if (nombreEquivalente) {
+                        //console.log(`Columna "${columna}" es equivalente a "${nombreEquivalente}".`);
+                    } else {
+                        //console.log(`Columna "${columna}" no tiene un equivalente en el mapeo.`);
+                    }
+        
+                    // Obtener el valor de la base de datos usando el nombre equivalente
+                    const valor = nombreEquivalente && precios[idtabla].find(item => item.nombre === nombreEquivalente)?.valor || 'N/A';
+                    //console.log(`Valor para "${columna}":`, valor);
+        
+                    // Agregar el valor a la celda
+                    fila.append('<td>' + valor + '</td>');
+                });
+            }
+        }
+        
 
 
 
