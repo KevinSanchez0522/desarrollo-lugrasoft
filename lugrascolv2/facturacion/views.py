@@ -1,9 +1,11 @@
+from collections import defaultdict
+import datetime
 import json
 import os
 from pydoc import doc
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from .models import Clientes, TransaccionFactura, TransaccionRemision, Facturas, Remisiones , Inventario, OrdenProduccion, TransaccionOrden, Transformulas, TransMp,Proveedores, Compras
+from .models import Clientes, ListadoPrecios, TransaccionFactura, TransaccionRemision, Facturas, Remisiones , Inventario, OrdenProduccion, TransaccionOrden, Transformulas, TransMp,Proveedores, Compras
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, F
 from django.http import HttpResponse
@@ -1017,4 +1019,73 @@ def retornoItemProduccion(request):
         return JsonResponse(response_data)
 
     # Si el método no es POST, podemos retornar un error.
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
+
+def listaPrecios(request):
+    return render(request, 'listaPrecios.html')
+
+
+
+def actualizarLista(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            fecha = datetime.date.today()
+            tablas = [
+                ('Tabla1', 1),
+                ('Tabla2', 2),
+                ('Tabla3', 3),
+                ('Tabla4', 4),
+                ('Tabla5', 5),
+                ('Tabla6', 6),
+                ('Tabla7', 7),
+                ('Tabla8', 8),
+                ('Tabla9', 9),
+                ('Tabla10', 10),
+            ]
+
+            registros = []
+
+            for nombre_tabla, idtabla in tablas:
+                tabla = data.get(nombre_tabla)
+                if tabla:
+                    for datos in tabla:
+                        nombre = datos.get('nombre')
+                        cantidad = datos.get('valor')
+                        registros.append(
+                            ListadoPrecios(
+                                nombre=nombre,
+                                valor=cantidad,
+                                fecha_actualizacion=fecha,
+                                idtabla=idtabla
+                            )
+                        )
+
+            # Guardar todos los registros en la base de datos
+            with transaction.atomic():
+                ListadoPrecios.objects.bulk_create(registros)
+
+            return JsonResponse({'status': 'success', 'message': 'Datos guardados correctamente'})
+        
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
+
+
+def consultarPrecios(request):
+    if request.method == 'GET':
+        try:
+            precios = ListadoPrecios.objects.all().values('id', 'nombre', 'valor', 'fecha_actualizacion', 'idtabla')
+            precios_por_tabla = defaultdict(list)
+            for precio in precios:
+                precios_por_tabla[precio['idtabla']].append(precio)
+            precios_por_tabla = dict(precios_por_tabla)
+            return JsonResponse({'status': 'success', 'precios': precios_por_tabla})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)

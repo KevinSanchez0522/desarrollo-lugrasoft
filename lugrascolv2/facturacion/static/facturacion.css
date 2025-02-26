@@ -290,7 +290,7 @@ input[type="checkbox"] + label:after {
 input[type="checkbox"]:checked + label:after {
     display: block;
 }
-.bt-facturar{
+.bt-facturar, .bt-edit-fra{
     margin-top: 50px;
     display: inline-block;
     padding: 10px 15px;
@@ -305,14 +305,90 @@ input[type="checkbox"]:checked + label:after {
     text-decoration: none;
     transition: background-color 0.3s;
 }
-.bt-facturar :hover {
+.bt-facturar :hover, .bt-edit-fra :hover {
     background-color: #53ad56; /* Cambio de color al pasar el mouse */
 }
-.bt-facturar :focus {
+.bt-facturar :focus , .bt-edit-fra :focus{
     outline: none; /* Elimina el borde de enfoque al hacer clic */
 }
 
-.bt-facturar :active {
+.bt-facturar :active , .bt-edit-fra :active{
     background-color: #53ad56; /* Color de fondo al hacer clic */
     transform: translateY(1px); /* Efecto de presionado */
+}
+
+
+/* Estilo básico para el modal */
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed; /* Fijo en la pantalla */
+    z-index: 1000; /* Por encima de otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%; /* Ancho completo */
+    height: 100%; /* Altura completa */
+    overflow: auto; /* Hacer scroll si es necesario */
+    background-color: rgb(0,0,0); /* Color de fondo semitransparente */
+    background-color: rgba(0,0,0,0.4); /* Color de fondo semitransparente */
+}
+
+/* Estilo del contenido del modal */
+.modal-content {
+    position: relative;
+    background-color: #ffff;
+    margin: 1% auto; /* Centrado */
+    padding: 5px;
+    border: none;
+    width: 80%; /* Ancho del modal */
+    background: 
+    linear-gradient(
+        rgba(255, 255, 255, 0.92), 
+        rgba(255, 255, 255, 0.92)
+    ), url('../static/logo.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    
+}
+.modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.4); /* Capa blanca semitransparente */
+    z-index: -1000; /* Coloca esta capa detrás del contenido del modal */
+}
+
+/* Estilo para el botón de cerrar */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content .cabeceraModal{
+    justify-content: center;
+    text-align: center;
+}
+.label-tabla {
+    display: block; /* Hace que el label ocupe toda la línea */
+    font-size: 18px; /* Tamaño de la fuente */
+    font-weight: bold; /* Texto en negrita */
+    margin-bottom: 10px; /* Espacio entre el label y la tabla */
+    color: #333; /* Color del texto */
+}
+.edit-list{
+    display: flex;
+    justify-content: end;
 }

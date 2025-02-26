@@ -18,6 +18,7 @@
     var obtenerfactura = "{%url 'obtenerFactura'%}"
     var precioPorProducto = "{% url 'precioxproducto'%}"
     var devolverItemProduccion = "{% url 'devolverItem' %}"
+    var obtenerLista = "{% url 'obtenerListaPrecios' %}"
     </script>
 <link rel="stylesheet" href="{%static 'facturacion.css'%}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -140,6 +141,277 @@
             </div>
             
         </div>
+    </div>
+</div>
+
+<div id="modalTablaPrecios" class="modal">
+    <div class="modal-content" >
+        <span class="close" id="closeButton">&times;</span>
+        <div class="cabeceraModal">
+            <!-- Aquí puedes agregar contenido dinámico si lo deseas -->
+            <h2 id="detalleContenido"> Lista de Precios</h2>
+        </div>
+        <div class="edit-list">
+            <button class="bt-edit-fra"><a href="{%url 'ListaPrecios'%}">Editar lista de precios</a></button>
+        </div>
+        <label for="tabla1" class="label-tabla">PRODUCTO MOTOR 2T ROJO-ECOLOGICO -- NAUTICO -- ISO 68 -- ATF</label>
+        <div class="tabla">
+            <table class="table" id="Tabla1">
+                <thead class="table">
+                    <tr class="encabezado">
+                        <td>TAMBOR X55</td>
+                        <td>GARRAFAS 5GL</td>
+                        <td>BALDEX5</td>
+                        <td>PINTA X 24</td>
+                        <td>PLANO X24</td>
+                        <td>PLANO X12</td>
+                        <td>LITRO X24</td>
+                        <td>GALON X6</td>
+                        <td>CANECA MT X15</td>
+                        <td>PLANO X24 (946)</td>
+                        <td>PLANO X12 (946)</td>
+                        <td>TAMBOR X55 SE</td>
+                        <td>PIMPINA X6 SIN ENVASE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!--aqui se agregan dinamicamente los precios de los productos-->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <label for="tabla2" class="label-tabla">PRODUCTO MOTOR OIL 40 -- 50 -- MAXIDIESEL -- SAE 60 -- LUBRICANTE PARA CADENAS</label>
+        <div class="tabla">
+            <table class="table" id="Tabla2">
+                <thead class="table">
+                    <tr class="encabezado">
+                        <td>TAMBOR X55</td>
+                        <td>GARRAFAS 5GL</td>
+                        <td>BALDEX5</td>
+                        <td>PLANO 4T X24</td>
+                        <td>PLANO X24</td>
+                        <td>PLANO X12</td>
+                        <td>GALON X6</td>
+                        <td>CANECA MT X15</td>
+                        <td>PIMPINA MT X16</td>
+                        <td>CHUPO X24</td>
+                        <td>CILINDRICO X24</td>
+                        <td>PLANO X24 (946)</td>
+                        <td>PLANO X12 (946)</td>
+                        <td>4T PLANO X24 (946)</td>
+                        <td>TAMBOR X55 SE</td>
+                        <td>PIMPINA X6 SIN ENVASE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!--aqui se agregan dinamicamente los precios de los productos-->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <label for="tabla3" class="label-tabla">PRODUCTO TRANSMISIONES GL-1 </label>
+        <div class="tabla">
+            <table class="table" id="Tabla3">
+                <thead class="table">
+                    <tr class="encabezado">
+                        <td>TAMBOR X55</td>
+                        <td>GARRAFAS 5GL</td>
+                        <td>GALON X6</td>
+                        <td>CHUPO X24</td>
+                        <td>BALDEX5</td>
+                        <td>PLANO X24</td>
+                        <td>PLANO X24 (946)</td>
+                        <td>TAMBOR X55 SE</td>
+                        <td>PIMPINA X6 SIN ENVASE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!--aqui se agregan dinamicamente los precios de los productos-->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <label for="tabla4" class="label-tabla">PRODUCTO VALVULINA TRAPICHE </label>
+        <div class="tabla">
+            <table class="table" id="Tabla4">
+                <thead class="table">
+                    <tr class="encabezado">
+                        <td>TAMBOR X55</td>
+                        <td>GARRAFAS 5GL</td>
+                        <td>GALON X6</td>
+                        <td>CHUPO X24</td>
+                        <td>BALDEX5</td>
+                        <td>PLANO X24</td>
+                        <td>PLANO X24 (946)</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!--aqui se agregan dinamicamente los precios de los productos-->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <label for="tabla5" class="label-tabla">PRODUCTO VALVULINA GL-5 </label>
+        <div class="tabla">
+            <table class="table" id="Tabla5">
+                <thead class="table">
+                    <tr class="encabezado">
+                        <td>TAMBOR X55</td>
+                        <td>GARRAFAS 5GL</td>
+                        <td>BALDEX5</td>
+                        <td>PLANO 4T X24</td>
+                        <td>PLANO X24</td>
+                        <td>PLANO X12</td>
+                        <td>GALON X6</td>
+                        <td>SCOTTER X20</td>
+                        <td>SCOTTER PLANO X24</td>
+                        <td>CILINDRICO X24</td>
+                        <td>PLANO X24 (946)</td>
+                        <td>PLANO X12 (946)</td>
+                        <td>TAMBOR X55 SE</td>
+                        <td>PIMPINA X6 SIN ENVASE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!--aqui se agregan dinamicamente los precios de los productos-->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <label for="tabla6" class="label-tabla"> PRODUCTO 20W50 SL -- 20W50 4T  </label>
+        <div class="tabla">
+            <table class="table" id="Tabla6">
+                <thead class="table">
+                    <tr class="encabezado">
+                        <td>TAMBOR X55</td>
+                        <td>GARRAFAS 5GL</td>
+                        <td>BALDEX5</td>
+                        <td>PLANO X24</td>
+                        <td>PLANO X12</td>
+                        <td>GALON X6</td>
+                        <td>CANECA MT X15</td>
+                        <td>PIMPINA MT X16</td>
+                        <td>PLANO X24 (946)</td>
+                        <td>PLANO X12 (946)</td>
+                        <td>TAMBOR X55 SE</td>
+                        <td>PIMPINA X6 SIN ENVASE</td>
+                        <td>PINTA X 24</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!--aqui se agregan dinamicamente los precios de los productos-->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <label for="tabla7" class="label-tabla">PRODUCTO 25W60 SL -- 25W60 4T</label>
+        <div class="tabla">
+            <table class="table" id="Tabla7">
+                <thead class="table">
+                    <tr class="encabezado">
+                        <td>TAMBOR X55</td>
+                        <td>GARRAFAS 5GL</td>
+                        <td>BALDEX5</td>
+                        <td>PLANO X24</td>
+                        <td>PLANO X12</td>
+                        <td>GALON X6</td>
+                        <td>CANECA MT X15</td>
+                        <td>PIMPINA MT X16</td>
+                        <td>PLANO X24 (946)</td>
+                        <td>PLANO X12 (946)</td>
+                        <td>TAMBOR X55 SE</td>
+                        <td>PIMPINA X6 SIN ENVASE</td>
+                        <td>PINTA X 24</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!--aqui se agregan dinamicamente los precios de los productos-->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <label for="tabla8" class="label-tabla">PRODUCTO DIESEL 15W40  </label>
+        <div class="tabla">
+            <table class="table" id="Tabla8">
+                <thead class="table">
+                    <tr class="encabezado">
+                        <td>TAMBOR X55</td>
+                        <td>GARRAFAS 5GL</td>
+                        <td>BALDEX5</td>
+                        <td>PLANO X24</td>
+                        <td>PLANO X12</td>
+                        <td>GALON X6</td>
+                        <td>CANECA MT X15</td>
+                        <td>PLANO X24 (946)</td>
+                        <td>PLANO X12 (946)</td>
+                        <td>TAMBOR X55 SE</td>
+                        <td>PIMPINA X6 SIN ENVASE</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!--aqui se agregan dinamicamente los precios de los productos-->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <label for="tabla9" class="label-tabla">PRODUCTO GRASA DE CALCIO ROJA - AZUL - COPAS -- GRASA DE RODAMIENTOS DE SODIO </label>
+        <div class="tabla">
+            <table class="table" id="Tabla9">
+                <thead class="table">
+                    <tr class="encabezado">
+                        <td>TAMBOR X55</td>
+                        <td>BALDE X7</td>
+                        <td>BALDE X16</td>
+                        <td>CAJA X8</td>
+                        <td>CAJA X24</td>
+                        <td>CAJA X48</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!--aqui se agregan dinamicamente los precios de los productos-->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <label for="tabla10" class="label-tabla">PRODUCTO GRASA DE LITIO AZUL </label>
+        <div class="tabla">
+            <table class="table" id="Tabla10">
+                <thead class="table">
+                    <tr class="encabezado">
+                        <td>TAMBOR X55</td>
+                        <td>BALDE X7</td>
+                        <td>BALDE X16</td>
+                        <td>CAJA X8</td>
+                        <td>CAJA X24</td>
+                        <td>CAJA X48</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!--aqui se agregan dinamicamente los precios de los productos-->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </div>
 

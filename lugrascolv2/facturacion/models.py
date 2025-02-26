@@ -388,3 +388,15 @@ class CasosSoporte(models.Model):
     class Meta:
         managed = True
         db_table = 'casos_soporte'
+        
+        
+        
+class ListadoPrecios(models.Model):
+    idtabla = models.IntegerField(null=False, blank=False)
+    nombre  = models.CharField(max_length=50 , blank=False, null=False)
+    valor = models.FloatField(null=False, blank=False)
+    fecha_actualizacion = models.DateField(null=False, blank=False)
+    
+    class Meta:
+        managed = True
+        db_table = 'listado_precios'
