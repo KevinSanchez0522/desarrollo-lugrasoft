@@ -59,7 +59,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 formulario.reset(); // Limpiar el formulario
                 limpiarTabla(); // Limpiar la tabla
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error =>{
+                alert(error);
+                console.error('Error:', error);
+            });
         
         }
     });
