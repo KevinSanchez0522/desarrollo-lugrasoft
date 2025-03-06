@@ -80,7 +80,7 @@ def guardar_datos(request):
         nombre = request.POST.get('nombre')
         codig = int(request.POST.get('codig'))  # Se supone que este es el cod_inventario
         
-        if Transformulas.objects.filter(cod_inventario = codig).exist():
+        if Transformulas.objects.filter(cod_inventario = codig).exists():
             return JsonResponse({'error': 'La formula ya existe'}, status=400)
         
         cantidad = float(0)
