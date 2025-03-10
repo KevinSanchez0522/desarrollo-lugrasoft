@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+    
     $(document).ready(function() {
         $('#cliente').select2();
         $('#Bproducto').select2();
@@ -560,19 +562,22 @@ document.addEventListener('DOMContentLoaded', function() {
             
         });
 
-        function agregarProducto(idProducto, nombre, total_venta, subtotal_venta,) {
+        function agregarProducto(idProducto, nombre, total_venta, subtotal_venta, identificador) {
             var incluirIVA = $('#checkIva').prop('checked');
             var subtotal_venta_mostrar = incluirIVA ? total_venta : subtotal_venta;
             var subtotal_venta_formateado = formatearNumero(subtotal_venta_mostrar);
             var ivarespaldo= 19;
+
+            
+
 
             // Crear una fila con una clase específica para la cantidad
             var fila = '<tr class="producto-row">' +
                     '<td>' + idProducto + '</td>' +
                     '<td>' + nombre + '</td>' +
                     '<td><input class="cantidad" type="text" value="1" /></td>' +
-                    '<td><input class="valor" type="text" value="' + subtotal_venta_formateado + '" /></td>' +
-                    '<td><a href="#" class="iconoBorrar"> <i class="bi bi-trash"></i></a></td>' +
+                    '<td><input id="'+ inputId +'" class="valor" type="text" value="' + subtotal_venta_formateado + '" /></td>' +
+                    '<td><a href="#" class="iconoBorrar"> <i class="bi bi-trash"></i></a><i class= "bi bi-list" data-id="inputSeleccionado" title = "Lista de Precios" id= "lista_precio"></i></td>' +
                     '</tr>';
 
                     // Solo agregar si no existe ya
@@ -622,7 +627,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 datos.forEach(function(dato) {
 
-                    agregarProducto(dato.id_producto, dato.nombre, dato.total_venta, dato.subtotal_venta)
+                    agregarProducto(dato.id_producto, dato.nombre, dato.total_venta, dato.subtotal_venta, dato.id)
                 });
 
                 $('#tabla-formulario').off('input', '.cantidad, .valor').on('input', '.cantidad, .valor', function() {

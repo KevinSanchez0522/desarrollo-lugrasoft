@@ -619,6 +619,7 @@ def precio_producto(request):
             
             # Crear un diccionario con los datos de la fórmula actual
             formula_data = {
+                'codigo': formula.id,
                 'id_producto': formula.cod_inventario.cod_inventario,
                 'nombre': formula.nombre,
                 'iva': formula.porcentajeiva,
