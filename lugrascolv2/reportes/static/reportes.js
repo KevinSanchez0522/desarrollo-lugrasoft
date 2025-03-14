@@ -630,9 +630,12 @@ function openModal(remision) {
                 if (response.productos && response.productos.length > 0) {
                     response.productos.forEach(function(producto) {
                         nombresProductos.push(producto.nombre);
+                        var precioUnitario = parseFloat(producto.precio_unitario.replace(/,/g, ''));
+                        totalFila = producto.cantidad * precioUnitario
                         var fila = '<tr>' +
                                     '<td>' + producto.cantidad + ' '+'---'+' ' + producto.cod_inventario + ' ' + producto.nombre + '</td>' +
                                     '<td class="precio-unitario">'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
+                                    '<td class="subtotal">'+ totalFila.toLocaleString()+'</td>'+
                                     '</tr>';
                         tbody.append(fila);
                         var cantidad = parseFloat(producto.cantidad)
@@ -640,6 +643,11 @@ function openModal(remision) {
                         console.log('peso', producto.peso)
                         pesofila= producto.peso * producto.cantidad
                         totalPeso += pesofila
+                        
+
+
+
+
 
 
 

@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         pesofila= producto.peso * producto.cantidad
                         totalPeso += pesofila
 
+
                         $('.valorNit').text('N° de Cliente:  '+ producto.nit_cliente);
                         $('.nombreCliente').text(producto.nombre_cliente);
                         $('.direcCliente').text(producto.direccion_cliente);
