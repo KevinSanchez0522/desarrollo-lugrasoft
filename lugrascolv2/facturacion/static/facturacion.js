@@ -147,6 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     '<td>' + dato.nombre + '</td>' +
                                     '<td>' + dato.cantidad + '</td>' +
                                     '<td><input id="' + inputId + '" type="text" value="' + subtotal_venta_formateado + '"/></td>' +
+                                    '<td class="valorTotal">0</td>'+
                                     '<td><i class="bi bi-arrow-return-left" title = "devolver a produccion"></i><i class= "bi bi-list" data-id="inputSeleccionado" title = "Lista de Precios" id= "lista_precio"></i></td>'
                                     '</tr>';
         
@@ -155,6 +156,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
                                 // Calcular el subtotal total solo si se incluye IVA
                                 var valorProducto = incluirIVA ? dato.total_venta * dato.cantidad : dato.subtotal_venta * dato.cantidad;
+
+                                var totalProducto = dato.cantidad * valorProducto;
+                                $('#tabla-formulario tbody tr:last-child .valorTotal').text(formatearNumero(totalProducto));
+
+
                                 //console.log('dato cantidad', dato.cantidad)
                                 precioTotal += valorProducto;
         
@@ -187,6 +193,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         
         $('#tabla-formulario').on('input', 'input',function() {
+            var fila = $(this).closest('tr');
+            actualizarTotalProducto(fila);
             recalcularTotales();
         });
 
@@ -328,12 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     //console.log(`No hay datos para idtabla ${idtabla}.`);
                     continue;  // Saltar a la siguiente iteración
                 }
-        
-                //console.log(`Datos para idtabla ${idtabla}:`, precios[idtabla]);
-        
-                // Seleccionar la tabla
 
-                // Seleccionar la tabla
                 const tabla = $('#Tabla' + idtabla + ' tbody');
                 //console.log(`Tabla seleccionada para idtabla ${idtabla}:`, tabla);
 
@@ -452,18 +455,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
         
-                //console.log('valor convertido:', numero);
 
                 // Calcular el valor del producto
                 var valorProducto = numero * cantidad;
-                //console.log('valor producto suma', valorProducto)
-                //console.log('precio total antes al cambiar', precioTotal)
+
                 precioTotal += valorProducto;
-                //console.log('precio total despues al cambiar', precioTotal)
-                
-                
-                
-                //console.log('iva rt', iva)
 
                 // Calcular IVA sobre subtotal
                 if (incluirIVA) {
@@ -589,7 +585,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var cantidadFila = $('#tabla-formulario tbody tr:last-child .cantidad').val();
             var valorProducto = incluirIVA ? total_venta * cantidadFila : subtotal_venta * cantidadFila;
             var totalProducto = cantidadFila * valorProducto;
-            $('#tabla-formulario tbody tr[data-id="' + idProducto + '"].valorTotal').text(formatearNumero(totalProducto));
+            $('#tabla-formulario tbody tr:last-child .valorTotal').text(formatearNumero(totalProducto));
             precioTotal += valorProducto;
             
             //console.log('Cantidad de la fila recién agregada:', cantidadFila);
@@ -603,6 +599,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Recalcular totales después de agregar el producto
         actualizarTotales(precioTotal, ivaSobreSubtotalTotal)
+        }
+
+        function actualizarTotalProducto(fila) {
+            var cantidadFila = $(fila).find('.cantidad').val(); // Obtener la cantidad de la fila
+            
+
+                // Verificar si no se obtuvo de un input (en caso de que la celda ya esté renderizada sin un input)
+            if (cantidadFila === undefined || cantidadFila === "") {
+                // Si no es un input (por alguna razón), usar el valor estático en una celda, si existe
+                cantidadFila = $(fila).find('td').eq(2).text(); // Aquí .cantidad-celda es una celda estática
+                console.log('cantidad estatica', cantidadFila)
+            }
+
+
+            var valorProducto = $(fila).find('.valor').val(); // Obtener el valor del producto de la fila
+            console.log('valor PNO', valorProducto)
+            
+            if (valorProducto == undefined || valorProducto === ""){
+                valorProducto = $(fila).find('td').eq(3).find('input').val(); // Aquí
+                console.log('valor PO', valorProducto)
+            }        
+            // Asegúrate de que los valores sean numéricos
+            cantidadFila = parseFloat(cantidadFila) || 0; // Si no es número, establecer a 0
+            valorProducto = parseFloat(valorProducto) || 0; // Si no es número, establecer a 0
+        
+            // Calcular el total del producto
+            var totalProducto = cantidadFila * valorProducto;
+        
+            // Actualizar el total en la celda correspondiente
+            $(fila).find('.valorTotal').text(formatearNumero(totalProducto));
         }
 
 
@@ -622,10 +648,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Datos recibidos:', response);
                     console.log('Datos recibidos:', response);
                     
-                    // Aquí puedes actualizar la interfaz de usuario con los datos recibidos
-                //console.log('Datos recibidos:', response);
-                    
-                    // Aquí puedes actualizar la interfaz de usuario con los datos recibidos
                 var datos = response.datos;  // Array de objetos con los datos de las fórmula
 
                 datos.forEach(function(dato) {
@@ -634,8 +656,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 $('#tabla-formulario').off('input', '.cantidad, .valor').on('input', '.cantidad, .valor', function() {
+                    var fila = $(this).closest('tr');
+                    actualizarTotalProducto(fila);
                     recalcularTotalesProducto();
+                    
                 });
+
         
                 
             
