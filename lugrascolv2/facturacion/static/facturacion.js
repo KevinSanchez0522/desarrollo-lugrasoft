@@ -570,13 +570,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             
 
-
+            var inputId = 'inputSeleccionado_' + identificador;
             // Crear una fila con una clase específica para la cantidad
             var fila = '<tr class="producto-row">' +
                     '<td>' + idProducto + '</td>' +
                     '<td>' + nombre + '</td>' +
                     '<td><input class="cantidad" type="text" value="1" /></td>' +
                     '<td><input id="'+ inputId +'" class="valor" type="text" value="' + subtotal_venta_formateado + '" /></td>' +
+                    '<td class="valorTotal">0</td>'+
                     '<td><a href="#" class="iconoBorrar"> <i class="bi bi-trash"></i></a><i class= "bi bi-list" data-id="inputSeleccionado" title = "Lista de Precios" id= "lista_precio"></i></td>' +
                     '</tr>';
 
@@ -587,6 +588,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var cantidadFila = $('#tabla-formulario tbody tr:last-child .cantidad').val();
             var valorProducto = incluirIVA ? total_venta * cantidadFila : subtotal_venta * cantidadFila;
+            var totalProducto = cantidadFila * valorProducto;
+            $('#tabla-formulario tbody tr[data-id="' + idProducto + '"].valorTotal').text(formatearNumero(totalProducto));
             precioTotal += valorProducto;
             
             //console.log('Cantidad de la fila recién agregada:', cantidadFila);

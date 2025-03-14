@@ -161,7 +161,7 @@ def ver_orden_en_curso(request):
     
         transacciones = TransaccionOrden.objects.filter(
             id__in=subquery.values('id'), 
-            fecha_creacion__in=subquery.values('min_fecha_creacion')
+            fecha_entrega__in=subquery.values('min_fecha_creacion')
         ).exclude(
             estado='facturado'
         ).annotate(
