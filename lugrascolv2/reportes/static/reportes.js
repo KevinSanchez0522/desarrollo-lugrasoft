@@ -631,11 +631,11 @@ function openModal(remision) {
                     response.productos.forEach(function(producto) {
                         nombresProductos.push(producto.nombre);
                         var precioUnitario = parseFloat(producto.precio_unitario.replace(/,/g, ''));
-                        totalFila = producto.cantidad * precioUnitario
+                        var totalFila1 = producto.cantidad * precioUnitario
                         var fila = '<tr>' +
                                     '<td>' + producto.cantidad + ' '+'---'+' ' + producto.cod_inventario + ' ' + producto.nombre + '</td>' +
                                     '<td class="precio-unitario">'+ '$' + (producto.precio_unitario || 'N/A') + '</td>' +
-                                    '<td class="subtotal">'+ totalFila.toLocaleString()+'</td>'+
+                                    '<td class="subtotal">'+ totalFila1.toLocaleString()+'</td>'+
                                     '</tr>';
                         tbody.append(fila);
                         var cantidad = parseFloat(producto.cantidad)
@@ -817,6 +817,10 @@ function printModal() {
     // Eliminar columna "PRECIO UNITARIO" y otros valores solo en la primera copia
     modalContent = modalContent.replace(
         /<th class="precio">PRECIO UNITARIO<\/th>/g,  // Esto elimina el encabezado de la columna
+        '' 
+    );
+    modalContent = modalContent.replace(
+        /<td class="subtotal">[\s\S]*?<\/td>/g,  // Esto elimina el encabezado de la columna
         '' 
     );
     modalContent = modalContent.replace(

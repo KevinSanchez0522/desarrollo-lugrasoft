@@ -701,9 +701,12 @@ def detallesFactura(request):
                 
                 
                 total+=transaccion_total
+                print('total', total)
                 
                 subtotal= round(total/Decimal(1.19))
+                print('subtotal', subtotal)
                 iva= round(total-subtotal)
+                print('iva', iva)
                 if ica:
                     valorIca=subtotal*2.5/100
                     
