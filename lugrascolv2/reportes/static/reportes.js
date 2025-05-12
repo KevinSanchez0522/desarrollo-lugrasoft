@@ -864,6 +864,9 @@ function printModal() {
                             margin-top:4cm;
                         }
 
+                        .modal-content >.subtotal{
+                        display: none;
+                        }
                         .modal-content {
                             
                             margin-top: 4cm; /* Margen superior de 4 cm */
