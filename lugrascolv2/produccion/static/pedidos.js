@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Añade evento de cambio de entrada para las cantidades en la tabla
     $('#tabla-formulario').on('input', '.cantidad-input', function() {
-        updateInfoContainers();
+        updateInfoContainersNotAlert()
     });
 
     function updateInfoContainers() {
@@ -198,6 +198,71 @@ document.addEventListener("DOMContentLoaded", function() {
     
         actualizarVisualizacionMateriasPrimasRequeridas(materiasPrimasRequeridas);
     }
+
+
+
+    function updateInfoContainersNotAlert() {
+        // Reiniciar el objeto de cantidades requeridas de materias primas
+        const materiasPrimasRequeridas = {};
+
+    
+        // Iterar sobre todas las filas de la tabla
+        $('#tabla-formulario tbody tr').each(function() {
+            const productoId = $(this).data('productoId');
+            const cantidad = $(this).find('.cantidad-input').val() || 1; // Si no hay cantidad, se asume 1
+    
+            // Actualizar cantidades requeridas de materias primas para este producto
+            $.ajax({
+                url: materiasprimas, // Asegúrate de que esta URL coincide con tu configuración de Django
+                data: { producto_id: productoId },
+                async: false, // Hacer la solicitud de manera sincrónica para garantizar el orden de ejecución
+                success: function(response) {
+                    if (response.success) {
+                        const materiasPrimas = response.materias_primas;
+    
+                        materiasPrimas.forEach(mp => {
+                            const codigoMP = mp.codigo;
+                            const cantidadRequerida = mp.cantidad_requerida * cantidad;
+                            const nombreMP = mp.nombre;
+
+                            // Verificar si la cantidad requerida es mayor que la cantidad en inventario
+                            if (cantidadRequerida > (existenciasMateriasPrimas[codigoMP] || 0)) {
+                                inventarioInsuficiente = true;
+                            }
+    
+                            if (materiasPrimasRequeridas[codigoMP]) {
+                                // Si la materia prima ya está en el registro, sumar la cantidad requerida
+                                materiasPrimasRequeridas[codigoMP].cantidad += cantidadRequerida;
+                            } else {
+                                // Si no está en el registro, asignar la cantidad requerida
+                                materiasPrimasRequeridas[codigoMP] = {
+                                    cantidad: cantidadRequerida,
+                                    nombre: nombreMP
+                                };
+                            }
+                            existenciasMateriasPrimas[codigoMP] = mp.cantidad_actual;
+                        });
+    
+                    } else {
+                        alert('Error: ' + response.error);
+                    }
+                },
+                error: function() {
+                    alert('Error al validar el producto.');
+                }
+            });
+        });
+    
+        actualizarVisualizacionMateriasPrimasRequeridas(materiasPrimasRequeridas);
+    }
+
+
+
+
+
+
+
+
 
 
 function actualizarVisualizacionMateriasPrimasRequeridas(materiasPrimasRequeridas) {
