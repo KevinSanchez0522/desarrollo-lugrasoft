@@ -387,7 +387,7 @@ def kardex_view(request):
                         
                 
 
-                saldo += entradas - salidas
+                saldo += float(entradas) - float(salidas)
 
                 kardex.append({
                     'fecha': fecha.strftime('%Y-%m-%d'),
