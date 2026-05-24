@@ -267,49 +267,35 @@ document.addEventListener('DOMContentLoaded', function() {
             "PLANO4T946X24": "4T PLANO X24 (946)"
         };
         
-
-        $('#tabla-formulario').on('click','.bi-list', function(e){
-            const row = $(this).closest('tr');
-            const input = row.find('input'); // Selecciona el input dentro de la fila
-
-            // Obtener el valor del atributo id del input
-            const inputId = input.attr('id');
-            console.log('ID del input:', inputId);
-            
-            // Guardar el inputId en el modal
-            $('#modalTablaPrecios').data('input-id', inputId);
-
-
-            var fila = $(this).closest('tr');
-            $('#modalTablaPrecios').css('display', 'block');
-            $.ajax({
-                type: "GET",
-                url: obtenerLista,  // URL de la vista que obtiene los precios
-                success: function (response) {
-                    console.log("Precios obtenidos:", response);
-                    renderizarPreciosEnTablas(response.precios);
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error al obtener los precios:", error);
-                }
-            });
-            $('#modalTablaPrecios').on('click', 'table td', function () {
-                // Obtener el valor de la celda clickeada
-                const valor = $(this).text().trim();
-                console.log("Valor seleccionado:", valor);
-    
-                // Obtener el id del input guardado en el modal
-                const inputId = $('#modalTablaPrecios').data('input-id');
-
-    
-                // Colocar el valor en el input
-                $('#' + inputId).val(valor);
-                recalcularTotales(valor)
-    
-                // Cerrar el modal
-                $('#modalTablaPrecios').css('display', 'none');
-            });
-        });
+        $('#tabla-formulario').on(
+            'click',
+            '.bi-list',
+            function () {
+                const row = $(this).closest('tr');
+                const input = row.find('td').eq(3).find('input');
+                const inputId =
+                    input.attr('id');
+                $('#modalTablaPrecios')
+                    .data('input-id', inputId)
+                    .fadeIn();
+                $.ajax({
+                    type: 'GET',
+                    url: obtenerLista,
+                    success: function (response) {
+                        console.log(
+                            'Precios obtenidos:',
+                            response
+                        );
+                        renderizarPrecios(
+                            response.precios
+                        );
+                    },
+                    error: function (xhr) {
+                        console.error(xhr);
+                    }
+                });
+            }
+        );
         // Manejador de clic para cualquier celda de cualquier tabla
 
         // Cerrar el modal al hacer clic en el botón de cierre
@@ -325,78 +311,191 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
 
-        function renderizarPreciosEnTablas(precios) {
-            //console.log("Datos recibidos (precios):", precios);
-        
-            for (let idtabla = 1; idtabla <= 10; idtabla++) {
-                //console.log(`Procesando idtabla ${idtabla}`);
-        
-                // Verificar si hay datos para esta tabla
-                if (!precios[idtabla] || !Array.isArray(precios[idtabla]) || precios[idtabla].length === 0) {
-                    //console.log(`No hay datos para idtabla ${idtabla}.`);
-                    continue;  // Saltar a la siguiente iteración
-                }
+        function renderizarPrecios(precios) {
 
-                const tabla = $('#Tabla' + idtabla + ' tbody');
-                //console.log(`Tabla seleccionada para idtabla ${idtabla}:`, tabla);
+            $('#contenedorPreciosModal').html('');
 
-                if (tabla.length === 0) {
-                    //console.log(`No se encontró la tabla para idtabla ${idtabla}.`);
-                    continue;  // Saltar a la siguiente iteración
-                }
+            // MAPEO DE NOMBRES
+            const nombresLineas = {
 
-                const fila = tabla.find('tr');
-                //console.log(`Fila seleccionada para idtabla ${idtabla}:`, fila);
+                1: "PRODUCTO MOTOR 2T ROJO-ECOLOGICO -- NAUTICO -- ISO 68 -- ATF",
 
-                if (fila.length === 0) {
-                    //console.log(`No se encontró la fila para idtabla ${idtabla}.`);
-                    continue;  // Saltar a la siguiente iteración
-                }
+                2: "PRODUCTO MOTOR OIL 40 -- 50 -- MAXIDIESEL -- SAE 60",
 
-        
-                // Obtener los nombres de las columnas
-                const columnas = $('#Tabla' + idtabla + ' thead tr td').map(function () {
-                    //console.log("Celda encontrada:", $(this).text().trim());
-                    return $(this).text().trim();
-                }).get();
-                //console.log(`Columnas para idtabla ${idtabla}:`, columnas);
-        
-                if (columnas.length === 0) {
-                    //console.log(`No se encontraron columnas para idtabla ${idtabla}.`);
-                    continue;  // Saltar a la siguiente iteración
-                }
-        
-                // Limpiar la fila antes de agregar nuevos datos
-                fila.empty();
-        
-                // Iterar sobre las columnas y agregar los valores correspondientes
-                columnas.forEach(function (columna) {
-                    //console.log(`Procesando columna "${columna}" para idtabla ${idtabla}.`);
-        
-                    // Buscar el nombre equivalente en el mapeo
-                    const nombreEquivalente = Object.keys(mapeoNombres).find(
-                        key => mapeoNombres[key] === columna
-                    );
-                    //console.log(`Nombre equivalente para "${columna}":`, nombreEquivalente);
-        
-                    // Validar si el nombre equivalente existe
-                    if (nombreEquivalente) {
-                        //console.log(`Columna "${columna}" es equivalente a "${nombreEquivalente}".`);
-                    } else {
-                        //console.log(`Columna "${columna}" no tiene un equivalente en el mapeo.`);
-                    }
-        
-                    // Obtener el valor de la base de datos usando el nombre equivalente
-                    const valor = nombreEquivalente && precios[idtabla].find(item => item.nombre === nombreEquivalente)?.valor || 'N/A';
-                    //console.log(`Valor para "${columna}":`, valor);
-        
-                    // Agregar el valor a la celda
-                    fila.append('<td>' + valor + '</td>');
+                3: "PRODUCTO TRANSMISIONES GL-1",
+
+                4: "PRODUCTO VALVULINA TRAPICHE",
+
+                5: "PRODUCTO VALVULINA GL-5",
+
+                6: "PRODUCTO 20W50 SL -- 20W50 4T",
+
+                7: "PRODUCTO 25W60 SL -- 25W60 4T",
+
+                8: "PRODUCTO DIESEL 15W40",
+
+                9: "PRODUCTO GRASA DE CALCIO",
+
+                10: "PRODUCTO GRASA DE LITIO AZUL"
+            };
+
+            for (const idtabla in precios) {
+
+                const items = precios[idtabla];
+
+                const nombreLinea =
+                    nombresLineas[idtabla] || `Línea ${idtabla}`;
+
+                let html = `
+
+                    <div class="card-linea modal-card">
+
+                        <div class="linea-header">
+
+                            <h2>
+                                ${nombreLinea}
+                            </h2>
+
+                        </div>
+
+                        <div class="productos-grid">
+                `;
+
+                items.forEach(function(item){
+
+                    html += `
+
+                        <div class="item-precio">
+
+                            <label>
+                                ${item.nombre}
+                            </label>
+
+                            <button
+                                type="button"
+                                class="btn-seleccionar-precio"
+                                data-valor="${item.valor}"
+                            >
+
+                                $ ${parseFloat(item.valor)
+                                    .toLocaleString('es-CO')}
+
+                            </button>
+
+                        </div>
+                    `;
                 });
+
+                html += `
+
+                        </div>
+
+                    </div>
+                `;
+
+                $('#contenedorPreciosModal').append(html);
             }
         }
-        
 
+
+        /* ================================
+            PETICIÓN AJAX
+        ================================ */
+
+        $('#tabla-formulario').on(
+            'click',
+            '.bi-list',
+            function(e){
+
+                e.preventDefault();
+
+                const row = $(this).closest('tr');
+
+                const input = row.find('td').eq(3).find('input');
+
+                const inputId = input.attr('id');
+
+                // GUARDAR INPUT DESTINO
+                $('#modalTablaPrecios')
+                    .data('input-target', input);
+
+                // MOSTRAR MODAL
+                $('#modalTablaPrecios')
+                    .css('display', 'flex');
+
+                $.ajax({
+
+                    type: "GET",
+
+                    url: obtenerLista,
+
+                    success: function(response) {
+
+                        console.log(
+                            'PRECIOS OBTENIDOS:',
+                            response
+                        );
+
+                        renderizarPrecios(
+                            response.precios
+                        );
+                    },
+
+                    error: function(xhr, status, error) {
+
+                        console.error(
+                            'ERROR AL OBTENER PRECIOS:',
+                            error
+                        );
+                    }
+                });
+        });
+
+
+        /* ================================
+            SELECCIONAR PRECIO
+        ================================ */
+
+        $('#contenedorPreciosModal').on(
+            'click',
+            '.btn-seleccionar-precio',
+            function () {
+
+                const valor = parseFloat(
+                    $(this).attr('data-valor')
+                ) || 0;
+
+                // INPUT PRECIO
+                const input = $('#modalTablaPrecios')
+                    .data('input-target');
+
+                if (!input || input.length === 0) {
+                    console.error('No se encontró input');
+                    return;
+                }
+
+                // FORMATO
+                const valorFormateado = valor.toLocaleString('es-ES', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
+                // ACTUALIZAR SOLO PRECIO
+                input.val(valorFormateado);
+
+                // FILA
+                const fila = input.closest('tr');
+
+                // RECALCULAR
+                actualizarTotalProducto(fila);
+
+                recalcularTotales();
+
+                // CERRAR
+                $('#modalTablaPrecios').fadeOut();
+            }
+        );
+        
 
 
         
@@ -426,6 +525,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 actualizarTotales(precioTotal, ivaSobreSubtotalTotal);
         }
+
 
         function recalcularTotalesProducto(){
             var incluirIVA = $('#checkIva').prop('checked');
@@ -602,33 +702,76 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function actualizarTotalProducto(fila) {
-            var cantidadFila = $(fila).find('.cantidad').val(); // Obtener la cantidad de la fila
-            
 
-                // Verificar si no se obtuvo de un input (en caso de que la celda ya esté renderizada sin un input)
-            if (cantidadFila === undefined || cantidadFila === "") {
-                // Si no es un input (por alguna razón), usar el valor estático en una celda, si existe
-                cantidadFila = $(fila).find('td').eq(2).text(); // Aquí .cantidad-celda es una celda estática
-                console.log('cantidad estatica', cantidadFila)
+            // =========================
+            // CANTIDAD
+            // =========================
+            var cantidadFila = $(fila).find('.cantidad').val();
+
+            // Si no existe input .cantidad
+            if (
+                cantidadFila === undefined ||
+                cantidadFila === ""
+            ) {
+                cantidadFila = $(fila)
+                    .find('td')
+                    .eq(2)
+                    .text()
+                    .trim();
+
+                console.log('cantidad estatica', cantidadFila);
             }
 
+            // =========================
+            // VALOR PRODUCTO
+            // =========================
 
-            var valorProducto = $(fila).find('.valor').val(); // Obtener el valor del producto de la fila
-            console.log('valor PNO', valorProducto)
-            
-            if (valorProducto == undefined || valorProducto === ""){
-                valorProducto = $(fila).find('td').eq(3).find('input').val(); // Aquí
-                console.log('valor PO', valorProducto)
-            }        
-            // Asegúrate de que los valores sean numéricos
-            cantidadFila = parseFloat(cantidadFila) || 0; // Si no es número, establecer a 0
-            valorProducto = parseFloat(valorProducto) || 0; // Si no es número, establecer a 0
-        
-            // Calcular el total del producto
+            // Buscar cualquier input del TD 4
+            var inputValor = $(fila)
+                .find('td')
+                .eq(3)
+                .find('input');
+
+            var valorProducto = inputValor.val();
+
+            console.log('valor obtenido', valorProducto);
+
+            // Evitar undefined
+            if (
+                valorProducto === undefined ||
+                valorProducto === null ||
+                valorProducto === ""
+            ) {
+                valorProducto = "0";
+            }
+
+            // =========================
+            // LIMPIAR FORMATO
+            // =========================
+
+            valorProducto = valorProducto
+                .toString()
+                .replace(/\$/g, '')
+                .replace(/\s/g, '')
+                .replace(/\./g, '')
+                .replace(',', '.');
+
+            // =========================
+            // CONVERTIR A NUMERO
+            // =========================
+
+            cantidadFila = parseFloat(cantidadFila) || 0;
+            valorProducto = parseFloat(valorProducto) || 0;
+
+            // =========================
+            // TOTAL
+            // =========================
+
             var totalProducto = cantidadFila * valorProducto;
-        
-            // Actualizar el total en la celda correspondiente
-            $(fila).find('.valorTotal').text(formatearNumero(totalProducto));
+
+            $(fila)
+                .find('.valorTotal')
+                .text(formatearNumero(totalProducto));
         }
 
 

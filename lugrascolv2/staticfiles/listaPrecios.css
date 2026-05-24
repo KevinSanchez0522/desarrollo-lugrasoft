@@ -1,202 +1,199 @@
+/* RESET */
 
-/* Estilos generales para la tabla */
-.tabla {
-    width: 100%;
-    margin: 20px auto;
-    margin-top: 20px; /* Espacio entre la tabla y el contenido superior */
-    overflow-x: auto;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-    max-height: calc(100vh - 140px); /* Altura máxima de la tabla */
-    overflow-y: scroll;
+*{
+    box-sizing: border-box;
 }
 
-.table {
-    width: 100%;
-    border-collapse: collapse;
+/* CONTENEDOR PRINCIPAL */
+
+.content2{
+    width: calc(100% - 220px);
+    overflow-x: hidden;
 }
 
-.table th,
-.table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+.contenedor-precios{
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(500px, 1fr));
+    gap: 24px;
+    padding: 25px;
+    align-items: start;
+}
+/* HEADER */
+
+.header-precios{
+    grid-column: 1 / -1;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+
+    margin-bottom: 10px;
+
+    flex-wrap: wrap;
 }
 
-/* Encabezado de la tabla */
-.encabezado td {
-    background-color: #4CAF50;
+/* TITULOS */
+
+.titulo-principal{
+    font-size: 32px;
+    margin: 0;
+    color: #2f2f2f;
+}
+
+.subtitulo{
+    margin-top: 6px;
+    color: #777;
+}
+
+/* BOTON */
+
+.btn-guardar{
+    background: #4caf50;
     color: white;
-    font-size: 16px;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-/* Cuerpo de la tabla */
-.table tbody tr:hover {
-    background-color: #f5f5f5;
+/* TARJETAS */
+
+.card-linea{
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.05);
+    border: 1px solid #ececec;
+    transition: .2s ease;
+    min-width: 0;
+    overflow: hidden;
 }
 
-/* Estilos para las celdas */
-.table td {
-    color: #333;
+.card-linea:hover{
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 15px rgba(0,0,0,.08);
 }
 
-/* Estilos para el texto */
-.table th, .table td {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* HEADER TARJETA */
+
+.linea-header{
+    margin-bottom: 18px;
 }
 
-/* Mejora de la accesibilidad en pantallas pequeñas */
-@media screen and (max-width: 600px) {
-    .table thead {
-        display: none;
+.linea-header h2{
+
+    margin: 0 0 20px 0;
+
+    font-size: 20px;
+
+    color: #222;
+
+    line-height: 1.3;
+}
+
+/* GRID PRODUCTOS */
+
+.productos-grid{
+
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+}
+
+/* ITEM */
+
+.item-precio{
+    display: flex;
+
+    flex-direction: column;
+}
+
+/* LABEL */
+
+.item-precio label{
+    margin-bottom: 5px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    color: #555;
+}
+
+/* INPUT */
+
+.input-precio{
+
+    width: 100%;
+    height: 42px;
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+    padding: 0 12px;
+    font-size: 14px;
+    transition: .2s;
+}
+
+.input-precio:focus{
+
+    border-color: #7c9726;
+
+    box-shadow: 0 0 0 3px rgba(124,151,38,.12);
+
+    outline: none;
+}
+
+.input-precio:focus{
+    border-color: #4caf50;
+
+    outline: none;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1200px){
+
+    .contenedor-precios{
+
+        grid-template-columns:
+            repeat(auto-fit, minmax(320px, 1fr));
     }
+}
 
-    .table, .table tbody, .table tr, .table td {
-        display: block;
+@media(max-width:768px){
+
+    .content2{
         width: 100%;
     }
 
-    .table tr {
-        margin-bottom: 15px;
+    .contenedor-precios{
+
+        grid-template-columns: 1fr;
+        padding: 15px;
     }
 
-    .table td {
-        text-align: right;
-        padding-left: 50%;
-        text-align: right;
-        position: relative;
+    .header-precios{
+
+        flex-direction: column;
+
+        align-items: flex-start;
     }
 
-    .table td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 0;
-        width: 50%;
-        padding-left: 15px;
-        font-weight: bold;
-        text-align: left;
+    .titulo-principal{
+
+        font-size: 25px;
     }
-}
-/* Estilo del contenido del modal */
-.modal-content {
-    position: relative;
-    background-color: #ffff;
-    margin: 1% auto; /* Centrado */
-    padding: 5px;
-    border: none;
-    width: 80%; /* Ancho del modal */
-    background: 
-    linear-gradient(
-        rgba(255, 255, 255, 0.92), 
-        rgba(255, 255, 255, 0.92)
-    ), url('../static/logo.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
 
-    
-}
-.modal-content::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.4); /* Capa blanca semitransparente */
-    z-index: -1000; /* Coloca esta capa detrás del contenido del modal */
-}
+    .productos-grid{
 
-/* Estilo para el botón de cerrar */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.modal-content .cabeceraModal{
-    justify-content: center;
-    text-align: center;
-}
-.label-tabla {
-    display: block; /* Hace que el label ocupe toda la línea */
-    font-size: 18px; /* Tamaño de la fuente */
-    font-weight: bold; /* Texto en negrita */
-    margin-bottom: 10px; /* Espacio entre el label y la tabla */
-    color: #333; /* Color del texto */
-}
-.edit-list{
-    display: flex;
-    justify-content: end;
-}
-
-.bt-edit-fra{
-    margin-top: 50px;
-    display: inline-block;
-    padding: 10px 15px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #fff;
-    background-color: #4CAF50; /* Color de fondo del botón */
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    transition: background-color 0.3s;
-}
-.bt-edit-fra :hover {
-    background-color: #53ad56; /* Cambio de color al pasar el mouse */
-}
-.bt-edit-fra :focus{
-    outline: none; /* Elimina el borde de enfoque al hacer clic */
-}
-
-.bt-edit-fra :active{
-    background-color: #53ad56; /* Color de fondo al hacer clic */
-    transform: translateY(1px); /* Efecto de presionado */
-}
-
-
-/* Estilo base del input */
-input{
-    width: 100%; /* Ancho completo */
-    padding: 10px 15px; /* Espaciado interno */
-    font-size: 14px; /* Tamaño de la fuente */
-    color: #333; /* Color del texto */
-    background-color: #f9f9f9; /* Fondo claro */
-    border: 1px solid #ddd; /* Borde sutil */
-    border-radius: 6px; /* Bordes redondeados */
-    outline: none; /* Quita el borde de enfoque predeterminado */
-    transition: all 0.3s ease; /* Transición suave */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra ligera */
-}
-
-/* Estilo cuando el input está enfocado */
-input:focus{
-    border-color: #007bff; /* Cambia el color del borde al enfocar */
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2); /* Sombra más pronunciada */
-    background-color: #fff; /* Fondo blanco al enfocar */
-}
-
-/* Estilo para el placeholder */
-input::placeholder {
-    color: #999; /* Color del placeholder */
-    font-style: italic; /* Texto en cursiva */
-}
-
-/* Estilo cuando el input está deshabilitado */
-input:disabled {
-    background-color: #eee; /* Fondo gris claro */
-    color: #aaa; /* Texto gris */
-    cursor: not-allowed; /* Cursor de no permitido */
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
 }
