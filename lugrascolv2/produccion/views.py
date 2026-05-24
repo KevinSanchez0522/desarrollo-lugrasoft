@@ -315,9 +315,7 @@ def irAfacturar (request):
 
             # Iterar sobre las transacciones y actualizar el estado
             for transaccion in transacciones:
-                #transaccion.estado = estado
-                #transaccion.fecha_terminacion_orden = fechaActual
-                #transaccion.save()
+
                 # Obtener el cod_inventario y cantidad de la transacción
                 cod_inventario = transaccion.cod_inventario.cod_inventario
                 print('codigo',cod_inventario)
@@ -344,33 +342,51 @@ def irAfacturar (request):
                         elif cantidad_recibida < cantidad:
                             print(f'La cantidad recibida es menor. Se va a crear una transacción auxiliar para facturar {producto["cod_inventario"]}')
                             
-                            if not TransaccionOrden.objects.filter(id_orden=idOrden, cod_inventario=cod_inventario, cantidad=cantidad_recibida,estado='por facturar').exists():
-                                nueva_transaccion = TransaccionOrden.objects.create(
-                                    id_orden=transaccion.id_orden,
-                                    cod_inventario=transaccion.cod_inventario,
-                                    cantidad=cantidad_recibida,
-                                    estado='por facturar',  # O el estado que corresponda
-                                    fecha_creacion=transaccion.fecha_creacion,
-                                    fecha_entrega= transaccion.fecha_entrega,
-                                    prioridad= transaccion.prioridad
-                                )
-                                nueva_transaccion.save()
-                                print(f'Nueva transacción creada: cod_inventario={producto["cod_inventario"]}, cantidad={cantidad_recibida}')
-                                total = cantidad - cantidad_recibida
-                                print(f'Cantidad restante para producción: {total}')
-                                transaccion.cantidad =  total
-                                
-                                transaccion.save()
-                                
-                                # Actualizamos el inventario, sumando la cantidad recibida
-                                inventario = get_object_or_404(Inventario, cod_inventario=cod_inventario)
-                                inventario.cantidad = cantidad_recibida  # sumamos la cantidad del inventario
-                                inventario.save()  # Guardamos el inventario actualizado
-                                print(f'Inventario actualizado después de la transacción auxiliar: {inventario.cod_inventario}, nueva cantidad: {inventario.cantidad}')
-                                
-                            else:
-                                print(f'Ya existe una transacción auxiliar para este producto {producto["cod_inventario"]}. No se creará una nueva.')
+                            with transaction.atomic():
 
+                                # Verificar si ya existe una transacción parcial
+                                transaccion_existente = TransaccionOrden.objects.filter(
+                                    id_orden=idOrden,
+                                    cod_inventario=transaccion.cod_inventario,
+                                    estado='por facturar'
+                                ).first()
+
+                                if transaccion_existente:
+
+                                    # Si ya existe, solo aumentar cantidad
+                                    transaccion_existente.cantidad += cantidad_recibida
+                                    transaccion_existente.save()
+
+                                else:
+
+                                    # Crear nueva transacción parcial
+                                    TransaccionOrden.objects.create(
+                                        id_orden=transaccion.id_orden,
+                                        cod_inventario=transaccion.cod_inventario,
+                                        cantidad=cantidad_recibida,
+                                        estado='por facturar',
+                                        fecha_creacion=transaccion.fecha_creacion,
+                                        fecha_entrega=transaccion.fecha_entrega,
+                                        prioridad=transaccion.prioridad,
+                                        responsable=transaccion.responsable
+                                    )
+
+                                # Restar cantidad pendiente a producción
+                                transaccion.cantidad -= cantidad_recibida
+
+                                # Si ya quedó en 0 se puede cambiar estado
+                                if transaccion.cantidad <= 0:
+                                    transaccion.estado = 'por facturar'
+
+                                transaccion.save()
+
+                                # Actualizar inventario correctamente
+                                inventario = Inventario.objects.get(
+                                    cod_inventario=cod_inventario
+                                )
+
+                                inventario.cantidad += cantidad_recibida
+                                inventario.save()
 
             return JsonResponse({'message': 'Datos recibidos y almacenados correctamente.'})
         

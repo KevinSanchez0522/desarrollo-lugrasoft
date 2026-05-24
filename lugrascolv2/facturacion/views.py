@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from .models import Clientes, ListadoPrecios, TransaccionFactura, TransaccionRemision, Facturas, Remisiones , Inventario, OrdenProduccion, TransaccionOrden, Transformulas, TransMp,Proveedores, Compras
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Max, F
+from django.db.models import Max, F, Sum
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas # type: ignore
@@ -101,16 +101,23 @@ def productos_facturar(request):
         for id_orden in id_ordenes:
             print('ordenes', id_orden)
             # Obtener las transacciones de la orden actual
-            transacciones = TransaccionOrden.objects.filter(id_orden=id_orden, estado__in=['por facturar'])
+            transacciones = (
+                TransaccionOrden.objects.filter(
+                    id_orden=id_orden,
+                    estado='por facturar')
+            
+            .values('cod_inventario')
+            .annotate(cantidad_total=Sum('cantidad'))
+            )
 
             # Lista para almacenar los productos de la orden actual
             productos = []
 
             # Iterar sobre cada transacción de la orden
             for transaccion in transacciones:
-                cod_inventario = transaccion.cod_inventario
+                cod_inventario = transaccion['cod_inventario']
                 print('codigos: ', cod_inventario)
-                cantidad_transaccion = transaccion.cantidad
+                cantidad_transaccion = transaccion['cantidad_total']
 
                 # Obtener la fórmula correspondiente al cod_inventario
                 try:
@@ -1030,66 +1037,228 @@ def listaPrecios(request):
     return render(request, 'listaPrecios.html')
 
 
+import json
+import datetime
+from django.db import transaction
+from django.http import JsonResponse
+from .models import ListadoPrecios
+
+
+# ======================================================
+# CONFIGURACIÓN DE LÍNEAS Y PRESENTACIONES
+# ======================================================
+
+
+from collections import defaultdict
+from django.shortcuts import render
+from .models import ListadoPrecios
+
+
+NOMBRES_LINEAS = {
+    1: "PRODUCTO MOTOR 2T ROJO-ECOLOGICO -- NAUTICO -- ISO 68 -- ATF",
+    2: "PRODUCTO MOTOR OIL 40 -- 50 -- MAXIDIESEL -- SAE 60",
+    3: "PRODUCTO TRANSMISIONES GL-1",
+    4: "PRODUCTO VALVULINA TRAPICHE",
+    5: "PRODUCTO VALVULINA GL-5",
+    6: "PRODUCTO 20W50 SL -- 20W50 4T",
+    7: "PRODUCTO 25W60 SL -- 25W60 4T",
+    8: "PRODUCTO DIESEL 15W40",
+    9: "PRODUCTO GRASA DE CALCIO",
+    10: "PRODUCTO GRASA DE LITIO AZUL",
+}
+
+
+
+# ======================================================
+# VISTA PRINCIPAL
+# ======================================================
+def listaPrecios(request):
+    precios = ListadoPrecios.objects.all().order_by(
+        'idtabla',
+        'nombre'
+    )
+    lineas = defaultdict(list)
+    for item in precios:
+        lineas[item.idtabla].append({
+            'nombre': item.nombre,
+            'valor': item.valor
+        })
+    data = {}
+    for idtabla, productos in lineas.items():
+        data[idtabla] = {
+            'nombre': NOMBRES_LINEAS.get(idtabla),
+            'productos': productos
+        }
+    return render(request, 'listaPrecios.html', {
+        'lineas': data
+    })
+
+
+# ======================================================
+# ACTUALIZAR PRECIOS
+# ======================================================
 
 def actualizarLista(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            fecha = datetime.date.today()
-            tablas = [
-                ('Tabla1', 1),
-                ('Tabla2', 2),
-                ('Tabla3', 3),
-                ('Tabla4', 4),
-                ('Tabla5', 5),
-                ('Tabla6', 6),
-                ('Tabla7', 7),
-                ('Tabla8', 8),
-                ('Tabla9', 9),
-                ('Tabla10', 10),
-            ]
 
-            registros = []
+    if request.method != 'POST':
 
-            for nombre_tabla, idtabla in tablas:
-                tabla = data.get(nombre_tabla)
-                if tabla:
-                    for datos in tabla:
-                        nombre = datos.get('nombre')
-                        cantidad = datos.get('valor')
-                        registros.append(
-                            ListadoPrecios(
-                                nombre=nombre,
-                                valor=cantidad,
-                                fecha_actualizacion=fecha,
-                                idtabla=idtabla
-                            )
-                        )
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Método no permitido'
+        }, status=405)
 
-            # Guardar todos los registros en la base de datos
-            with transaction.atomic():
-                ListadoPrecios.objects.bulk_create(registros)
+    try:
 
-            return JsonResponse({'status': 'success', 'message': 'Datos guardados correctamente'})
-        
-        except json.JSONDecodeError:
-            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-    
-    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+        data = json.loads(request.body)
+
+        fecha_actual = datetime.date.today()
+
+        nuevos = []
+        actualizar = []
+
+        existentes = ListadoPrecios.objects.all()
+
+        mapa_existentes = {
+
+            (
+                item.idtabla,
+                item.nombre.strip().upper()
+            ): item
+
+            for item in existentes
+        }
+
+        for item in data:
+
+            idtabla = item.get('idtabla')
+
+            nombre = (
+                item.get('nombre', '')
+                .strip()
+                .upper()
+            )
+
+            try:
+                valor = float(item.get('valor', 0))
+
+            except (ValueError, TypeError):
+                valor = 0
+
+            clave = (idtabla, nombre)
+
+            if clave in mapa_existentes:
+
+                obj = mapa_existentes[clave]
+
+                obj.valor = valor
+                obj.fecha_actualizacion = fecha_actual
+
+                actualizar.append(obj)
+
+            else:
+
+                nuevos.append(
+
+                    ListadoPrecios(
+
+                        idtabla=idtabla,
+
+                        nombre=nombre,
+
+                        valor=valor,
+
+                        fecha_actualizacion=fecha_actual
+                    )
+                )
+
+        with transaction.atomic():
+
+            if nuevos:
+
+                ListadoPrecios.objects.bulk_create(
+                    nuevos
+                )
+
+            if actualizar:
+
+                ListadoPrecios.objects.bulk_update(
+                    actualizar,
+                    ['valor', 'fecha_actualizacion']
+                )
+
+        return JsonResponse({
+
+            'status': 'success',
+
+            'message': 'Precios actualizados correctamente'
+        })
+
+    except json.JSONDecodeError:
+
+        return JsonResponse({
+
+            'status': 'error',
+
+            'message': 'JSON inválido'
+
+        }, status=400)
+
+    except Exception as e:
+
+        return JsonResponse({
+
+            'status': 'error',
+
+            'message': str(e)
+
+        }, status=500)
 
 
+# ======================================================
+# CONSULTAR PRECIOS
+# ======================================================
 
 def consultarPrecios(request):
-    if request.method == 'GET':
-        try:
-            precios = ListadoPrecios.objects.all().values('id', 'nombre', 'valor', 'fecha_actualizacion', 'idtabla')
-            precios_por_tabla = defaultdict(list)
-            for precio in precios:
-                precios_por_tabla[precio['idtabla']].append(precio)
-            precios_por_tabla = dict(precios_por_tabla)
-            return JsonResponse({'status': 'success', 'precios': precios_por_tabla})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
+    if request.method != 'GET':
+
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Método no permitido'
+        }, status=405)
+
+    try:
+
+        precios = ListadoPrecios.objects.all().values(
+
+            'idtabla',
+            'nombre',
+            'valor',
+            'fecha_actualizacion'
+        )
+
+        precios_por_tabla = defaultdict(list)
+
+        for precio in precios:
+
+            precios_por_tabla[
+                precio['idtabla']
+            ].append(precio)
+
+        return JsonResponse({
+
+            'status': 'success',
+
+            'precios': dict(precios_por_tabla)
+
+        })
+
+    except Exception as e:
+
+        return JsonResponse({
+
+            'status': 'error',
+
+            'message': str(e)
+
+        }, status=500)
