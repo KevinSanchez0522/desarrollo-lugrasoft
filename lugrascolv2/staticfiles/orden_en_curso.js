@@ -148,6 +148,10 @@ document.addEventListener('DOMContentLoaded', function(){
                         $('#responsableEtiquetado').text(detalle.responsable);
                         $('#estado').text(detalle.estado)
                         var row = tbody.insertRow();
+                        // COLOR VERDE SI EL PRODUCTO ESTÁ TERMINADO
+                        if (detalle.terminado === true) {
+                            row.classList.add('fila-terminada');
+                        }
                         
                         var cellProducto = row.insertCell(0);
                         var cellNombre = row.insertCell(1);

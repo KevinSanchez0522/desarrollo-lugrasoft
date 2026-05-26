@@ -330,3 +330,8 @@ span{
 tr[data-prioridad="true"] {
     background-color: #ffcccb; /* Color rosado claro */
 }
+
+.fila-terminada{
+    background-color: #d4edda !important;
+    color: #155724;
+}
